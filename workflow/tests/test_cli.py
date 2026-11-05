@@ -140,8 +140,15 @@ class CliTests(AngelTestCase):
             listing = subprocess.run(["unzip", "-Z1", str(out)], capture_output=True,
                                      text=True, check=False)
             if listing.returncode == 0:
-                self.assertIn("WORKFLOW.md", listing.stdout)
-                self.assertIn("skills/engineering/tdd-workflow/SKILL.md", listing.stdout)
+                names = listing.stdout.splitlines()
+                self.assertIn("WORKFLOW.md", names)
+                self.assertIn("skills/engineering/tdd-workflow/SKILL.md", names)
+                self.assertIn("contracts/skill-report/1.1.0.schema.json", names)
+                self.assertEqual(sum(1 for n in names if n.endswith("/SKILL.md")),
+                                 len(self.registry.skills),
+                                 "the zip must carry every skill")
+                self.assertFalse([n for n in names if "__pycache__" in n or n.endswith(".pyc")],
+                                 "the zip must not carry build leftovers")
 
     def test_journal_all_verifies(self):
         result = self.cli("journal", "--all")

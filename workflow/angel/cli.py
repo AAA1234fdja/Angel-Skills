@@ -187,16 +187,22 @@ def cmd_pack(args: argparse.Namespace) -> int:
     out = Path(args.out).resolve() if args.out else root / "dist" / "workflow.zip"
     out.parent.mkdir(parents=True, exist_ok=True)
     include = ["EXTENSION-STANDARD.md", "WORKFLOW.md", "categories.json", "CHANGELOG.md",
-               "README.md", "skills", "contracts", "angel", "tests", "ely-extension"]
+               "README.md", "skills", "contracts", "angel", "tests", "tools", "ely-extension"]
     targets = [name for name in include if (root / name).exists()]
-    if shutil.which("zip") is None:
-        fail(AngelError("zip is not available on this system",
-                        hint="install zip, or use `workflow pack --tar`"), args.json)
-        return 1
-    result = subprocess.run(["zip", "-r", "-q", str(out), *targets], cwd=root, check=False)
+    if out.exists():
+        out.unlink()
+    result = subprocess.run(
+        ["zip", "-r", "-q", str(out), *targets, "-x", "*__pycache__*", "*.pyc",
+         "*/.workflow/*", "*/dist/*"],
+        cwd=root, check=False)
     if result.returncode != 0:
         return fail(AngelError(f"zip exited with {result.returncode}"), args.json)
-    emit({"out": str(out), "entries": len(targets)}, args.json)
+    listing = subprocess.run(["unzip", "-Z1", str(out)], capture_output=True, text=True,
+                             check=False)
+    entries = [line for line in listing.stdout.splitlines() if line and not line.endswith("/")]
+    skills = sum(1 for line in entries if line.endswith("/SKILL.md"))
+    emit({"out": str(out), "entries": len(entries), "skills": skills,
+          "bytes": out.stat().st_size}, args.json)
     return 0
 
 
