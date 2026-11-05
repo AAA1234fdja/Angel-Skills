@@ -42,16 +42,21 @@ o con `alias workflow="node $PWD/workflow/bin/workflow.mjs"`.
 
 | Categoría | Estado | Skills |
 |---|---|---|
-| `ingenieria` | activa | 7 |
-| `agentic` | pendiente | 0 |
+| `ingenieria` | activa | 11 |
+| `agentic` | activa | 3 |
 | `seguridad` | pendiente | 0 |
 | `datos-infra` | pendiente | 0 |
 | `producto` | pendiente | 0 |
 | `contenido` | pendiente | 0 |
 
-Las skills de `ingenieria`: `tdd-workflow` (test), `verification-loop` (verify),
-`coding-standards` (implement), `code-review` (review), `search-first` (plan),
-`build-fix` (verify), `skill-authoring` (meta).
+**`ingenieria`** — `tdd-workflow` (test), `verification-loop` (verify),
+`build-fix` (verify), `coding-standards` (implement), `refactor-clean`
+(implement), `performance-optimizer` (implement), `code-review` (review),
+`search-first` (plan), `e2e-testing` (test), `ai-regression-testing` (test),
+`skill-authoring` (meta).
+
+**`agentic`** — `agent-harness-construction` (plan), `agent-architecture-audit`
+(review), `eval-harness` (verify).
 
 ## Integrar en Ely (opcional)
 

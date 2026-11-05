@@ -3,7 +3,7 @@
 > **Este archivo se lee antes de crear o editar cualquier skill.**
 > Si el arnés (o una persona) va a tocar `workflow/`, primero lee §1 y §7, luego
 > consulta la categoría en `workflow/categories.json` y solo después escribe.
-> Última revisión: 2026-11-05 · versión del paquete: `0.1.0`
+> Última revisión: 2026-11-05 · versión del paquete: `0.2.0`
 
 | | |
 |---|---|

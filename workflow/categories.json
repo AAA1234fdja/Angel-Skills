@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0",
+  "version": "0.2.0",
   "updated": "2026-11-05",
   "standard": "EXTENSION-STANDARD.md",
   "origin": {
@@ -10,8 +10,15 @@
   },
   "rules": {
     "naming": "^[a-z0-9]+(-[a-z0-9]+)*$",
-    "frontmatter": ["name", "description", "metadata"],
-    "descriptionMustContain": ["Use when", "Usar cuando"],
+    "frontmatter": [
+      "name",
+      "description",
+      "metadata"
+    ],
+    "descriptionMustContain": [
+      "Use when",
+      "Usar cuando"
+    ],
     "descriptionMaxChars": 700,
     "skillFile": "SKILL.md",
     "categoryFile": "CATEGORY.md",
@@ -80,31 +87,80 @@
           "status": "propia",
           "phase": "meta",
           "description": "Procedimiento para crear o editar una skill de este repositorio cumpliendo EXTENSION-STANDARD.md. Se activa cuando el arnés va a tocar workflow/."
+        },
+        {
+          "id": "e2e-testing",
+          "origin": "ECC · skills/e2e-testing",
+          "status": "adoptada",
+          "phase": "test",
+          "description": "Pruebas de extremo a extremo con Page Object Model, localizadores estables y cuarentena de tests inestables. Se activa cuando el cambio toca un flujo de usuario completo."
+        },
+        {
+          "id": "ai-regression-testing",
+          "origin": "ECC · skills/ai-regression-testing",
+          "status": "adoptada",
+          "phase": "test",
+          "description": "Convertir cada defecto corregido en un test de regresión permanente en entorno aislado. Se activa al corregir un defecto o al aceptar código generado por IA."
+        },
+        {
+          "id": "refactor-clean",
+          "origin": "ECC · agents/refactor-cleaner + commands/refactor-clean",
+          "status": "adoptada",
+          "phase": "implement",
+          "description": "Eliminación verificada de código muerto, un candidato por commit y con la suite en verde. Se activa cuando el repo acumula código sin uso o duplicados."
+        },
+        {
+          "id": "performance-optimizer",
+          "origin": "ECC · agents/performance-optimizer + skills/benchmark-optimization-loop",
+          "status": "adoptada",
+          "phase": "implement",
+          "description": "Optimización medida: línea base, una hipótesis, un cuello de botella, comparación contra la base. Se activa cuando hay una queja de rendimiento o un presupuesto de latencia incumplido."
         }
       ],
-      "pending": [
-        "e2e-testing",
-        "ai-regression-testing",
-        "refactor-clean",
-        "performance-optimizer"
-      ]
+      "pending": []
     },
     {
       "id": "agentic",
       "name": "Agentic / Harness",
       "order": 2,
-      "status": "pendiente",
+      "status": "activa",
       "description": "Diseño de agentes, loops autónomos, evaluación y presupuesto de contexto.",
-      "gate": "Ninguna skill se activa sin una métrica de evaluación definida antes.",
-      "rules": [],
-      "skills": [],
+      "gate": "Ningún cambio en un agente se acepta sin eval antes/después: sin números no hay mejora.",
+      "rules": [
+        "Todo cambio en un agente se mide antes y después con el mismo eval; sin números no hay mejora.",
+        "El criterio de éxito de una tarea se define antes de diseñar herramientas o prompts.",
+        "La guía larga vive en skills cargadas bajo demanda, nunca en el system prompt.",
+        "Un fallo se diagnostica por capas con la traza delante; reescribir el prompt es el último recurso."
+      ],
+      "skills": [
+        {
+          "id": "agent-harness-construction",
+          "origin": "ECC · skills/agent-harness-construction",
+          "status": "adoptada",
+          "phase": "plan",
+          "description": "Diseño del espacio de acción, granularidad de herramientas, formato de observación y presupuesto de contexto de un agente. Se activa al definir o revisar las herramientas de un agente."
+        },
+        {
+          "id": "eval-harness",
+          "origin": "ECC · skills/eval-harness",
+          "status": "adoptada",
+          "phase": "verify",
+          "description": "Evals con criterio de éxito previo, calificadores por código/modelo/humano y métricas pass@k y pass^k. Se activa al cambiar un prompt, una herramienta o un modelo y hay que decidir con números."
+        },
+        {
+          "id": "agent-architecture-audit",
+          "origin": "ECC · skills/agent-architecture-audit",
+          "status": "adoptada",
+          "phase": "review",
+          "description": "Diagnóstico por capas de una aplicación con agentes, con hallazgos por severidad y parche concreto. Se activa cuando un agente se comporta raro y no se sabe en qué capa está la falla."
+        }
+      ],
       "pending": [
-        "agent-harness-construction",
-        "agent-architecture-audit",
-        "eval-harness",
         "continuous-learning-v2",
         "strategic-compact",
-        "safety-guard"
+        "safety-guard",
+        "agent-eval",
+        "agent-self-evaluation"
       ]
     },
     {
@@ -116,7 +172,12 @@
       "gate": "Toda skill de esta categoría se ejecuta en modo lectura antes de proponer cambios.",
       "rules": [],
       "skills": [],
-      "pending": ["security-review", "safety-guard", "gateguard", "security-bounty-hunter"]
+      "pending": [
+        "security-review",
+        "safety-guard",
+        "gateguard",
+        "security-bounty-hunter"
+      ]
     },
     {
       "id": "datos-infra",
@@ -127,7 +188,13 @@
       "gate": null,
       "rules": [],
       "skills": [],
-      "pending": ["api-design", "backend-patterns", "database-migrations", "deployment-patterns", "docker-patterns"]
+      "pending": [
+        "api-design",
+        "backend-patterns",
+        "database-migrations",
+        "deployment-patterns",
+        "docker-patterns"
+      ]
     },
     {
       "id": "producto",
@@ -138,7 +205,12 @@
       "gate": null,
       "rules": [],
       "skills": [],
-      "pending": ["accessibility", "browser-qa", "click-path-audit", "design-system"]
+      "pending": [
+        "accessibility",
+        "browser-qa",
+        "click-path-audit",
+        "design-system"
+      ]
     },
     {
       "id": "contenido",
@@ -149,7 +221,12 @@
       "gate": null,
       "rules": [],
       "skills": [],
-      "pending": ["article-writing", "brand-voice", "seo", "investor-materials"]
+      "pending": [
+        "article-writing",
+        "brand-voice",
+        "seo",
+        "investor-materials"
+      ]
     }
   ]
 }

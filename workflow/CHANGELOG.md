@@ -2,6 +2,19 @@
 
 Formato: fecha · versión del paquete · cambio.
 
+## 0.2.0 — 2026-11-05
+
+- `ingenieria` completada: 11 skills. Se añaden `e2e-testing` (test),
+  `ai-regression-testing` (test), `refactor-clean` (implement) y
+  `performance-optimizer` (implement). `pending` de la categoría queda vacío.
+- `agentic` pasa a `activa` con 3 skills: `agent-harness-construction` (plan),
+  `agent-architecture-audit` (review) y `eval-harness` (verify). Gate de la
+  categoría: ningún cambio en un agente se acepta sin eval antes/después.
+- `pending` de `agentic`: `continuous-learning-v2`, `strategic-compact`,
+  `safety-guard`, `agent-eval`, `agent-self-evaluation`.
+- `README.md` raíz del repo reescrito: apuntaba a un placeholder.
+- `validate` en verde: 14 skills, 0 errores, 0 avisos.
+
 ## 0.1.0 — 2026-11-05
 
 - Paquete `workflow/` creado: `EXTENSION-STANDARD.md`, `categories.json`,
@@ -13,7 +26,6 @@ Formato: fecha · versión del paquete · cambio.
 - CLI con `list`, `show`, `claim`, `validate`, `plan`, `pack`, `install`, `where`.
 - Extensión de Ely con 5 comandos, permisos `workspace:read`, `ui`, `commands`,
   `chat` (sin red, sin escritura).
-- `validate` en verde: 7 skills, 0 errores, 0 avisos.
 
-Pendiente para 0.2.0: adoptar las skills `pendiente` de `agentic` una vez
-acordado el criterio de evaluación; decidir si `datos-infra` se parte en dos.
+Pendiente para 0.3.0: `seguridad` (`security-review`, `safety-guard`, `gateguard`,
+`security-bounty-hunter`) y decidir si `datos-infra` se parte en dos.
