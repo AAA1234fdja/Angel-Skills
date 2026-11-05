@@ -105,6 +105,7 @@ VERBS = (
     "implement", "fix", "review", "test", "verify", "refactor", "optimize",
     "design", "plan", "document", "migrate", "audit", "secure", "debug",
     "investigate", "extract", "translate", "generate", "measure", "register",
+    "ship", "validate",
 )
 
 VERB_HINTS = {
@@ -128,7 +129,14 @@ VERB_HINTS = {
     "generate": ("generate", "scaffold", "template", "boilerplate"),
     "measure": ("measure", "benchmark", "eval", "metric"),
     "register": ("register", "new skill", "authoring", "add skill"),
+    "ship": ("ship", "release", "deploy", "publish", "launch", "rollout"),
+    "validate": ("validate", "conforms", "well formed", "against the schema"),
 }
+
+
+#: the lifecycle order a plan is presented in (see `answer_band`)
+PHASE_ORDER = ("plan", "design", "research", "implement", "test", "review",
+               "verify", "ship", "debug", "audit", "document", "meta")
 
 
 @dataclass
@@ -385,7 +393,7 @@ def build_steps(registry: Registry, matches: list[Match]) -> list[dict[str, Any]
     and come after, also in lifecycle order. A single threshold would either hide
     the support or bury the answer.
     """
-    order = {phase: i for i, phase in enumerate(("plan", "design", "research", "implement", "test", "review", "verify", "debug", "audit", "document", "meta",))}
+    order = {phase: i for i, phase in enumerate(PHASE_ORDER)}
     top = max((m.score for m in matches), default=0.0)
     answer_cut = top * 0.6
     rows = []

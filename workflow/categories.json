@@ -1,5 +1,5 @@
 {
-  "version": "0.4.0",
+  "version": "0.5.0",
   "updated": "2026-11-05",
   "standard": "EXTENSION-STANDARD.md",
   "main": "WORKFLOW.md",
@@ -29,6 +29,7 @@
       "test",
       "review",
       "verify",
+      "ship",
       "debug",
       "audit",
       "document",
@@ -144,6 +145,27 @@
           "status": "adopted",
           "phase": "implement",
           "description": "One taxonomy, one policy: every failure carries a stable code, severity, owner and retry rule."
+        },
+        {
+          "id": "dependency-graph",
+          "origin": "original",
+          "status": "original",
+          "phase": "plan",
+          "description": "Audit the dependency graph before changing it: cycles, depth, fan-in and orphans. Use when a refactor could cascade, a build order is disputed, or a module seems to know about everything."
+        },
+        {
+          "id": "prototype-spike",
+          "origin": "original",
+          "status": "original",
+          "phase": "research",
+          "description": "Run a spike with a box, a question and a delete date. Use when an estimate hides an unknown, a library choice needs evidence, or the team argues about feasibility instead of measuring it."
+        },
+        {
+          "id": "flaky-test-triage",
+          "origin": "original",
+          "status": "original",
+          "phase": "debug",
+          "description": "Turn a flaky test into a diagnosis: quarantine, reproduce, name the source of nondeterminism and fix or delete. Use when CI fails intermittently, when a retry button becomes policy, or before a suite's signal is ignored."
         }
       ],
       "pending": []
@@ -189,6 +211,13 @@
           "status": "adopted",
           "phase": "review",
           "description": "Check a consumer against a producer across majors and report what breaks and where."
+        },
+        {
+          "id": "api-design",
+          "origin": "original",
+          "status": "original",
+          "phase": "design",
+          "description": "Design the shape of a call before anyone implements it: operations, errors, idempotency and what the consumer must be able to ignore. Use when an endpoint, SDK method or shared schema is being added, or when a client breaks because the surface was never specified."
         }
       ],
       "pending": []
@@ -272,6 +301,13 @@
           "status": "adopted",
           "phase": "audit",
           "description": "Turn recurring failures into tracked, deduplicated work items with evidence and owners."
+        },
+        {
+          "id": "alert-design",
+          "origin": "original",
+          "status": "original",
+          "phase": "implement",
+          "description": "Design alerts that a tired person can act on: symptom over cause, a threshold with a reason and a runbook line. Use when adding monitoring, when an alert is being silenced, or after an incident nobody was paged for."
         }
       ],
       "pending": []
@@ -369,6 +405,13 @@
           "status": "adopted",
           "phase": "audit",
           "description": "Audit imports and dependencies for unused, unpinned or unreviewed packages."
+        },
+        {
+          "id": "threat-model",
+          "origin": "original",
+          "status": "original",
+          "phase": "design",
+          "description": "Model what can go wrong before it is built: assets, trust boundaries, STRIDE coverage and the mitigation each threat needs. Use when a design adds an entry point, when a permission is widened, or when a security review starts from a blank page."
         }
       ],
       "pending": []
@@ -414,6 +457,13 @@
           "status": "adopted",
           "phase": "design",
           "description": "Decide what to cache, for how long, and how to invalidate, before adding a cache."
+        },
+        {
+          "id": "data-retention",
+          "origin": "original",
+          "status": "original",
+          "phase": "design",
+          "description": "Decide what is kept, for how long, and what deletes it: purpose, retention window, legal hold and the deletion path. Use when a new dataset is added, a request to delete arrives, or an audit asks why the record still exists."
         }
       ],
       "pending": []
@@ -513,6 +563,13 @@
           "status": "adopted",
           "phase": "review",
           "description": "Audit a UI against WCAG 2.2 AA: contrast, focus order, targets, semantics, keyboard paths."
+        },
+        {
+          "id": "release-readiness",
+          "origin": "original",
+          "status": "original",
+          "phase": "ship",
+          "description": "Decide whether a change may ship: the five gates, the rollback path, and the evidence for each. Use when a release is being announced, a flag is about to be turned on, or a hotfix skips the normal path."
         }
       ],
       "pending": []

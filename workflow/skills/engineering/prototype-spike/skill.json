@@ -1,0 +1,97 @@
+{
+  "id": "prototype-spike",
+  "category": "engineering",
+  "description": "Run a spike with a question, a timebox and a delete date, so a throwaway answers one unknown and leaves. Use when an estimate hides an unknown, a library choice needs evidence, or the team argues about feasibility instead of measuring it.",
+  "phase": "research",
+  "verbs": [
+    "investigate",
+    "measure"
+  ],
+  "triggers": [
+    "spike",
+    "timebox",
+    "feasibility",
+    "proof of concept",
+    "does it work"
+  ],
+  "keywords": [
+    "spike",
+    "prototype",
+    "throwaway",
+    "timebox",
+    "unknown",
+    "feasibility",
+    "experiment",
+    "poc"
+  ],
+  "tools": [
+    {
+      "id": "spike-budget",
+      "entry": "tools/spike_budget.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Checks a spike against its box, its delete date and whether it escaped into production.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "question": {
+            "type": "string"
+          },
+          "box_hours": {
+            "type": "number"
+          },
+          "spent_hours": {
+            "type": "number"
+          },
+          "delete_date": {
+            "type": "string"
+          },
+          "today": {
+            "type": "string"
+          },
+          "cloned_files": {
+            "type": "integer"
+          },
+          "promoted": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "question",
+          "box_hours"
+        ]
+      },
+      "sample": {
+        "question": "does the vendor API paginate under 200ms?",
+        "box_hours": 4,
+        "spent_hours": 5.5,
+        "delete_date": "2026-11-12",
+        "today": "2026-11-05",
+        "cloned_files": 0
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "the spike is inside its box and before its delete date, per spike-budget",
+      "kind": "tool",
+      "tool": "spike-budget"
+    },
+    {
+      "id": "finding",
+      "statement": "a five-line finding with the command and the number exists",
+      "kind": "artifact"
+    },
+    {
+      "id": "deleted",
+      "statement": "the spike code was deleted on its date",
+      "kind": "review"
+    }
+  ]
+}

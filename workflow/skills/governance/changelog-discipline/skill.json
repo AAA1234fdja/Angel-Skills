@@ -45,13 +45,20 @@
           {
             "version": "0.3.0",
             "type": "breaking",
-            "text": "skills are folders with a manifest instead of loose markdown files",
-            "action": "run workflow validate --strict and add skill.json to local skills"
+            "audience": "skill authors",
+            "text": "skills moved to folders",
+            "action": "add skill.json and re-run validate"
           },
           {
-            "version": "0.3.0",
+            "version": "0.3.1",
+            "type": "fixed",
+            "audience": "operators",
+            "text": "the journal now fsyncs every entry"
+          },
+          {
+            "version": "0.3.2",
             "type": "added",
-            "text": "workflow run executes a routed plan and writes a hash-chained journal"
+            "text": "new agent commands"
           }
         ]
       }

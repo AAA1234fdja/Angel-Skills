@@ -1,0 +1,110 @@
+{
+  "id": "release-readiness",
+  "category": "product",
+  "description": "Decide whether a change may ship: the five gates, the rollback path and the evidence for each. Use when a release is being announced, a flag is about to be turned on, a hotfix skips the normal path, or someone asks whether it is safe to ship.",
+  "phase": "ship",
+  "verbs": [
+    "plan",
+    "ship"
+  ],
+  "triggers": [
+    "can we ship",
+    "release readiness",
+    "go no go",
+    "safe to deploy",
+    "rollback plan"
+  ],
+  "keywords": [
+    "release",
+    "ship",
+    "deploy",
+    "rollout",
+    "rollback",
+    "gate",
+    "flag",
+    "hotfix",
+    "launch"
+  ],
+  "tools": [
+    {
+      "id": "release-gate",
+      "entry": "tools/release_gate.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Applies the five release gates to supplied evidence and returns a ship / no-ship verdict.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "gates": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "required": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "gates"
+        ]
+      },
+      "sample": {
+        "gates": [
+          {
+            "id": "tests",
+            "status": "pass",
+            "evidence": "suite green on tag v1.4.2"
+          },
+          {
+            "id": "rollback",
+            "status": "pass",
+            "evidence": "rehearsed in staging, 40s"
+          },
+          {
+            "id": "observability",
+            "status": "pass",
+            "evidence": "error rate dashboard"
+          },
+          {
+            "id": "blast_radius",
+            "status": "waived",
+            "waiver": "ana",
+            "reason": "single tenant behind a flag"
+          },
+          {
+            "id": "communication",
+            "status": "blocked",
+            "reason": "support has not been told"
+          }
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "all five gates are pass or waived with a name, and the release-gate tool agrees",
+      "kind": "tool",
+      "tool": "release-gate"
+    },
+    {
+      "id": "rollback",
+      "statement": "the rollback command was executed once outside production",
+      "kind": "review"
+    },
+    {
+      "id": "window",
+      "statement": "the metric and the observation window are stated before the deploy",
+      "kind": "review"
+    }
+  ]
+}

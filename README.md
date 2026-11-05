@@ -20,10 +20,10 @@ python3 -m angel.cli list                  # skills por categoría, con sus tool
 python3 -m angel.cli route --need "the build is broken"   # quién responde y por qué
 python3 -m angel.cli run --need "the build is broken"     # plan → tools → veredicto
 python3 -m angel.cli validate --strict     # registro ⇄ disco, sin avisos
-python3 -m angel.cli tool --self-test      # las 41 herramientas sobre su muestra
+python3 -m angel.cli tool --self-test      # las 49 herramientas sobre su muestra
 python3 -m angel.cli agents validate --strict             # cartas, aristas, ciclos
 python3 -m angel.cli agents plan --agent isa-planner --need "revisar este diff"
-python3 -m unittest discover -s tests -t tests            # 174 tests
+python3 -m unittest discover -s tests -t tests            # 194 tests
 python3 -m angel.cli pack --out dist/workflow.zip         # el paquete en un zip
 ```
 
@@ -38,6 +38,21 @@ hacia abajo —un subagente recibe la intersección de lo que su padre tiene y l
 la arista permite—, los ciclos se rechazan al cargar el roster y toda llamada deja
 un árbol y un journal encadenado por hashes. Referencia: [`workflow/AGENTS.md`](workflow/AGENTS.md).
 
+## Nuevo en 0.5
+
+Ocho skills con herramienta ejecutable y criterio de salida comprobable:
+
+| Skill | Qué decide | Herramienta |
+|---|---|---|
+| `release-readiness` | si un cambio puede salir: cinco puertas y rollback | `release-gate` |
+| `api-design` | la superficie de una llamada antes de implementarla | `surface-audit` |
+| `threat-model` | activos, fronteras de confianza y cobertura STRIDE | `threat-coverage` |
+| `data-retention` | qué se guarda, cuánto y qué lo borra | `retention-audit` |
+| `alert-design` | alertas que una persona cansada puede accionar | `alert-audit` |
+| `flaky-test-triage` | el origen del no-determinismo, no el reintento | `flake-classifier` |
+| `dependency-graph` | ciclos, capas y fan-in antes de refactorizar | `dependency-audit` |
+| `prototype-spike` | una pregunta, una caja de horas y una fecha de borrado | `spike-budget` |
+
 ## La regla
 
 Una skill es una **carpeta**, no un markdown: `SKILL.md` (el procedimiento) +
@@ -49,7 +64,8 @@ sin carpeta también.
 
 ## Estado
 
-**0.4.0** · 44 skills en 11 categorías activas · 41 herramientas ejecutables ·
+**0.5.0** · 52 skills en 11 categorías activas · 49 herramientas ejecutables ·
 5 contratos versionados · 6 agentes con dirección y jerarquía de subagentes ·
-174 tests en verde · extensión opcional de Ely.
+194 tests en verde · presupuesto de líneas medido y renegociado a 25.000 ·
+extensión opcional de Ely.
 Detalle en [`workflow/CHANGELOG.md`](workflow/CHANGELOG.md).

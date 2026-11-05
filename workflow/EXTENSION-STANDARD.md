@@ -1,7 +1,7 @@
 # EXTENSION-STANDARD.md — how a skill is written here
 
 > Read this **before** creating or editing any skill. `WORKFLOW.md` explains the
-> purpose; this file is the contract. Package `0.4.0` · updated 2026-11-05
+> purpose; this file is the contract. Package `0.5.0` · updated 2026-11-05
 >
 > Machine check: `workflow validate --strict` implements §5 and §6. If the
 > standard and the validator disagree, the validator wins and this file is a bug.
@@ -142,6 +142,36 @@ write files, it does so through explicit paths passed in the payload.
 
 ---
 
+## 4b. `acceptance`: the exit criteria a machine can read
+
+`## Exit Criteria` is prose for a person. `acceptance` in `skill.json` is the same
+promise in a form `validate` can check:
+
+```json
+"acceptance": [
+  {"id": "exit", "statement": "the box is still open and the delete date has not passed",
+   "kind": "tool", "tool": "spike-budget"},
+  {"id": "finding", "statement": "a five-line finding with the command and the number",
+   "kind": "artifact"}
+]
+```
+
+| Kind | What proves it |
+|---|---|
+| `tool` | a declared tool from this skill returned `ok: true`; the id is checked |
+| `command` | a command whose output is quoted in the record |
+| `test` | a named test that fails without the change |
+| `review` | a person's signed review, with a name |
+| `artifact` | a file that exists and is cited by path |
+
+`validate --strict` rejects an unknown `kind`, a duplicate `id`, a missing
+`statement` and a `tool` that the skill does not declare. Declaring no `acceptance`
+at all is allowed (older skills do not), but every skill added from 0.5 onwards
+must have one, because "the skill's exit criteria are met" is a criterion that
+checks nothing.
+
+---
+
 ## 5. Checklist before saving
 
 Errors (block):
@@ -152,7 +182,8 @@ Errors (block):
 - [ ] `description` contains `Use when` and ≤ 700 chars
 - [ ] `When to Use`, `Procedure`, `Exit Criteria` exist
 - [ ] `skill.json` exists with `id`, `category`, `description`
-- [ ] every declared tool has an existing `entry` file and a valid `risk`
+- [ ] every declared tool has an existing `entry` file, a valid `risk` and a `sample`
+- [ ] `acceptance` (if declared) has valid `kind`s and names only real tools
 - [ ] registered in `categories.json` (`workflow validate` green)
 
 Warnings (review):
@@ -160,6 +191,7 @@ Warnings (review):
 - [ ] missing `When Not to Use` / `Common Failures`
 - [ ] body > 260 lines (should it be split?)
 - [ ] no `triggers` in the manifest (routing will be weak)
+- [ ] no `acceptance`: the exit criteria are prose only (required for skills added from 0.5)
 - [ ] destructive tool without a documented confirmation path
 - [ ] description overlaps another skill in the same category
 

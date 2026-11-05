@@ -61,7 +61,7 @@ class ElyExtensionTests(AngelTestCase):
         manifest = json.loads(
             (REAL_ROOT / "ely-extension" / "ely-extension.json").read_text(encoding="utf-8"))
         self.assertEqual(manifest["id"], "angel.workflow")
-        self.assertEqual(manifest["version"], "0.4.0")
+        self.assertEqual(manifest["version"], __import__("angel").__version__)
         commands = {c["id"] for c in manifest["contributes"]["commands"]}
         self.assertEqual(commands, {
             "angel.workflow.list", "angel.workflow.phase", "angel.workflow.skill",

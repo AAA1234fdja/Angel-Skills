@@ -1,0 +1,105 @@
+{
+  "id": "dependency-graph",
+  "category": "engineering",
+  "description": "Audit a dependency graph before changing it: cycles, layers, fan-in and orphans. Use when a refactor could cascade, the build order is disputed, a module seems to know about everything, or before extracting a shared package.",
+  "phase": "plan",
+  "verbs": [
+    "plan",
+    "audit"
+  ],
+  "triggers": [
+    "dependency graph",
+    "circular dependency",
+    "coupling",
+    "module boundaries",
+    "fan in"
+  ],
+  "keywords": [
+    "dependency",
+    "graph",
+    "cycle",
+    "coupling",
+    "layer",
+    "module",
+    "import",
+    "architecture",
+    "orphan"
+  ],
+  "tools": [
+    {
+      "id": "dependency-audit",
+      "entry": "tools/dependency_audit.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Finds cycles, layer violations, longest chain, fan-in and orphans in an edge list.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "edges": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "layer_order": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "edges"
+        ]
+      },
+      "sample": {
+        "edges": [
+          {
+            "from": "app.api",
+            "to": "domain.model"
+          },
+          {
+            "from": "domain.model",
+            "to": "infra.db"
+          },
+          {
+            "from": "infra.db",
+            "to": "domain.model"
+          },
+          {
+            "from": "app.cli",
+            "to": "app.api"
+          }
+        ],
+        "layer_order": [
+          "app",
+          "domain",
+          "infra"
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "no cycle is left unexplained and the dependency-audit tool reports ok",
+      "kind": "tool",
+      "tool": "dependency-audit"
+    },
+    {
+      "id": "direction",
+      "statement": "the layer direction rule is written down in one sentence",
+      "kind": "review"
+    },
+    {
+      "id": "fanin",
+      "statement": "high fan-in nodes are treated as contract changes",
+      "kind": "review"
+    }
+  ]
+}

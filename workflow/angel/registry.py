@@ -28,7 +28,10 @@ STANDARD = "EXTENSION-STANDARD.md"
 SKILL_FILE = "SKILL.md"
 MANIFEST = "skill.json"
 
-PHASES = ("plan", "design", "research", "implement", "test", "review", "verify", "debug", "audit", "document", "meta",)
+#: the lifecycle, top-down; `router.PHASE_ORDER` is the same tuple, and a test
+#: asserts it, because two copies of an ordering is two orderings.
+PHASES = ("plan", "design", "research", "implement", "test", "review", "verify",
+          "ship", "debug", "audit", "document", "meta")
 STATUSES = ("adopted", "original", "experimental")
 RISK_LEVELS = ("read", "write", "execute", "destructive")
 REQUIRED_SECTIONS = ("When to Use", "Procedure", "Exit Criteria")
@@ -372,8 +375,53 @@ def _validate_skill(skill: Skill, root: Path) -> list[str]:
             entry = skill.path / tool.entry
             if not entry.is_file():
                 errors.append(f"tool {tool.id}: entry {tool.entry!r} does not exist")
+            elif not tool.sample:
+                errors.append(f"tool {tool.id}: no sample payload, so it cannot be "
+                              "self-tested and its denominator is unknown")
         if len({t.id for t in skill.tools}) != len(skill.tools):
             errors.append("duplicate tool ids")
+        errors.extend(_validate_acceptance(skill))
+    return errors
+
+
+ACCEPTANCE_KINDS = ("tool", "command", "test", "review", "artifact")
+
+
+def _validate_acceptance(skill: Skill) -> list[str]:
+    """A skill's exit criteria are checkable or they are decoration.
+
+    `acceptance` in `skill.json` is the machine-readable half of the
+    `## Exit Criteria` section: each item says what proves the skill is done,
+    and by which of five kinds of proof.
+    """
+    errors: list[str] = []
+    criteria = skill.manifest.get("acceptance")
+    if criteria is None:
+        return errors
+    if not isinstance(criteria, list) or not criteria:
+        return ["acceptance must be a non-empty list when declared"]
+    seen: set[str] = set()
+    for index, criterion in enumerate(criteria):
+        if not isinstance(criterion, dict):
+            errors.append(f"acceptance[{index}] must be an object")
+            continue
+        cid = str(criterion.get("id") or "")
+        if not cid:
+            errors.append(f"acceptance[{index}] has no id")
+        elif cid in seen:
+            errors.append(f"acceptance[{index}]: duplicate id {cid!r}")
+        seen.add(cid)
+        if not str(criterion.get("statement") or "").strip():
+            errors.append(f"acceptance[{index}] has no statement")
+        kind = criterion.get("kind")
+        if kind not in ACCEPTANCE_KINDS:
+            errors.append(f"acceptance[{index}] kind {kind!r} is not one of "
+                          f"{', '.join(ACCEPTANCE_KINDS)}")
+        if kind == "tool":
+            ref = str(criterion.get("tool") or "")
+            if ref not in {t.id for t in skill.tools}:
+                errors.append(f"acceptance[{index}] names tool {ref!r}, which the "
+                              "skill does not declare")
     return errors
 
 
@@ -382,9 +430,6 @@ def _warn_skill(skill: Skill) -> list[str]:
     for heading in ADVISED_SECTIONS:
         if heading not in skill.sections:
             warnings.append(f"no '## {heading}' section")
-    for tool in skill.tools:
-        if not tool.sample:
-            warnings.append(f"tool {tool.id}: no sample payload (it cannot be self-tested)")
     lines = len(skill.body.splitlines())
     if lines > 260:
         warnings.append(f"body is {lines} lines: consider references/")

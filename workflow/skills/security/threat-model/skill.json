@@ -1,0 +1,124 @@
+{
+  "id": "threat-model",
+  "category": "security",
+  "description": "Model what can go wrong before it is built: assets, trust boundaries, STRIDE coverage and the mitigation each threat needs. Use when a design adds an entry point or a permission, when data crosses a boundary it did not cross before, or when a security review has to start somewhere other than a blank page.",
+  "phase": "design",
+  "verbs": [
+    "secure",
+    "design"
+  ],
+  "triggers": [
+    "threat model",
+    "stride",
+    "trust boundary",
+    "attack surface",
+    "what can go wrong"
+  ],
+  "keywords": [
+    "threat",
+    "stride",
+    "boundary",
+    "spoofing",
+    "tampering",
+    "disclosure",
+    "escalation",
+    "attack",
+    "mitigation"
+  ],
+  "tools": [
+    {
+      "id": "threat-coverage",
+      "entry": "tools/threat_coverage.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Reports unvisited STRIDE categories, undecided threats and mitigations that name no mechanism.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "boundaries": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "boundaries"
+        ]
+      },
+      "sample": {
+        "boundaries": [
+          {
+            "name": "browser->api",
+            "threats": [
+              {
+                "category": "spoofing",
+                "threat": "stolen session token",
+                "score": "high",
+                "decision": "mitigate",
+                "mechanism": "short-lived tokens with rotation"
+              },
+              {
+                "category": "information disclosure",
+                "threat": "errors echo ids",
+                "score": "medium",
+                "decision": "accept",
+                "owner": "ana"
+              },
+              {
+                "category": "tampering",
+                "threat": "replayed webhook",
+                "score": "high",
+                "decision": "mitigate",
+                "mechanism": "signed payload with a timestamp"
+              },
+              {
+                "category": "repudiation",
+                "threat": "no audit of admin actions",
+                "score": "medium",
+                "decision": "mitigate",
+                "mechanism": "append-only audit log"
+              },
+              {
+                "category": "denial of service",
+                "threat": "unbounded pagination",
+                "score": "low",
+                "decision": "mitigate",
+                "mechanism": "page cap of 100"
+              },
+              {
+                "category": "elevation of privilege",
+                "threat": "tenant header trusted",
+                "score": "high",
+                "decision": "eliminate"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "threat-coverage reports no unvisited STRIDE category for a changed boundary",
+      "kind": "tool",
+      "tool": "threat-coverage"
+    },
+    {
+      "id": "owners",
+      "statement": "every accepted threat names an owner",
+      "kind": "review"
+    },
+    {
+      "id": "dated",
+      "statement": "the model is dated and tied to the design version it describes",
+      "kind": "artifact"
+    }
+  ]
+}

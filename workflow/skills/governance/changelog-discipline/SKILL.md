@@ -35,9 +35,11 @@ decoration.
 3. **State the action** for a breaking change: what to do, by when.
 4. **Link the detail** (commit, skill id, contract version) rather than inlining it.
 5. **Group by version**, newest first, with a date the reader can trust.
-6. **Use the same verbs every time** so a reader can scan; inconsistent language
+6. **Name the consumer**: a caller of the API, an operator, a skill author. An
+   entry without a subject makes the reader work out whether it applies to them.
+7. **Use the same verbs every time** so a reader can scan; inconsistent language
    turns a changelog into prose.
-7. **Never rewrite published entries.** Corrections go in a new entry.
+8. **Never rewrite published entries.** Corrections go in a new entry.
 
 ## Exit Criteria
 
@@ -46,7 +48,7 @@ decoration.
 - [ ] Security fixes are called out separately.
 - [ ] Entries are grouped by version with dates.
 - [ ] Published entries are untouched.
-- [ ] `changelog-lint` reports no vague entry.
+- [ ] `changelog-lint` reports no vague entry and no entry without an audience.
 
 ## Common Failures
 

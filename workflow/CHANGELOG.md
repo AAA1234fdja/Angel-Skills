@@ -4,6 +4,44 @@ Formato: fecha · versión del paquete · cambio. Cada entrada dice qué cambia
 para quien consume el paquete; los cambios de comportamiento incompatibles van primero
 y con la acción requerida.
 
+## 0.5.0 — 2026-11-05
+
+Ocho skills nuevas y tres reglas que el validador ahora exige. El paquete pasa de
+44 a 52 skills y de 41 a 49 herramientas; ninguna skill existente cambia de id.
+
+**breaking** para quien declaraba herramientas sin `sample`: desde esta versión es
+un error, no un aviso, porque una herramienta sin muestra no se puede auto-probar y
+su denominador es desconocido. Acción: añade un `sample` real a cada tool.
+
+**budget** — el techo de líneas pasa de 20.000 a 25.000, decidido y razonado en el
+README (§ Line budget), no para justificar relleno: 52 skills con herramientas no
+caben en 20.000 a la densidad actual. La regla no cambia (se mide, no se estima y
+subirlo es una decisión registrada aquí); cambia el número una vez.
+
+- **added** — `release-readiness` (product, fase `ship`): cinco puertas, veredicto y
+  ruta de rollback; tool `release-gate`.
+- **added** — `api-design` (contracts, `design`): la superficie de una llamada antes
+  de implementarla; tool `surface-audit`.
+- **added** — `threat-model` (security, `design`): activos, fronteras de confianza y
+  cobertura STRIDE; tool `threat-coverage`.
+- **added** — `data-retention` (data, `design`): propósito, ventana con disparador e
+  inventario de copias; tool `retention-audit`.
+- **added** — `alert-design` (errors, `implement`): síntoma, umbral razonado y línea
+  de runbook; tool `alert-audit`.
+- **added** — `flaky-test-triage` (engineering, `debug`): cuarentena, clasificación
+  del no-determinismo y arreglo de la causa; tool `flake-classifier`.
+- **added** — `dependency-graph` (engineering, `plan`): ciclos, capas, fan-in y
+  huérfanos antes de refactorizar; tool `dependency-audit`.
+- **added** — `prototype-spike` (engineering, `research`): pregunta, caja de horas y
+  fecha de borrado; tool `spike-budget`.
+- **added** — `acceptance` en `skill.json` pasa a validarse: cada criterio declara su
+  `kind` (`tool`, `command`, `test`, `review`, `artifact`) y, si es `tool`, nombra
+  una herramienta que la skill declara. Un criterio de salida ahora es comprobable.
+- **changed** — vocabulario de fases y verbos: se añaden la fase `ship` y el verbo
+  `ship`, porque publicar no es sinónimo de documentar ni de verificar.
+- **changed** — `changelog-discipline` exige `audience` por entrada: un cambio sin
+  sujeto obliga al lector a decidir si le afecta, que es su pregunta más cara.
+
 ## 0.4.0 — 2026-11-05
 
 Los agentes pasan a ser servicios administrables: un agente es una API, y toda

@@ -2,8 +2,11 @@
 
 Payload::
 
-    {"entries": [{"version": "0.3.0", "type": "breaking",
+    {"entries": [{"version": "0.3.0", "type": "breaking", "audience": "skill authors",
                   "text": "skills moved to folders", "action": "re-run workflow validate"}]}
+
+`audience` is checked because an entry without one makes the reader decide whether
+the change applies to them, which is the reader's most expensive question.
 """
 
 VAGUE = ("various", "misc", "improvements", "cleanup", "minor fixes", "stuff",
@@ -20,6 +23,7 @@ def run(payload):
         kind = str(entry.get("type") or "").lower()
         text = str(entry.get("text") or "").strip()
         action = str(entry.get("action") or "").strip()
+        audience = str(entry.get("audience") or "").strip()
         issues = []
 
         if not version:
@@ -34,6 +38,8 @@ def run(payload):
             issues.append("breaking change without a required action")
         if kind == "security" and not action:
             issues.append("security fix without guidance")
+        if not audience:
+            issues.append("no audience: say who is affected")
 
         rows.append({"version": version, "type": kind, "issues": issues})
         problems.extend(f"{version or '?'}: {issue}" for issue in issues)
