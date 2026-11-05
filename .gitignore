@@ -1,0 +1,6 @@
+# artefactos del paquete workflow
+workflow/dist/
+*.zip
+__pycache__/
+node_modules/
+.ely/

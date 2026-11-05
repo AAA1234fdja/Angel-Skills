@@ -1,0 +1,155 @@
+{
+  "version": "0.1.0",
+  "updated": "2026-11-05",
+  "standard": "EXTENSION-STANDARD.md",
+  "origin": {
+    "repo": "https://github.com/affaan-m/ECC",
+    "commit": "b38be6a",
+    "license": "MIT",
+    "note": "ECC se usa como fuente de patrones. Cada skill adoptada conserva su id original y se reescribe; no se copia texto literal sin atribución."
+  },
+  "rules": {
+    "naming": "^[a-z0-9]+(-[a-z0-9]+)*$",
+    "frontmatter": ["name", "description", "metadata"],
+    "descriptionMustContain": ["Use when", "Usar cuando"],
+    "descriptionMaxChars": 700,
+    "skillFile": "SKILL.md",
+    "categoryFile": "CATEGORY.md",
+    "maxSkillLines": 400
+  },
+  "categories": [
+    {
+      "id": "ingenieria",
+      "name": "Ingeniería",
+      "order": 1,
+      "status": "activa",
+      "description": "Cómo se escribe, prueba, revisa y verifica código en este repositorio. Es la categoría base: cualquier otra depende de que estas reglas se cumplan antes de tocar skills.",
+      "gate": "Ningún cambio de código se considera terminado sin pasar por tdd-workflow y verification-loop.",
+      "rules": [
+        "Escribir el test que falla antes de la implementación (RED → GREEN → REFACTOR).",
+        "Nunca declarar una tarea lista sin evidencia de ejecución (test, build o lint real).",
+        "Una skill = un procedimiento con criterio de salida verificable.",
+        "Los ids de skill son estables: renombrar rompe el registro y el arnés."
+      ],
+      "skills": [
+        {
+          "id": "tdd-workflow",
+          "origin": "ECC · skills/tdd-workflow",
+          "status": "adoptada",
+          "phase": "test",
+          "description": "Ciclo RED → GREEN → REFACTOR con puerta de cobertura. Se activa antes de escribir cualquier implementación nueva."
+        },
+        {
+          "id": "verification-loop",
+          "origin": "ECC · skills/verification-loop",
+          "status": "adoptada",
+          "phase": "verify",
+          "description": "Verificación en seis fases (build, tipos, lint, tests+cobertura, seguridad, revisión del diff). Se activa al cerrar una tarea."
+        },
+        {
+          "id": "coding-standards",
+          "origin": "ECC · skills/coding-standards",
+          "status": "adoptada",
+          "phase": "implement",
+          "description": "Convenciones base: nombres, legibilidad, inmutabilidad y criterio de revisión. Se activa al crear o refactorizar módulos."
+        },
+        {
+          "id": "code-review",
+          "origin": "ECC · skills (patrón reviewer) + agents/code-reviewer",
+          "status": "adoptada",
+          "phase": "review",
+          "description": "Revisión con contexto fresco: defectos reales por severidad, sin reescribir el diseño del autor. Se activa antes de abrir un PR."
+        },
+        {
+          "id": "search-first",
+          "origin": "ECC · skills/search-first",
+          "status": "adoptada",
+          "phase": "plan",
+          "description": "Buscar en npm/PyPI/GitHub antes de escribir una dependencia o un helper propio. Se activa al empezar cualquier tarea no trivial."
+        },
+        {
+          "id": "build-fix",
+          "origin": "ECC · agents/build-error-resolver + commands/build-fix",
+          "status": "adoptada",
+          "phase": "verify",
+          "description": "Diagnóstico incremental de errores de build, tipos y linter, un error por ciclo con causa raíz. Se activa cuando el build falla."
+        },
+        {
+          "id": "skill-authoring",
+          "origin": "propia",
+          "status": "propia",
+          "phase": "meta",
+          "description": "Procedimiento para crear o editar una skill de este repositorio cumpliendo EXTENSION-STANDARD.md. Se activa cuando el arnés va a tocar workflow/."
+        }
+      ],
+      "pending": [
+        "e2e-testing",
+        "ai-regression-testing",
+        "refactor-clean",
+        "performance-optimizer"
+      ]
+    },
+    {
+      "id": "agentic",
+      "name": "Agentic / Harness",
+      "order": 2,
+      "status": "pendiente",
+      "description": "Diseño de agentes, loops autónomos, evaluación y presupuesto de contexto.",
+      "gate": "Ninguna skill se activa sin una métrica de evaluación definida antes.",
+      "rules": [],
+      "skills": [],
+      "pending": [
+        "agent-harness-construction",
+        "agent-architecture-audit",
+        "eval-harness",
+        "continuous-learning-v2",
+        "strategic-compact",
+        "safety-guard"
+      ]
+    },
+    {
+      "id": "seguridad",
+      "name": "Seguridad",
+      "order": 3,
+      "status": "pendiente",
+      "description": "Endurecimiento de agentes, revisión de vulnerabilidades y guardas contra operaciones destructivas.",
+      "gate": "Toda skill de esta categoría se ejecuta en modo lectura antes de proponer cambios.",
+      "rules": [],
+      "skills": [],
+      "pending": ["security-review", "safety-guard", "gateguard", "security-bounty-hunter"]
+    },
+    {
+      "id": "datos-infra",
+      "name": "Datos e infraestructura",
+      "order": 4,
+      "status": "pendiente",
+      "description": "APIs, bases de datos, migraciones, despliegue y observabilidad.",
+      "gate": null,
+      "rules": [],
+      "skills": [],
+      "pending": ["api-design", "backend-patterns", "database-migrations", "deployment-patterns", "docker-patterns"]
+    },
+    {
+      "id": "producto",
+      "name": "Producto y UX",
+      "order": 5,
+      "status": "pendiente",
+      "description": "Accesibilidad, auditoría de flujos, sistemas de diseño y QA en navegador.",
+      "gate": null,
+      "rules": [],
+      "skills": [],
+      "pending": ["accessibility", "browser-qa", "click-path-audit", "design-system"]
+    },
+    {
+      "id": "contenido",
+      "name": "Contenido y negocio",
+      "order": 6,
+      "status": "pendiente",
+      "description": "Escritura, marca, distribución y materiales de inversión.",
+      "gate": null,
+      "rules": [],
+      "skills": [],
+      "pending": ["article-writing", "brand-voice", "seo", "investor-materials"]
+    }
+  ]
+}

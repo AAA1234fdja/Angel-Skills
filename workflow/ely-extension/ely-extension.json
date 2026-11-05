@@ -1,0 +1,26 @@
+{
+  "id": "angel.workflow",
+  "name": "Angel Workflow",
+  "version": "0.1.0",
+  "publisher": "angel",
+  "description": "Skills del paquete workflow: listar por categoría, cargar una fase en el chat y validar el estándar antes de guardar.",
+  "main": "main.js",
+  "permissions": ["workspace:read", "ui", "commands", "chat"],
+  "activationEvents": ["onStartup"],
+  "engines": { "ely": ">=0.9" },
+  "contributes": {
+    "commands": [
+      { "id": "angel.workflow.list", "title": "Workflow: listar skills" },
+      { "id": "angel.workflow.claim", "title": "Workflow: cargar fase en el chat" },
+      { "id": "angel.workflow.skill", "title": "Workflow: abrir una skill" },
+      { "id": "angel.workflow.validate", "title": "Workflow: validar el paquete" },
+      { "id": "angel.workflow.standard", "title": "Workflow: leer el estándar" }
+    ]
+  },
+  "l10n": {
+    "en": {
+      "name": "Angel Workflow",
+      "description": "Workflow skill pack: list by category, load a phase into the chat, and validate the standard before saving."
+    }
+  }
+}
