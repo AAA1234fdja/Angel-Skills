@@ -128,6 +128,34 @@ without leaving its sandbox. Commands it adds to the palette:
 Declared permissions: `workspace:read`, `ui`, `commands`, `chat`. No network, no
 writes. Disabling it leaves the package intact and the CLI working.
 
+## Line budget
+
+The package has a stated size: **10,000 ≤ total lines ≤ 20,000**. It is measured,
+not estimated, with one command from `workflow/`:
+
+```bash
+find . -type f \( -name "*.py" -o -name "*.md" -o -name "*.json" -o -name "*.mjs" -o -name "*.js" \) \
+  -not -path "./dist/*" -not -path "./.workflow/*" -not -path "*/__pycache__/*" \
+  | sort | xargs wc -l | tail -1
+```
+
+Current figure: **15,813 lines**.
+
+| Block | Lines |
+|---|---|
+| runtime `angel/` | 3,645 |
+| skill tools | 2,518 |
+| manifests and contracts (`skill.json`, `categories.json`, schemas) | 4,326 |
+| `SKILL.md` procedures | 2,742 |
+| tests | 1,327 |
+| main documents | 633 |
+| Ely extension | 382 |
+| maintenance scripts | 240 |
+
+Growing the catalogue costs roughly 120 lines per skill, so the ceiling allows
+about 30 more skills before the budget has to be renegotiated — which is the
+point of measuring it.
+
 ## Origin of the patterns
 
 Skills marked `status: adoptada` adapt procedures from
