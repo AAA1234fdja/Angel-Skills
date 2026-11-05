@@ -139,7 +139,7 @@ find . -type f \( -name "*.py" -o -name "*.md" -o -name "*.json" -o -name "*.mjs
   | sort | xargs wc -l | tail -1
 ```
 
-Current figure: **15,813 lines**.
+Current figure: **15,854 lines**.
 
 | Block | Lines |
 |---|---|
@@ -147,7 +147,7 @@ Current figure: **15,813 lines**.
 | skill tools | 2,518 |
 | manifests and contracts (`skill.json`, `categories.json`, schemas) | 4,326 |
 | `SKILL.md` procedures | 2,742 |
-| tests | 1,327 |
+| tests | 1,345 |
 | main documents | 633 |
 | Ely extension | 382 |
 | maintenance scripts | 240 |
