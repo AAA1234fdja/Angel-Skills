@@ -205,6 +205,7 @@ function cmdInstall(root, argv) {
   cpSync(join(root, "categories.json"), join(dest, "categories.json"));
   cpSync(join(root, "EXTENSION-STANDARD.md"), join(dest, "EXTENSION-STANDARD.md"));
   cpSync(join(root, "skills"), join(dest, "skills"), { recursive: true });
+  if (existsSync(join(root, "README.md"))) cpSync(join(root, "README.md"), join(dest, "README.md"));
   process.stdout.write(`${green("✔")} extensión instalada en ${dest}\n`);
   process.stdout.write(`${dim("Reinicia el IDE o recarga la vista Extensiones.")}\n`);
   return 0;
