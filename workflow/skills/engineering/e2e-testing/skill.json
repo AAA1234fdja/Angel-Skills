@@ -1,0 +1,72 @@
+{
+  "id": "e2e-testing",
+  "category": "engineering",
+  "description": "End-to-end flows with page objects, stable locators and explicit quarantine for flaky tests. Use when a change touches a user flow that unit tests cannot cover, or a defect reached production through an integration seam.",
+  "phase": "test",
+  "verbs": [
+    "test"
+  ],
+  "triggers": [
+    "end to end",
+    "user flow",
+    "browser test",
+    "flaky test"
+  ],
+  "keywords": [
+    "e2e",
+    "playwright",
+    "page object",
+    "flaky",
+    "selector"
+  ],
+  "tools": [
+    {
+      "id": "flake-report",
+      "entry": "tools/flake_report.py",
+      "risk": "read",
+      "timeout": 15,
+      "description": "Computes flake rate from repeated runs and recommends quarantine.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "runs": {
+            "type": "object"
+          },
+          "max_flake_rate": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "runs"
+        ]
+      },
+      "sample": {
+        "runs": {
+          "checkout flow": [
+            "pass",
+            "pass",
+            "pass"
+          ],
+          "login redirect": [
+            "pass",
+            "fail",
+            "pass"
+          ]
+        },
+        "max_flake_rate": 0.1
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "the skill's exit criteria are met",
+      "kind": "review"
+    }
+  ]
+}

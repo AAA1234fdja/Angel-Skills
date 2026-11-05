@@ -1,0 +1,60 @@
+{
+  "id": "coding-standards",
+  "category": "engineering",
+  "description": "Baseline conventions for naming, unit size, immutability and error visibility, so a review discusses behaviour instead of style. Use when creating modules, refactoring, or reviewing code whose repository has no written convention.",
+  "phase": "implement",
+  "verbs": [
+    "implement",
+    "refactor"
+  ],
+  "triggers": [
+    "new module",
+    "write new code",
+    "naming conventions"
+  ],
+  "keywords": [
+    "style",
+    "naming",
+    "immutability",
+    "lint",
+    "conventions"
+  ],
+  "tools": [
+    {
+      "id": "style-scan",
+      "entry": "tools/style_scan.py",
+      "risk": "read",
+      "timeout": 20,
+      "description": "Scans provided file contents for size, naming, mutability and silence smells.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "files": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "files"
+        ]
+      },
+      "sample": {
+        "files": {
+          "src/orders.py": "def total(xs):\n    r = 0\n    for x in xs:\n        r += x\n    return r\n",
+          "src/util.py": "MAX_RETRIES = 3\n\n\ndef clamp(value, low, high):\n    return max(low, min(value, high))\n"
+        }
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "the skill's exit criteria are met",
+      "kind": "review"
+    }
+  ]
+}

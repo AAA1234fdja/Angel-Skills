@@ -1,0 +1,104 @@
+{
+  "id": "data-contracts",
+  "category": "data",
+  "description": "Define the shape and invariants of persisted data before the code that touches it. Use when a new table, collection or file format is about to be created, or when two codepaths disagree about what a field means.",
+  "phase": "plan",
+  "verbs": [
+    "design",
+    "plan"
+  ],
+  "triggers": [
+    "new table",
+    "data model",
+    "field meaning",
+    "invariants"
+  ],
+  "keywords": [
+    "data",
+    "model",
+    "invariant",
+    "schema",
+    "persistence"
+  ],
+  "tools": [
+    {
+      "id": "invariant-check",
+      "entry": "tools/invariant_check.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Validates sample records against declared invariants and nullability.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "invariants": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "records": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "invariants",
+          "records"
+        ]
+      },
+      "sample": {
+        "invariants": [
+          {
+            "field": "amount_cents",
+            "rule": "min",
+            "value": 0
+          },
+          {
+            "field": "email",
+            "rule": "required"
+          },
+          {
+            "field": "status",
+            "rule": "enum",
+            "value": [
+              "active",
+              "cancelled"
+            ]
+          },
+          {
+            "field": "id",
+            "rule": "unique"
+          }
+        ],
+        "records": [
+          {
+            "id": 1,
+            "amount_cents": 100,
+            "email": "a@b.c",
+            "status": "active"
+          },
+          {
+            "id": 2,
+            "amount_cents": 0,
+            "email": "d@e.f",
+            "status": "cancelled"
+          }
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "the skill's exit criteria are met",
+      "kind": "review"
+    }
+  ]
+}

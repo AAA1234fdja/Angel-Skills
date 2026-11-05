@@ -1,0 +1,74 @@
+{
+  "id": "schema-evolution",
+  "category": "contracts",
+  "description": "Evolve a schema without breaking consumers: classify every change as major, minor or patch and require the matching version bump. Use when adding, removing or retyping fields in a contract that already has consumers.",
+  "phase": "implement",
+  "verbs": [
+    "implement",
+    "migrate",
+    "design"
+  ],
+  "triggers": [
+    "change the schema",
+    "add a field",
+    "breaking change"
+  ],
+  "keywords": [
+    "schema",
+    "evolution",
+    "breaking",
+    "version",
+    "migration"
+  ],
+  "tools": [
+    {
+      "id": "bump-advisor",
+      "entry": "tools/bump_advisor.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Given planned changes, states the required bump and the migration steps.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "changes": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "current": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "changes"
+        ]
+      },
+      "sample": {
+        "current": "1.1.0",
+        "changes": [
+          {
+            "kind": "remove_field",
+            "path": "findings"
+          },
+          {
+            "kind": "add_optional_field",
+            "path": "next_action"
+          }
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "the skill's exit criteria are met",
+      "kind": "review"
+    }
+  ]
+}

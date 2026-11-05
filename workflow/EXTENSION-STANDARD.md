@@ -1,234 +1,238 @@
-# EXTENSION-STANDARD.md — Estándar de skills de Angel
+# EXTENSION-STANDARD.md — how a skill is written here
 
-> **Este archivo se lee antes de crear o editar cualquier skill.**
-> Si el arnés (o una persona) va a tocar `workflow/`, primero lee §1 y §7, luego
-> consulta la categoría en `workflow/categories.json` y solo después escribe.
-> Última revisión: 2026-11-05 · versión del paquete: `0.2.0`
-
-| | |
-|---|---|
-| Paquete | `workflow/` (skills + registro + CLI + extensión de Ely) |
-| Consumidores | CLI `workflow` · extensión `angel.workflow` de Ely · cualquier agente que lea el ZIP |
-| Fuente de patrones | [affaan-m/ECC](https://github.com/affaan-m/ECC) @ `b38be6a` (MIT) |
-| Estado | Categoría `ingenieria` activa · resto declaradas como `pendiente` |
+> Read this **before** creating or editing any skill. `WORKFLOW.md` explains the
+> purpose; this file is the contract. Package `0.3.0` · updated 2026-11-05
+>
+> Machine check: `workflow validate --strict` implements §5 and §6. If the
+> standard and the validator disagree, the validator wins and this file is a bug.
 
 ---
 
-## 1. Qué es una skill aquí
+## 1. The three tests of a skill
 
-Una **skill** es un procedimiento reutilizable, con disparador explícito y
-criterio de salida **verificable**. No es documentación, no es un ensayo y no es
-un prompt suelto.
+A skill is justified only if all three hold:
 
-Una skill se justifica solo si cumple las tres:
+1. **Trigger** — a recognisable situation says *when* to use it.
+2. **Procedure** — ordered steps someone else could execute without asking you.
+3. **Checkable exit** — something can be *verified* at the end: a command, a test,
+   an artefact, a signed review.
 
-1. **Disparador**: existe una situación reconocible ("el build falla", "voy a
-   escribir un módulo nuevo") que dice *cuándo* usarla.
-2. **Procedimiento**: pasos ordenados que otra persona podría ejecutar sin
-   preguntarte nada.
-3. **Salida verificable**: al final hay algo que se puede comprobar (un test que
-   pasa, un comando que devuelve 0, una lista con evidencia).
-
-Si falla una de las tres, no es una skill: es una nota → va a `docs/`, no a
-`workflow/skills/`.
+If any fails, it is a note → `docs/`, not `skills/`.
 
 ---
 
-## 2. Contrato del paquete (lo que el código puede asumir)
+## 2. Anatomy
 
 ```text
-workflow/
-├── EXTENSION-STANDARD.md      ← este archivo (contrato humano y del arnés)
-├── categories.json            ← registro: única fuente de verdad de categorías y skill ids
-├── skills/<categoria>/<skill>/SKILL.md
-├── bin/workflow.mjs           ← CLI (Node ≥ 18, sin dependencias)
-├── src/                       ← motor: registry, validate, pack
-├── ely-extension/             ← puente con Ely (ely-extension.json + main.js)
-└── README.md                  ← cómo se usa el paquete
+skills/<category>/<id>/
+├── SKILL.md       required — the procedure
+├── skill.json     required — the composition (routing + execution)
+├── tools/*.py     optional — each exposes run(payload) -> dict
+└── references/    optional — long-form notes, loaded only on demand
 ```
 
-**Reglas de estructura — obligatorias**
-
-| Regla | Detalle |
+| Rule | Detail |
 |---|---|
-| Ruta canónica | `workflow/skills/<categoria>/<skill-id>/SKILL.md` |
-| Id de skill | `^[a-z0-9]+(-[a-z0-9]+)*$`, único en todo el paquete, estable |
-| Id de categoría | igual que el de skill; debe existir en `categories.json` |
-| Registro | toda skill instalada **debe** figurar en `categories.json`; una skill en disco que no está en el registro es un error de validación |
-| Frontmatter | obligatorio en `SKILL.md`, ver §4 |
-| Tamaño | `SKILL.md` ≤ 400 líneas; si crece, se parte en `references/` |
-| Colocación | una skill vive en **una sola** categoría (la de su disparador principal) |
+| Canonical path | `workflow/skills/<category>/<id>/SKILL.md` |
+| Skill id | `^[a-z0-9]+(-[a-z0-9]+)*$`, unique, **stable forever** |
+| Category id | same pattern; must exist in `categories.json` |
+| Registry | a skill on disk that is not registered is an **error** |
+| Size | `SKILL.md` ≤ 400 lines, body ≤ 260 before splitting into `references/` |
+| Placement | one skill lives in exactly one category: the one of its primary trigger |
 
 ---
 
-## 3. Anatomía de una categoría
-
-Cada categoría declara en `categories.json`:
-
-| Campo | Obligatorio | Para qué |
-|---|---|---|
-| `id` | sí | segmento de ruta y filtro del CLI |
-| `name` | sí | etiqueta visible (español) |
-| `description` | sí | qué cubre y qué **no** cubre |
-| `status` | sí | `activa` \| `pendiente` \| `congelada` |
-| `gate` | no | condición que bloquea el cierre de una tarea en esa categoría |
-| `rules` | sí (`[]` permitido) | reglas duras, una frase imperativa cada una |
-| `skills` | sí (`[]` permitido) | skills instaladas, con `origin`, `status`, `phase` |
-| `pending` | no | ids de ECC que se quieren adoptar después (no son skills todavía) |
-
-`status: "pendiente"` significa **declarada pero vacía**: se puede consultar y
-planificar, pero el CLI no la ofrece como cargable.
-
----
-
-## 4. Frontmatter de `SKILL.md`
+## 3. `SKILL.md` contract
 
 ```markdown
 ---
 name: tdd-workflow
-description: Ciclo RED → GREEN → REFACTOR con puerta de cobertura. Usar cuando se va a escribir implementación nueva o a corregir un defecto. (ver §4.1)
+description: Red-green-refactor with a coverage gate so a task is never called done on inspection alone. Use when implementation is about to be written or a defect is about to be fixed.
 metadata:
   origin: ECC · skills/tdd-workflow
-  category: ingenieria
+  category: engineering
   phase: test
-  status: adoptada
+  status: adopted
   version: 1
 ---
 
 # TDD Workflow
 
-## Cuándo usar
-## Cuándo NO usar
-## Procedimiento
-## Criterio de salida
-## Errores típicos
+## When to Use
+## When Not to Use
+## Procedure
+## Exit Criteria
+## Common Failures
 ```
 
-**§4.1 — `description`.** Es el único campo que el modelo lee para decidir si
-carga la skill. Debe:
+**3.1 `description`** — the only field a model reads to decide whether to load the
+skill. It must: start with the outcome, contain the literal trigger `Use when`,
+fit in **700 characters**, carry no markdown or newlines, and be distinguishable
+from every other skill in its category. If two descriptions can be swapped, one of
+them is redundant.
 
-- empezar con el resultado, no con el nombre de la técnica;
-- contener el disparador literal `Usar cuando` (o `Use when` en skills en inglés);
-- caber en **700 caracteres** y no llevar markdown ni saltos de línea;
-- distinguirse de las demás skills de su categoría (si dos descripciones se
-  pueden intercambiar, una de las dos sobra).
+**3.2 `metadata`** — `origin`, `category`, `phase`, `status`, `version` are
+required. `phase` ∈ `plan · design · research · implement · test · review · verify · debug · audit · document · meta`. `status`
+∈ `adopted · original · experimental`.
 
-**§4.2 — `phase`.** Vocabulario cerrado: `plan`, `implement`, `test`, `review`,
-`verify`, `meta`. Sirve para ordenar el pipeline y para que el CLI agrupe.
+**3.3 Sections** — `When to Use`, `Procedure`, `Exit Criteria` are **required**.
+`When Not to Use` and `Common Failures` are strongly advised; their absence is a
+warning, not an error.
 
-**§4.3 — Prosa.** Español para el texto; inglés solo para términos técnicos
-consagrados (`build`, `lint`, `commit`). Sin emojis. Sin "en este documento
-vamos a…".
-
-**§4.4 — Secciones obligatorias.** `Cuándo usar`, `Procedimiento`, `Criterio de
-salida`. `Cuándo NO usar` y `Errores típicos` son muy recomendables; su ausencia
-se marca como aviso, no como error.
+**3.4 Prose** — English. Imperative. No emojis. No "in this document we will".
+Exit criteria are a checklist, each item checkable by a machine or a named person.
 
 ---
 
-## 5. Adoptada vs propia
+## 4. `skill.json` contract
 
-| `status` | Significado | Regla |
+```json
+{
+  "id": "tdd-workflow",
+  "category": "engineering",
+  "description": "…",
+  "phase": "test",
+  "verbs": ["test", "implement"],
+  "triggers": ["write the failing test", "red green refactor"],
+  "keywords": ["tdd", "test", "coverage"],
+  "tools": [
+    {
+      "id": "coverage-gate",
+      "entry": "tools/coverage_gate.py",
+      "description": "Checks a coverage report against a threshold.",
+      "risk": "read",
+      "timeout": 20,
+      "input": {"type": "object", "properties": {}, "required": []}
+    }
+  ],
+  "contracts": ["skill-report@1.0.0"],
+  "requires": ["verification-loop"],
+  "routing": {"not_for": ["one-off exploration"]},
+  "acceptance": [{"id": "exit", "statement": "tests fail first, then pass", "kind": "test"}]
+}
+```
+
+| Field | Required | Consumed by |
 |---|---|---|
-| `adoptada` | Adaptada de ECC | Se conserva el id original de ECC; `origin` citado; texto reescrito para este repo, no copiado literal |
-| `propia` | Creada aquí | `origin: propia` |
-| `experimental` | En prueba | No se cuenta como base para otras skills |
+| `id`, `category`, `description` | yes | validation |
+| `phase` | yes | routing filter and step order |
+| `verbs` | recommended | router (×2.5) |
+| `triggers` | recommended | router (×3.0) |
+| `keywords` | recommended | router (×1.0) |
+| `tools[]` | if the skill automates anything | `tool`, `run` |
+| `contracts[]` | if it exchanges structured data | `contract --check` |
+| `requires[]` | if it cannot run alone | `route` ordering |
+| `routing.not_for[]` | optional | router exclusion |
+| `acceptance[]` | recommended | the criteria the runner attaches to a step |
 
-Nunca se marca `adoptada` algo que no venga de una fuente citada. Si se reescribe
-tanto que ya no se reconoce el original, se marca `propia` igualmente (el
-`origin` se conserva como referencia histórica).
+**4.1 Risk levels for tools**
+
+| Risk | Meaning | Allowed in profile |
+|---|---|---|
+| `read` | observes, never mutates | all |
+| `write` | mutates files inside the workspace | `standard`, `full` |
+| `execute` | runs subprocesses or the network | `standard`, `full` |
+| `destructive` | deletes, rewrites history, force-pushes | `full` + explicit consent |
+
+**4.2 Tool files** — a module with `run(payload) -> dict`. It runs with an
+allow-listed builtins set (no `open`, no `eval`, no `__import__` of arbitrary
+modules), a wall-clock timeout, and captured stdout/stderr. It must return a
+JSON-serialisable dict; anything else is `E_TOOL_FAILED`. If a tool needs to
+write files, it does so through explicit paths passed in the payload.
 
 ---
 
-## 6. Orden de lectura (lo que hace el arnés)
+## 5. Checklist before saving
 
-El arnés **no** lee todo el catálogo: sería el mismo error que este repo trata de
-evitar.
+Errors (block):
 
-```text
-1. workflow/categories.json        (¿qué categoría aplica?)
-2. workflow/skills/<cat>/<skill>/SKILL.md   (solo las de la fase en curso)
-3. workflow/EXTENSION-STANDARD.md  (solo si va a ESCRIBIR una skill)
+- [ ] id matches the pattern and is unique
+- [ ] path is `skills/<category>/<id>/`
+- [ ] frontmatter has `name`, `description`, `metadata.origin/category/phase/status/version`
+- [ ] `description` contains `Use when` and ≤ 700 chars
+- [ ] `When to Use`, `Procedure`, `Exit Criteria` exist
+- [ ] `skill.json` exists with `id`, `category`, `description`
+- [ ] every declared tool has an existing `entry` file and a valid `risk`
+- [ ] registered in `categories.json` (`workflow validate` green)
+
+Warnings (review):
+
+- [ ] missing `When Not to Use` / `Common Failures`
+- [ ] body > 260 lines (should it be split?)
+- [ ] no `triggers` in the manifest (routing will be weak)
+- [ ] destructive tool without a documented confirmation path
+- [ ] description overlaps another skill in the same category
+
+---
+
+## 6. Anti-patterns (forbidden)
+
+| Anti-pattern | Why |
+|---|---|
+| A skill that describes a topic without a procedure | no way to tell whether it was applied |
+| An umbrella skill that does everything | the model cannot tell when to fire it |
+| Copying ECC wholesale | 314 skills compete for context; adopt on demonstrated need |
+| Absolute paths or machine names inside a skill | breaks portability |
+| Renaming a published id | breaks registry, routing, contracts and journals |
+| A tool that mutates without declaring `write` | bypasses authorisation |
+| Hooks or scripts lifted from ECC | they are coupled to its structure; rewrite if needed |
+
+---
+
+## 7. Registering a new skill (the only supported path)
+
+```bash
+workflow new my-skill --category engineering --phase implement --verb refactor \
+  --description "One sentence with the outcome." --when "the trigger situation"
+workflow validate --strict
 ```
 
-Regla de coste: se cargan **como máximo las skills de una fase**; si una tarea
-cruza fases, se carga por fase, no de golpe.
+`workflow new` does five things: validates the id, refuses duplicates, creates
+`SKILL.md` + `skill.json` from the template, registers the skill in
+`categories.json`, and removes it from `pending`. Editing the template by hand is
+allowed; registering by hand is not — the CLI is what keeps the registry and the
+disk in sync.
+
+Then:
+
+1. Rewrite the procedure sections with real steps.
+2. Add `tools/` if the exit criteria can be checked mechanically, and declare each
+   tool in `skill.json` with the lowest risk that works.
+3. Add `contracts/` if the skill exchanges structured data with another skill.
+4. `workflow validate --strict` and `workflow tool --list`.
+5. Bump `metadata.version` and add a `CHANGELOG.md` line.
 
 ---
 
-## 7. Checklist antes de guardar una skill
+## 8. Changing an existing skill
 
-Errores (bloquean):
-
-- [ ] El id cumple `^[a-z0-9]+(-[a-z0-9]+)*$` y no existe ya en el registro.
-- [ ] La ruta es `workflow/skills/<categoria>/<id>/SKILL.md`.
-- [ ] Frontmatter con `name`, `description`, `metadata.origin`, `metadata.category`, `metadata.phase`, `metadata.status`.
-- [ ] `description` incluye el disparador y cabe en 700 caracteres.
-- [ ] Existen las secciones `Cuándo usar`, `Procedimiento`, `Criterio de salida`.
-- [ ] El `Criterio de salida` es comprobable (comando, test, artefacto).
-- [ ] La skill está registrada en `categories.json` (`workflow validate` en verde).
-
-Avisos (no bloquean, pero se revisan):
-
-- [ ] Falta `Cuándo NO usar`.
-- [ ] Falta `Errores típicos`.
-- [ ] Supera 250 líneas (¿debería partirse?).
-- [ ] Su descripción solapa con otra de la misma categoría.
-- [ ] Usa rutas absolutas o nombres de máquina.
+1. Read the skill and its `metadata.version`.
+2. Change the body freely; **never** change `name`, `category` or the id.
+3. If routing changed (triggers, verbs, keywords), say so in the changelog.
+4. If a tool's payload shape changed, that is a contract change: new contract
+   version, and `workflow contract --check` must pass.
+5. Bump `metadata.version`, add the changelog line, run `validate --strict`.
 
 ---
 
-## 8. Anti-patrones (prohibidos)
+## 9. Validation and exit codes
 
-| Anti-patrón | Por qué |
+`workflow validate` runs, in order: registry JSON → every registered skill exists
+→ frontmatter parses → §5 errors → §5 warnings → contracts (`contract --check`).
+
+| Code | Meaning |
 |---|---|
-| Skill que describe un tema sin procedimiento | No hay forma de saber si se aplicó |
-| Skill "paraguas" que hace de todo | El modelo no sabe cuándo dispararla |
-| Duplicar ECC entero | 314 skills compiten por el contexto; aquí se adopta por necesidad demostrada |
-| Escribir dentro de la skill rutas de `~/.claude` o de otra máquina | Rompe la portabilidad |
-| Cambiar el id de una skill ya publicada | Rompe registro, enlaces y el arnés |
-| Copiar hooks o scripts de ECC | Están acoplados a su estructura; aquí se reescriben si hacen falta |
-| Marcar `adoptada` sin `origin` | Sin atribución no se puede auditar ni actualizar |
+| 0 | valid |
+| 1 | errors |
+| 2 | warnings present with `--strict` |
+
+Nothing is packed (`workflow pack`) or installed into Ely while validation fails.
 
 ---
 
-## 9. Cómo se extiende (procedimiento)
+## 10. Licence and attribution
 
-**Añadir una skill a una categoría existente**
-
-1. `workflow plan <categoria>` → ver qué hay y qué falta.
-2. Añadir la entrada a `categories.json` (`skills`, no `pending`).
-3. Crear `skills/<categoria>/<id>/SKILL.md` siguiendo §4.
-4. `workflow validate` → debe salir en verde.
-
-**Añadir una categoría**
-
-1. Entrada nueva en `categories.json` con `status: "pendiente"` y `skills: []`.
-2. `workflow plan <nueva>` para revisar el hueco.
-3. Al instalar su primera skill, cambiar a `status: "activa"`.
-
-**Cambiar una skill existente**
-
-1. Leer la skill y su `metadata.version`.
-2. Aplicar el cambio sin tocar `name` ni `category`.
-3. Subir `version` en el frontmatter y anotarlo en `workflow/CHANGELOG.md`.
-
----
-
-## 10. Validación
-
-`workflow validate` aplica, en este orden: JSON del registro válido → cada skill
-del registro existe en disco → cada `SKILL.md` tiene frontmatter parseable →
-reglas de §7 (errores) → conteo de avisos. Sin dependencias externas: si el
-validador falla, el paquete no se empaqueta ni se publica en Ely.
-
-Códigos de salida: `0` sin errores · `1` errores · `2` avisos presentes con
-`--strict`.
-
----
-
-## 11. Licencia y atribución
-
-ECC es MIT. Las skills `adoptada` conservan el id y citan `origin`; si en el
-futuro se incorpora texto literal de ECC, debe incluirse su aviso de copyright
-MIT en `workflow/NOTICE.md`. Las skills `propia` son de este repositorio.
+ECC is MIT. Skills marked `adopted` keep ECC's id, cite `origin`, and are
+rewritten for this repository — not copied verbatim. `original` skills are this
+repository's own. Any future verbatim inclusion needs ECC's MIT notice in
+`NOTICE.md`.

@@ -1,0 +1,37 @@
+{
+  "id": "contract-validation",
+  "category": "contracts",
+  "description": "Validate payloads against their contract before they are used, reporting the first violation with its path. Use when a producer or consumer needs to guarantee that what crosses the boundary matches the declared schema.",
+  "phase": "verify",
+  "verbs": [
+    "verify",
+    "validate"
+  ],
+  "triggers": [
+    "validate payload",
+    "contract check",
+    "schema mismatch"
+  ],
+  "keywords": [
+    "validate",
+    "schema",
+    "payload",
+    "contract",
+    "boundary"
+  ],
+  "tools": [],
+  "contracts": [
+    "skill-report@1.1.0"
+  ],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "the skill's exit criteria are met",
+      "kind": "review"
+    }
+  ]
+}

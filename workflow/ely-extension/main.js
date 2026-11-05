@@ -4,7 +4,36 @@
  * la API `ely`. Lee el paquete desde el workspace y lo inyecta en el chat del
  * perfil activo, así el modelo recibe únicamente las skills de la fase pedida.
  */
-const BUNDLE = "workflow";
+/* The bundle can live in three places depending on how it was installed: the
+ * workspace's `workflow/` folder (CLI checkout), next to the extension
+ * (`workflow install --ely`), or at the workspace root. The first one that
+ * answers with a categories.json wins; the probe is done once. */
+const BUNDLE_CANDIDATES = ["workflow", "angel.workflow",
+  "IDE/ely-extensions/angel.workflow", ""];
+let bundlePath = null;
+
+async function resolveBundle(ely) {
+  if (bundlePath !== null) return bundlePath;
+  for (const candidate of BUNDLE_CANDIDATES) {
+    const path = candidate ? `${candidate}/categories.json` : "categories.json";
+    const raw = await readText(ely, path);
+    if (raw) {
+      bundlePath = candidate;
+      return bundlePath;
+    }
+  }
+  bundlePath = "workflow";
+  return bundlePath;
+}
+
+function bundleOf() {
+  return bundlePath === null ? "workflow" : bundlePath;
+}
+
+function join(relative) {
+  const base = bundleOf();
+  return base ? `${base}/${relative}` : relative;
+}
 
 const t = (ely, es, en) => ely.l10n(es, en);
 
@@ -41,7 +70,8 @@ function parseFrontmatter(text) {
 }
 
 async function loadRegistry(ely) {
-  const raw = await readText(ely, `${BUNDLE}/categories.json`);
+  await resolveBundle(ely);
+  const raw = await readText(ely, join("categories.json"));
   if (!raw) return null;
   try {
     return JSON.parse(raw);
@@ -54,25 +84,39 @@ async function loadRegistry(ely) {
   }
 }
 
+async function loadManifest(ely, category, id) {
+  const raw = await readText(ely, join(`skills/${category}/${id}/skill.json`));
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw);
+  } catch (e) {
+    return null;
+  }
+}
+
 async function loadSkills(ely, registry, filter = {}) {
   const rows = [];
   for (const cat of registry.categories || []) {
     if (filter.category && cat.id !== filter.category) continue;
     for (const entry of cat.skills || []) {
-      const file = `${BUNDLE}/skills/${cat.id}/${entry.id}/SKILL.md`;
+      const file = join(`skills/${cat.id}/${entry.id}/SKILL.md`);
       const text = await readText(ely, file);
       const { data, body } = parseFrontmatter(text || "");
       const meta = data.meta || {};
-      const phase = meta.phase || entry.phase || "";
+      const manifest = await loadManifest(ely, cat.id, entry.id);
+      const phase = (manifest && manifest.phase) || meta.phase || entry.phase || "";
       if (filter.phase && phase !== filter.phase) continue;
       rows.push({
         id: entry.id,
         category: cat.id,
-        categoryName: cat.name,
+        categoryName: cat.name || cat.id,
         phase,
         status: meta.status || entry.status || "",
         description: data.description || entry.description || "",
         present: !!text,
+        tools: (manifest && manifest.tools) || [],
+        contracts: (manifest && manifest.contracts) || [],
+        triggers: (manifest && manifest.triggers) || [],
         body
       });
     }
@@ -120,7 +164,7 @@ async function cmdList(ely) {
   const reg = await loadRegistry(ely);
   if (!reg) {
     await ely.window.showMessage(
-      t(ely, `No encuentro ${BUNDLE}/categories.json en el workspace`, `Cannot find ${BUNDLE}/categories.json in the workspace`),
+      t(ely, `No encuentro ${join("categories.json")} en el workspace`, `Cannot find ${join("categories.json")} in the workspace`),
       "warn"
     );
     return;
@@ -128,14 +172,14 @@ async function cmdList(ely) {
   const rows = await loadSkills(ely, reg);
   const missing = rows.filter((r) => !r.present);
   const lines = [
-    `# ${t(ely, "Skills del paquete", "Pack skills")} ${BUNDLE}`,
+    `# ${t(ely, "Skills del paquete", "Pack skills")} ${bundleOf() || "."}`,
     "",
     `${rows.length} ${t(ely, "declaradas", "declared")} · ${missing.length} ${t(ely, "sin archivo", "missing file")}`,
     ""
   ];
   for (const cat of reg.categories || []) {
     const own = rows.filter((r) => r.category === cat.id);
-    lines.push(`## ${cat.name} (${cat.id}) · ${cat.status} · ${own.length}`);
+    lines.push(`## ${cat.name || cat.id} (${cat.id}) · ${cat.status} · ${own.length}`);
     if (cat.gate) lines.push(`gate: ${cat.gate}`);
     for (const r of own) lines.push(`- ${r.present ? "●" : "○"} ${r.id} — ${r.phase} — ${r.description}`);
     if (!own.length) lines.push(t(ely, "- (sin skills todavía)", "- (no skills yet)"));
@@ -144,7 +188,7 @@ async function cmdList(ely) {
   await openText(ely, t(ely, "Workflow · skills", "Workflow · skills"), lines.join("\n"));
 }
 
-async function cmdClaim(ely) {
+async function cmdPhase(ely) {
   const reg = await loadRegistry(ely);
   if (!reg) return;
   const rows = await loadSkills(ely, reg);
@@ -186,6 +230,36 @@ async function cmdSkill(ely) {
   await openText(ely, `${row.id} · ${row.categoryName}`, row.body || row.description);
 }
 
+async function cmdTools(ely) {
+  const reg = await loadRegistry(ely);
+  if (!reg) return;
+  const rows = await loadSkills(ely, reg);
+  if (!rows.length) return;
+  const picked = await ely.window.showQuickPick({
+    items: asList(rows.filter((r) => r.tools.length)),
+    options: { title: t(ely, "Herramientas de una skill", "Tools of a skill") }
+  });
+  if (!picked) return;
+  const id = typeof picked === "string" ? picked : picked.label;
+  const row = rows.find((r) => r.id === id);
+  if (!row) return;
+  const lines = [
+    `# ${row.id} · ${row.categoryName}`,
+    "",
+    `${t(ely, "Fase", "Phase")}: ${row.phase || "?"} · status: ${row.status || "?"}`,
+    `${t(ely, "Disparadores", "Triggers")}: ${(row.triggers || []).join(", ") || "—"}`,
+    `${t(ely, "Contratos", "Contracts")}: ${(row.contracts || []).join(", ") || "—"}`,
+    "",
+    "| tool | risk | timeout | what it does |",
+    "|---|---|---|---|"
+  ];
+  for (const tool of row.tools) {
+    lines.push(`| ${tool.id} | ${tool.risk} | ${tool.timeout}s | ${tool.description || ""} |`);
+  }
+  lines.push("", t(ely, "Para ejecutarlas", "To run them") + ": `workflow tool --self-test`");
+  await openText(ely, `tools · ${row.id}`, lines.join("\n"));
+}
+
 async function cmdValidate(ely) {
   const reg = await loadRegistry(ely);
   if (!reg) return;
@@ -206,11 +280,11 @@ async function cmdValidate(ely) {
     }
     if (r.description.length > 700) errors.push(`${r.id}: description > 700`);
     if (!r.phase) errors.push(`${r.id}: ${t(ely, "sin fase", "no phase")}`);
-    for (const h of ["Cuándo usar", "Procedimiento", "Criterio de salida"]) {
+    for (const h of ["When to Use", "Procedure", "Exit Criteria"]) {
       if (!r.body.includes(h)) errors.push(`${r.id}: ${t(ely, "falta la sección", "missing section")} "${h}"`);
     }
-    if (!r.body.includes("Cuándo NO usar")) warnings.push(`${r.id}: ${t(ely, "sin", "no")} "Cuándo NO usar"`);
-    if (!r.body.includes("Errores típicos")) warnings.push(`${r.id}: ${t(ely, "sin", "no")} "Errores típicos"`);
+    if (!r.body.includes("When Not to Use")) warnings.push(`${r.id}: ${t(ely, "sin", "no")} "When Not to Use"`);
+    if (!r.body.includes("Common Failures")) warnings.push(`${r.id}: ${t(ely, "sin", "no")} "Common Failures"`);
   }
   const lines = [`# ${t(ely, "Validación", "Validation")} · ${rows.length} skill(s)`, ""];
   lines.push(`${errors.length} ${t(ely, "error(es)", "error(s)")} · ${warnings.length} ${t(ely, "aviso(s)", "warning(s)")}`, "");
@@ -226,7 +300,7 @@ async function cmdValidate(ely) {
 }
 
 async function cmdStandard(ely) {
-  const text = await readText(ely, `${BUNDLE}/EXTENSION-STANDARD.md`);
+  const text = await readText(ely, join("EXTENSION-STANDARD.md"));
   if (!text) {
     await ely.window.showMessage(t(ely, "No encuentro EXTENSION-STANDARD.md", "Cannot find EXTENSION-STANDARD.md"), "warn");
     return;
@@ -236,8 +310,9 @@ async function cmdStandard(ely) {
 
 /* ------------------------------------------------------------------ registro */
 async function registerCommands(ely) {
+  await ely.commands.register("angel.workflow.tools", t(ely, "Workflow: ver herramientas de una skill", "Workflow: tools of a skill"), () => cmdTools(ely));
   await ely.commands.register("angel.workflow.list", t(ely, "Workflow: listar skills", "Workflow: list skills"), () => cmdList(ely));
-  await ely.commands.register("angel.workflow.claim", t(ely, "Workflow: cargar fase en el chat", "Workflow: load phase into chat"), () => cmdClaim(ely));
+  await ely.commands.register("angel.workflow.phase", t(ely, "Workflow: cargar fase en el chat", "Workflow: load phase into chat"), () => cmdPhase(ely));
   await ely.commands.register("angel.workflow.skill", t(ely, "Workflow: abrir una skill", "Workflow: open a skill"), () => cmdSkill(ely));
   await ely.commands.register("angel.workflow.validate", t(ely, "Workflow: validar el paquete", "Workflow: validate the pack"), () => cmdValidate(ely));
   await ely.commands.register("angel.workflow.standard", t(ely, "Workflow: leer el estándar", "Workflow: read the standard"), () => cmdStandard(ely));

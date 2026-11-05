@@ -1,6 +1,50 @@
 # CHANGELOG · workflow
 
-Formato: fecha · versión del paquete · cambio.
+Formato: fecha · versión del paquete · cambio. Cada entrada dice qué cambia
+para quien consume el paquete; los cambios de comportamiento incompatibles van primero
+y con la acción requerida.
+
+## 0.3.0 — 2026-11-05
+
+Reescritura completa. El paquete pasa de catálogo de markdown a runtime ejecutable.
+
+**breaking** — una skill ya no es un `.md` suelto: es una carpeta con `SKILL.md` +
+`skill.json` + `tools/` + `references/`. Las skills de 0.2 (`skills/ingenieria/`,
+`skills/agentic/`) se eliminan y se recrean con el nuevo esquema. Acción: si tenías
+copias locales, añádeles `skill.json` y vuelve a pasar `workflow validate --strict`.
+
+- **added** — `angel/`, runtime en Python 3.10+ stdlib: `registry` (carga, valida y
+  reconcilia disco contra registro), `router` (puntuación determinista),
+  `protocols` (6 protocolos tipados y versionados), `contracts` (JSON-schema con
+  versiones inmutables y diff semántico), `tools` (sandbox de builtins + allow-list
+  de módulos, timeout y captura), `journal` (cadena de hashes), `runner` (plan,
+  dispatch, ejecución, veredicto, gate), `errors` (taxonomía con dueño y recuperación),
+  `frontmatter`, `jsonschema`, `cli` (14 subcomandos).
+- **added** — 44 skills en 11 categorías activas: engineering 12, contracts 4,
+  protocols 3, errors 4, agentic 5, security 4, data 4, reversing 3, governance 3,
+  product 1, content 1. Todas en inglés, con `origin`, `phase` y `status`.
+- **added** — 41 herramientas ejecutables, todas de riesgo `read`, puras, con
+  esquema de entrada y un `sample` declarado; `workflow tool --self-test` ejecuta
+  las 41 y falla si una no produce `advice`.
+- **added** — 4 contratos con consumidores: `skill-report@1.1.0`,
+  `message-digest@1.0.0`, `isa-plan@1.0.0`, `xev-result@1.0.0`.
+- **added** — `tests/`: 118 tests sobre el runtime y el catálogo real, incluida la
+  consistencia entre documentación, comandos citados y ficheros en disco.
+- **added** — `WORKFLOW.md` como documento principal: propósito, comparación con
+  ECC, anatomía de una skill, recorrido de 8 pasos, presupuesto de contexto, 8
+  reglas no negociables, ruta de crecimiento.
+- **changed** — `EXTENSION-STANDARD.md` reescrito a 0.3: las tres pruebas de una
+  skill, contrato de frontmatter y de `skill.json`, tabla de riesgos, checklist,
+  antipatrones, protocolo de registro y códigos de salida.
+- **changed** — el router entiende español, enmascara cláusulas negadas, agrupa los
+  pasos en respuestas y apoyo, y filtra (en vez de puntuar) la fase pedida.
+- **changed** — `workflow validate` compara en las dos direcciones (disco ⇄ registro)
+  y `--strict` convierte avisos en fallo.
+- **fixed** — `workflow tool` devuelve código 7/8 cuando la herramienta dictamina
+  que no hay que seguir, para que una cadena de shell se detenga.
+- **fixed** — el CLI ya no contiene el hack `{"**base": None} if False else {...}`.
+- **removed** — `bin/workflow.mjs` y `src/registry.mjs` (CLI Node de 0.2): el runtime
+  Python los sustituye por completo. Usa `python3 -m angel.cli`.
 
 ## 0.2.0 — 2026-11-05
 

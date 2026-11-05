@@ -1,232 +1,543 @@
 {
-  "version": "0.2.0",
+  "version": "0.3.0",
   "updated": "2026-11-05",
   "standard": "EXTENSION-STANDARD.md",
+  "main": "WORKFLOW.md",
   "origin": {
     "repo": "https://github.com/affaan-m/ECC",
     "commit": "b38be6a",
     "license": "MIT",
-    "note": "ECC se usa como fuente de patrones. Cada skill adoptada conserva su id original y se reescribe; no se copia texto literal sin atribución."
+    "note": "ECC is used as a source of patterns and as the benchmark to beat; every adopted skill keeps its id and origin."
   },
   "rules": {
     "naming": "^[a-z0-9]+(-[a-z0-9]+)*$",
-    "frontmatter": [
-      "name",
-      "description",
-      "metadata"
-    ],
-    "descriptionMustContain": [
-      "Use when",
-      "Usar cuando"
-    ],
-    "descriptionMaxChars": 700,
     "skillFile": "SKILL.md",
-    "categoryFile": "CATEGORY.md",
-    "maxSkillLines": 400
+    "manifestFile": "skill.json",
+    "requiredSections": [
+      "When to Use",
+      "Procedure",
+      "Exit Criteria"
+    ],
+    "maxDescriptionChars": 700,
+    "maxBodyLines": 260,
+    "maxSkillLines": 400,
+    "phases": [
+      "plan",
+      "design",
+      "research",
+      "implement",
+      "test",
+      "review",
+      "verify",
+      "debug",
+      "audit",
+      "document",
+      "meta"
+    ],
+    "statuses": [
+      "adopted",
+      "original",
+      "experimental"
+    ],
+    "risks": [
+      "read",
+      "write",
+      "execute",
+      "destructive"
+    ]
   },
   "categories": [
     {
-      "id": "ingenieria",
-      "name": "Ingeniería",
+      "id": "engineering",
+      "name": "Engineering",
       "order": 1,
       "status": "activa",
-      "description": "Cómo se escribe, prueba, revisa y verifica código en este repositorio. Es la categoría base: cualquier otra depende de que estas reglas se cumplan antes de tocar skills.",
-      "gate": "Ningún cambio de código se considera terminado sin pasar por tdd-workflow y verification-loop.",
+      "description": "How code is written, tested, reviewed and verified here. Every other category assumes these rules hold.",
+      "gate": "No change is finished without tdd-workflow and verification-loop evidence.",
       "rules": [
-        "Escribir el test que falla antes de la implementación (RED → GREEN → REFACTOR).",
-        "Nunca declarar una tarea lista sin evidencia de ejecución (test, build o lint real).",
-        "Una skill = un procedimiento con criterio de salida verificable.",
-        "Los ids de skill son estables: renombrar rompe el registro y el arnés."
+        "Write the failing test before the implementation.",
+        "Never call a task done without real execution evidence (test, build, lint).",
+        "One skill is one procedure with a machine-checkable exit.",
+        "Skill ids are stable; renaming breaks the registry, routing and journals."
       ],
       "skills": [
         {
           "id": "tdd-workflow",
           "origin": "ECC · skills/tdd-workflow",
-          "status": "adoptada",
+          "status": "adopted",
           "phase": "test",
-          "description": "Ciclo RED → GREEN → REFACTOR con puerta de cobertura. Se activa antes de escribir cualquier implementación nueva."
+          "description": "Red-green-refactor with a coverage gate so a task is never called done on inspection alone."
         },
         {
           "id": "verification-loop",
           "origin": "ECC · skills/verification-loop",
-          "status": "adoptada",
+          "status": "adopted",
           "phase": "verify",
-          "description": "Verificación en seis fases (build, tipos, lint, tests+cobertura, seguridad, revisión del diff). Se activa al cerrar una tarea."
+          "description": "Six-phase verification (build, types, lint, tests+coverage, security, diff review) with quotable evidence for each."
         },
         {
           "id": "coding-standards",
           "origin": "ECC · skills/coding-standards",
-          "status": "adoptada",
+          "status": "adopted",
           "phase": "implement",
-          "description": "Convenciones base: nombres, legibilidad, inmutabilidad y criterio de revisión. Se activa al crear o refactorizar módulos."
+          "description": "Baseline conventions for naming, size, immutability and error visibility so review discusses behaviour, not style."
         },
         {
           "id": "code-review",
-          "origin": "ECC · skills (patrón reviewer) + agents/code-reviewer",
-          "status": "adoptada",
+          "origin": "ECC · skills/code-review",
+          "status": "adopted",
           "phase": "review",
-          "description": "Revisión con contexto fresco: defectos reales por severidad, sin reescribir el diseño del autor. Se activa antes de abrir un PR."
+          "description": "Fresh-context diff review: real defects ranked by severity, with a verdict at the end."
         },
         {
           "id": "search-first",
           "origin": "ECC · skills/search-first",
-          "status": "adoptada",
+          "status": "adopted",
           "phase": "plan",
-          "description": "Buscar en npm/PyPI/GitHub antes de escribir una dependencia o un helper propio. Se activa al empezar cualquier tarea no trivial."
+          "description": "Search the repo, npm and PyPI before writing a dependency, helper or module."
         },
         {
           "id": "build-fix",
-          "origin": "ECC · agents/build-error-resolver + commands/build-fix",
-          "status": "adoptada",
+          "origin": "ECC · agent build-error-resolver + commands/build-fix",
+          "status": "adopted",
           "phase": "verify",
-          "description": "Diagnóstico incremental de errores de build, tipos y linter, un error por ciclo con causa raíz. Se activa cuando el build falla."
+          "description": "Incremental build, type and lint repair: one error per cycle, root cause before patch."
         },
         {
-          "id": "skill-authoring",
-          "origin": "propia",
-          "status": "propia",
-          "phase": "meta",
-          "description": "Procedimiento para crear o editar una skill de este repositorio cumpliendo EXTENSION-STANDARD.md. Se activa cuando el arnés va a tocar workflow/."
+          "id": "refactor-clean",
+          "origin": "ECC · agent refactor-cleaner",
+          "status": "adopted",
+          "phase": "implement",
+          "description": "Verified removal of dead code and duplicate logic, one candidate per commit, suite green throughout."
+        },
+        {
+          "id": "performance-optimizer",
+          "origin": "ECC · agent performance-optimizer",
+          "status": "adopted",
+          "phase": "implement",
+          "description": "Turn 'it is slow' into a measured change: baseline, one bottleneck, one hypothesis, compare."
         },
         {
           "id": "e2e-testing",
           "origin": "ECC · skills/e2e-testing",
-          "status": "adoptada",
+          "status": "adopted",
           "phase": "test",
-          "description": "Pruebas de extremo a extremo con Page Object Model, localizadores estables y cuarentena de tests inestables. Se activa cuando el cambio toca un flujo de usuario completo."
+          "description": "End-to-end flows with page objects, stable locators and quarantine for flaky tests."
         },
         {
           "id": "ai-regression-testing",
           "origin": "ECC · skills/ai-regression-testing",
-          "status": "adoptada",
+          "status": "adopted",
           "phase": "test",
-          "description": "Convertir cada defecto corregido en un test de regresión permanente en entorno aislado. Se activa al corregir un defecto o al aceptar código generado por IA."
+          "description": "Turn every fixed defect into a permanent regression test that runs without external services."
         },
         {
-          "id": "refactor-clean",
-          "origin": "ECC · agents/refactor-cleaner + commands/refactor-clean",
-          "status": "adoptada",
+          "id": "error-handling",
+          "origin": "ECC · skills/error-handling (pattern)",
+          "status": "adopted",
           "phase": "implement",
-          "description": "Eliminación verificada de código muerto, un candidato por commit y con la suite en verde. Se activa cuando el repo acumula código sin uso o duplicados."
+          "description": "Make failures loud, typed and recoverable instead of swallowed or converted to null."
         },
         {
-          "id": "performance-optimizer",
-          "origin": "ECC · agents/performance-optimizer + skills/benchmark-optimization-loop",
-          "status": "adoptada",
+          "id": "error-taxonomy",
+          "origin": "ECC · skills/error-handling + safety-guard (pattern)",
+          "status": "adopted",
           "phase": "implement",
-          "description": "Optimización medida: línea base, una hipótesis, un cuello de botella, comparación contra la base. Se activa cuando hay una queja de rendimiento o un presupuesto de latencia incumplido."
+          "description": "One taxonomy, one policy: every failure carries a stable code, severity, owner and retry rule."
+        }
+      ],
+      "pending": []
+    },
+    {
+      "id": "contracts",
+      "name": "Contracts",
+      "order": 2,
+      "status": "activa",
+      "description": "Machine-checkable promises between skills, modules and services: schemas, versions and breaking-change rules.",
+      "gate": "A contract version is immutable; a breaking change needs a new major file and a migration note.",
+      "rules": [
+        "Contracts are schemas plus a version plus consumers, never prose.",
+        "Adding optional fields is minor; removing fields or adding required ones is major.",
+        "Consumers pin a major version and accept any same-major producer.",
+        "Validation runs before the payload is used, not after it fails."
+      ],
+      "skills": [
+        {
+          "id": "contract-design",
+          "origin": "ECC · skills/api-design + contract-first",
+          "status": "adopted",
+          "phase": "plan",
+          "description": "Design a contract from the consumers' needs: minimal fields, explicit required set, versioned from day one."
+        },
+        {
+          "id": "contract-validation",
+          "origin": "ECC · skills/contract-first",
+          "status": "adopted",
+          "phase": "verify",
+          "description": "Validate payloads against their contract before use, with deterministic first-error reporting."
+        },
+        {
+          "id": "schema-evolution",
+          "origin": "ECC · skills/database-migrations (pattern)",
+          "status": "adopted",
+          "phase": "design",
+          "description": "Evolve a schema without breaking consumers: classify every change and require the right version bump."
+        },
+        {
+          "id": "api-compatibility",
+          "origin": "ECC · skills/api-design",
+          "status": "adopted",
+          "phase": "review",
+          "description": "Check a consumer against a producer across majors and report what breaks and where."
+        }
+      ],
+      "pending": []
+    },
+    {
+      "id": "protocols",
+      "name": "Protocols",
+      "order": 3,
+      "status": "activa",
+      "description": "Typed, versioned hand-offs between roles. A malformed message is rejected, never repaired.",
+      "gate": "Zero malformed messages accepted: parse, validate, then process, in that order.",
+      "rules": [
+        "Every message carries an envelope: protocol, version, task, origin, target, id.",
+        "A receiver refuses versions it does not declare.",
+        "Unknown fields are errors, not noise: they hide producer bugs.",
+        "Evidence without a source is not evidence."
+      ],
+      "skills": [
+        {
+          "id": "protocol-design",
+          "origin": "ECC · skills/agent-harness-construction (pattern)",
+          "status": "adopted",
+          "phase": "plan",
+          "description": "Design a message protocol: envelope, payload, consumers, versioning and rejection rules."
+        },
+        {
+          "id": "protocol-validation",
+          "origin": "ECC · skills/agent-harness-construction",
+          "status": "adopted",
+          "phase": "verify",
+          "description": "Validate a stream or file of protocol messages and report the first rejection with its code."
+        },
+        {
+          "id": "message-schema",
+          "origin": "ECC · skills/agent-harness-construction",
+          "status": "adopted",
+          "phase": "implement",
+          "description": "Derive and maintain a message schema from a dataclass so code and contract cannot drift."
+        }
+      ],
+      "pending": []
+    },
+    {
+      "id": "errors",
+      "name": "Error administration",
+      "order": 4,
+      "status": "activa",
+      "description": "The lifecycle of failure: taxonomy, recovery contract, forensics and retry policy.",
+      "gate": "No error reaches a boundary without a code, an owner and a recovery contract.",
+      "rules": [
+        "Every error has a stable code; the code is what callers branch on.",
+        "An error says what to do next or it is not finished.",
+        "Retries are policy, not reflex: only retryable codes, with a stop condition.",
+        "The journal is the source of truth for what happened; the console is a summary."
+      ],
+      "skills": [
+        {
+          "id": "error-recovery",
+          "origin": "ECC · skills/agent-introspection-debugging",
+          "status": "adopted",
+          "phase": "implement",
+          "description": "Attach a recovery contract to every error path: root-cause hint, safe retry, stop condition."
+        },
+        {
+          "id": "failure-forensics",
+          "origin": "ECC · skills/agent-architecture-audit",
+          "status": "adopted",
+          "phase": "debug",
+          "description": "Reconstruct a run from its journal: what ran, what failed, what was retried, and where the chain broke."
+        },
+        {
+          "id": "retry-policy",
+          "origin": "ECC · skills/agent-harness-construction (pattern)",
+          "status": "adopted",
+          "phase": "implement",
+          "description": "Decide retryability per error code, with backoff, budget and a stop condition that cannot loop forever."
+        },
+        {
+          "id": "incident-backlog",
+          "origin": "ECC · skills/issue-review",
+          "status": "adopted",
+          "phase": "audit",
+          "description": "Turn recurring failures into tracked, deduplicated work items with evidence and owners."
         }
       ],
       "pending": []
     },
     {
       "id": "agentic",
-      "name": "Agentic / Harness",
-      "order": 2,
+      "name": "Agentic",
+      "order": 5,
       "status": "activa",
-      "description": "Diseño de agentes, loops autónomos, evaluación y presupuesto de contexto.",
-      "gate": "Ningún cambio en un agente se acepta sin eval antes/después: sin números no hay mejora.",
+      "description": "Design, measure and audit agents: action space, evals, context budget and loop safety.",
+      "gate": "No change to an agent is accepted without an eval before and after.",
       "rules": [
-        "Todo cambio en un agente se mide antes y después con el mismo eval; sin números no hay mejora.",
-        "El criterio de éxito de una tarea se define antes de diseñar herramientas o prompts.",
-        "La guía larga vive en skills cargadas bajo demanda, nunca en el system prompt.",
-        "Un fallo se diagnostica por capas con la traza delante; reescribir el prompt es el último recurso."
+        "Define what 'task completed' means before designing tools or prompts.",
+        "Long guidance lives in skills loaded on demand, never in the system prompt.",
+        "Diagnose by layer with the trace in hand; rewriting the prompt is the last resort.",
+        "A loop without a stop condition is an outage waiting for a clock."
       ],
       "skills": [
         {
           "id": "agent-harness-construction",
           "origin": "ECC · skills/agent-harness-construction",
-          "status": "adoptada",
+          "status": "adopted",
           "phase": "plan",
-          "description": "Diseño del espacio de acción, granularidad de herramientas, formato de observación y presupuesto de contexto de un agente. Se activa al definir o revisar las herramientas de un agente."
+          "description": "Design action space, tool granularity, observation format and context budget for higher completion rates."
         },
         {
           "id": "eval-harness",
           "origin": "ECC · skills/eval-harness",
-          "status": "adoptada",
+          "status": "adopted",
           "phase": "verify",
-          "description": "Evals con criterio de éxito previo, calificadores por código/modelo/humano y métricas pass@k y pass^k. Se activa al cambiar un prompt, una herramienta o un modelo y hay que decidir con números."
+          "description": "Eval-driven development: criteria before the change, cheapest grader that works, pass@k and pass^k."
         },
         {
           "id": "agent-architecture-audit",
           "origin": "ECC · skills/agent-architecture-audit",
-          "status": "adoptada",
+          "status": "adopted",
           "phase": "review",
-          "description": "Diagnóstico por capas de una aplicación con agentes, con hallazgos por severidad y parche concreto. Se activa cuando un agente se comporta raro y no se sabe en qué capa está la falla."
+          "description": "Layer-by-layer diagnosis of an agent stack with severity-ranked findings and concrete patches."
+        },
+        {
+          "id": "context-budget",
+          "origin": "ECC · skills/context-budget + strategic-compact",
+          "status": "adopted",
+          "phase": "plan",
+          "description": "Spend context deliberately: measure what is loaded, cap it, and compact at phase boundaries."
+        },
+        {
+          "id": "autonomous-loop",
+          "origin": "ECC · skills/autonomous-loops + continuous-agent-loop",
+          "status": "adopted",
+          "phase": "implement",
+          "description": "Run unattended loops safely: explicit stop conditions, budgets, checkpoints and human gates."
         }
       ],
-      "pending": [
-        "continuous-learning-v2",
-        "strategic-compact",
-        "safety-guard",
-        "agent-eval",
-        "agent-self-evaluation"
-      ]
+      "pending": []
     },
     {
-      "id": "seguridad",
-      "name": "Seguridad",
-      "order": 3,
-      "status": "pendiente",
-      "description": "Endurecimiento de agentes, revisión de vulnerabilidades y guardas contra operaciones destructivas.",
-      "gate": "Toda skill de esta categoría se ejecuta en modo lectura antes de proponer cambios.",
-      "rules": [],
-      "skills": [],
-      "pending": [
-        "security-review",
-        "safety-guard",
-        "gateguard",
-        "security-bounty-hunter"
-      ]
-    },
-    {
-      "id": "datos-infra",
-      "name": "Datos e infraestructura",
-      "order": 4,
-      "status": "pendiente",
-      "description": "APIs, bases de datos, migraciones, despliegue y observabilidad.",
-      "gate": null,
-      "rules": [],
-      "skills": [],
-      "pending": [
-        "api-design",
-        "backend-patterns",
-        "database-migrations",
-        "deployment-patterns",
-        "docker-patterns"
-      ]
-    },
-    {
-      "id": "producto",
-      "name": "Producto y UX",
-      "order": 5,
-      "status": "pendiente",
-      "description": "Accesibilidad, auditoría de flujos, sistemas de diseño y QA en navegador.",
-      "gate": null,
-      "rules": [],
-      "skills": [],
-      "pending": [
-        "accessibility",
-        "browser-qa",
-        "click-path-audit",
-        "design-system"
-      ]
-    },
-    {
-      "id": "contenido",
-      "name": "Contenido y negocio",
+      "id": "security",
+      "name": "Security",
       "order": 6,
-      "status": "pendiente",
-      "description": "Escritura, marca, distribución y materiales de inversión.",
-      "gate": null,
-      "rules": [],
-      "skills": [],
-      "pending": [
-        "article-writing",
-        "brand-voice",
-        "seo",
-        "investor-materials"
-      ]
+      "status": "activa",
+      "description": "Secrets, dependencies, destructive operations and adversarial review of agent output.",
+      "gate": "Security findings of high severity block the run; they are not advisory.",
+      "rules": [
+        "Read-only first: audit before proposing changes.",
+        "A secret found in the repo is rotated, not just deleted.",
+        "Destructive operations need explicit consent, never a default.",
+        "Scanning your own configuration is part of the job, not an extra."
+      ],
+      "skills": [
+        {
+          "id": "security-review",
+          "origin": "ECC · skills/security-review",
+          "status": "adopted",
+          "phase": "review",
+          "description": "Adversarial review of a diff for reachable vulnerabilities, ranked by exploitability."
+        },
+        {
+          "id": "secret-scan",
+          "origin": "ECC · skills/security-scan",
+          "status": "adopted",
+          "phase": "verify",
+          "description": "Find credentials and high-entropy strings in the tree and diff, with rotation guidance."
+        },
+        {
+          "id": "safety-guard",
+          "origin": "ECC · skills/safety-guard",
+          "status": "adopted",
+          "phase": "implement",
+          "description": "Guard destructive operations behind risk levels and explicit confirmation."
+        },
+        {
+          "id": "dependency-audit",
+          "origin": "ECC · skills/dependencies (pattern)",
+          "status": "adopted",
+          "phase": "audit",
+          "description": "Audit imports and dependencies for unused, unpinned or unreviewed packages."
+        }
+      ],
+      "pending": []
+    },
+    {
+      "id": "data",
+      "name": "Data and persistence",
+      "order": 7,
+      "status": "activa",
+      "description": "Schemas that outlive code: migrations, query review and caching decisions.",
+      "gate": "A migration without a tested reverse path does not ship.",
+      "rules": [
+        "Data outlives code: version the storage, not just the API.",
+        "Every migration states its rollback and its data-loss window.",
+        "A cache is a correctness decision disguised as a performance one.",
+        "Queries are reviewed with the plan, not the query text alone."
+      ],
+      "skills": [
+        {
+          "id": "data-contracts",
+          "origin": "ECC · skills/database-patterns + api-design",
+          "status": "adopted",
+          "phase": "plan",
+          "description": "Define the shape and invariants of persisted data before the code that touches it."
+        },
+        {
+          "id": "migration-safety",
+          "origin": "ECC · skills/database-migrations",
+          "status": "adopted",
+          "phase": "implement",
+          "description": "Write reversible migrations with backfill plans, lock analysis and a tested rollback."
+        },
+        {
+          "id": "query-review",
+          "origin": "ECC · skills/postgres-patterns",
+          "status": "adopted",
+          "phase": "review",
+          "description": "Review queries with their access plan: N+1, missing indexes, unbounded scans."
+        },
+        {
+          "id": "caching-policy",
+          "origin": "ECC · skills/redis-patterns + content-hash-cache-pattern",
+          "status": "adopted",
+          "phase": "design",
+          "description": "Decide what to cache, for how long, and how to invalidate, before adding a cache."
+        }
+      ],
+      "pending": []
+    },
+    {
+      "id": "reversing",
+      "name": "Reverse engineering",
+      "order": 8,
+      "status": "activa",
+      "description": "Understand and reconstruct systems from artefacts: binaries, traffic, undocumented APIs.",
+      "gate": "Every finding is tied to an artefact (offset, string, packet) or it is a guess.",
+      "rules": [
+        "Evidence first: artefact, offset, hash. A hypothesis without an artefact is a guess.",
+        "Never execute an unknown sample outside an isolated environment.",
+        "Reconstruction is validated by replaying real observed traffic.",
+        "Document the protocol with the same rigour as production code."
+      ],
+      "skills": [
+        {
+          "id": "reverse-engineering",
+          "origin": "ECC · skills/osint-investigation (method) + repo-scan",
+          "status": "adopted",
+          "phase": "research",
+          "description": "Recover the behaviour of an unknown system: static triage, dynamic observation, protocol reconstruction, report."
+        },
+        {
+          "id": "binary-triage",
+          "origin": "ECC · skills/security-bounty-hunter (triage pattern)",
+          "status": "adopted",
+          "phase": "research",
+          "description": "First pass on an unknown binary: type, architecture, strings, imports, packing signals, without executing it."
+        },
+        {
+          "id": "api-reconstruction",
+          "origin": "ECC · skills/api-connector-builder",
+          "status": "adopted",
+          "phase": "implement",
+          "description": "Rebuild an undocumented HTTP API from captured traffic into an openapi-style spec and a validated client."
+        }
+      ],
+      "pending": []
+    },
+    {
+      "id": "governance",
+      "name": "Governance",
+      "order": 9,
+      "status": "activa",
+      "description": "The package administers itself: registration, audit of existing skills, versioning and changelog discipline.",
+      "gate": "Nothing enters the package without passing `workflow validate --strict` and a registration record.",
+      "rules": [
+        "The registry is the source of truth: on-disk without registered is an error.",
+        "New skills are scaffolded by `workflow new`, never hand-built.",
+        "Every edit bumps metadata.version and lands a CHANGELOG line.",
+        "A skill that cannot state its exit criteria is a note, not a skill."
+      ],
+      "skills": [
+        {
+          "id": "skill-authoring",
+          "origin": "ECC · skills/skill-create + configure-ecc",
+          "status": "original",
+          "phase": "meta",
+          "description": "Register and author a new skill end to end: decision tests, scaffolding, manifest, validation, changelog."
+        },
+        {
+          "id": "skill-audit",
+          "origin": "ECC · skills/skill-stocktake",
+          "status": "adopted",
+          "phase": "meta",
+          "description": "Audit the catalogue for overlap, dead skills, weak triggers and skills that never fire."
+        },
+        {
+          "id": "changelog-discipline",
+          "origin": "ECC · skills/conventional-commit-review",
+          "status": "adopted",
+          "phase": "meta",
+          "description": "Keep a changelog that a consumer can act on: what changed, what breaks, what to do."
+        }
+      ],
+      "pending": []
+    },
+    {
+      "id": "product",
+      "name": "Product and UX",
+      "order": 10,
+      "status": "activa",
+      "description": "User-facing quality: accessibility, flows and interface craft.",
+      "gate": "Accessibility findings of level AA failures block, level AAA advise.",
+      "rules": [
+        "Accessibility is a correctness requirement, not a polish item.",
+        "A flow is audited by clicking it, not by reading it.",
+        "Every interface change states what it makes possible."
+      ],
+      "skills": [
+        {
+          "id": "accessibility-audit",
+          "origin": "ECC · skills/accessibility",
+          "status": "adopted",
+          "phase": "review",
+          "description": "Audit a UI against WCAG 2.2 AA: contrast, focus order, targets, semantics, keyboard paths."
+        }
+      ],
+      "pending": []
+    },
+    {
+      "id": "content",
+      "name": "Content and docs",
+      "order": 11,
+      "status": "activa",
+      "description": "Written artefacts that ship with the code: documentation and changelogs.",
+      "gate": "nothing published without an executed example, a named source of truth and a last-verified date",
+      "rules": [
+        "Docs that drift are worse than no docs: every doc names its source of truth.",
+        "Write for the reader who has to act, not for the reader who has to admire."
+      ],
+      "skills": [
+        {
+          "id": "doc-writing",
+          "origin": "ECC · skills/article-writing + update-docs",
+          "status": "adopted",
+          "phase": "document",
+          "description": "Write and review documentation that stays true: source of truth, audience, failure modes, examples that run."
+        }
+      ],
+      "pending": []
     }
   ]
 }

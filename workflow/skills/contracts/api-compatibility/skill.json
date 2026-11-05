@@ -1,0 +1,117 @@
+{
+  "id": "api-compatibility",
+  "category": "contracts",
+  "description": "Check a consumer against a producer across major versions and report exactly what breaks and where. Use when upgrading a dependency, coordinating a producer/consumer release, or verifying that a pinned major still matches.",
+  "phase": "review",
+  "verbs": [
+    "review",
+    "verify"
+  ],
+  "triggers": [
+    "can we upgrade",
+    "compatibility",
+    "consumer break"
+  ],
+  "keywords": [
+    "compatibility",
+    "version",
+    "consumer",
+    "producer",
+    "breaking"
+  ],
+  "tools": [
+    {
+      "id": "compat-matrix",
+      "entry": "tools/compat_matrix.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Cross-tabulates consumers against producer versions and flags incompatible pairs.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "producers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "name",
+                "versions"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "versions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "consumers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "name",
+                "pins"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "pins": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "producers",
+          "consumers"
+        ]
+      },
+      "sample": {
+        "producers": [
+          {
+            "name": "api",
+            "versions": [
+              "1.0.0",
+              "1.4.0",
+              "2.0.0"
+            ]
+          }
+        ],
+        "consumers": [
+          {
+            "name": "web",
+            "pins": {
+              "api": 1
+            }
+          },
+          {
+            "name": "mobile",
+            "pins": {
+              "api": 2
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "the skill's exit criteria are met",
+      "kind": "review"
+    }
+  ]
+}

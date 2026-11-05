@@ -1,0 +1,64 @@
+{
+  "id": "agent-architecture-audit",
+  "category": "agentic",
+  "description": "Layer-by-layer diagnosis of an agent stack with severity-ranked findings and a concrete patch for each. Use when an agent misbehaves and it is unclear whether the fault is the prompt, memory, tools or transport.",
+  "phase": "review",
+  "verbs": [
+    "audit",
+    "debug",
+    "review"
+  ],
+  "triggers": [
+    "agent misbehaves",
+    "why is it wrong",
+    "diagnose the stack"
+  ],
+  "keywords": [
+    "audit",
+    "layer",
+    "diagnosis",
+    "trace",
+    "findings"
+  ],
+  "tools": [
+    {
+      "id": "layer-map",
+      "entry": "tools/layer_map.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Maps observed symptoms to the most likely stack layers with checks.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "symptoms": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "symptoms"
+        ]
+      },
+      "sample": {
+        "symptoms": [
+          "agent ignores instructions",
+          "output is truncated"
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "the skill's exit criteria are met",
+      "kind": "review"
+    }
+  ]
+}

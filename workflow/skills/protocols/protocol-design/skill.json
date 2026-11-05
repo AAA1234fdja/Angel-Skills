@@ -1,0 +1,95 @@
+{
+  "id": "protocol-design",
+  "category": "protocols",
+  "description": "Design a message protocol: envelope, payload, allowed consumers, versioning and rejection rules. Use when roles must hand structured work to each other and ad-hoc dictionaries are starting to drift.",
+  "phase": "plan",
+  "verbs": [
+    "design",
+    "plan"
+  ],
+  "triggers": [
+    "message format between agents",
+    "hand-off",
+    "protocol"
+  ],
+  "keywords": [
+    "protocol",
+    "envelope",
+    "message",
+    "role",
+    "version"
+  ],
+  "tools": [
+    {
+      "id": "protocol-skeleton",
+      "entry": "tools/protocol_skeleton.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Generates an envelope plus payload schema for a new protocol.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "origin": {
+            "type": "string"
+          },
+          "targets": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "name",
+          "origin",
+          "targets"
+        ]
+      },
+      "sample": {
+        "name": "xev-progress",
+        "origin": "xev",
+        "targets": [
+          "yev"
+        ],
+        "fields": [
+          {
+            "name": "step_id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "percent",
+            "type": "number",
+            "required": true
+          },
+          {
+            "name": "note",
+            "type": "string",
+            "required": false
+          }
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "the skill's exit criteria are met",
+      "kind": "review"
+    }
+  ]
+}

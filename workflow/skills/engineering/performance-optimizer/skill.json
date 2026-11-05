@@ -1,0 +1,83 @@
+{
+  "id": "performance-optimizer",
+  "category": "engineering",
+  "description": "Turn a slowness complaint into a measured change: baseline with dispersion, one bottleneck, one hypothesis, comparison against the baseline. Use when there is a concrete performance complaint or a latency budget being missed.",
+  "phase": "implement",
+  "verbs": [
+    "optimize",
+    "measure"
+  ],
+  "triggers": [
+    "it is slow",
+    "performance",
+    "latency",
+    "too many queries"
+  ],
+  "keywords": [
+    "performance",
+    "latency",
+    "benchmark",
+    "profile",
+    "baseline"
+  ],
+  "tools": [
+    {
+      "id": "bench-compare",
+      "entry": "tools/bench_compare.py",
+      "risk": "read",
+      "timeout": 15,
+      "description": "Compares before/after sample sets and decides improved/worse/noise.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "before": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "after": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "metric": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "before",
+          "after"
+        ]
+      },
+      "sample": {
+        "metric": "latency_ms",
+        "before": [
+          142,
+          138,
+          145,
+          140
+        ],
+        "after": [
+          96,
+          99,
+          94,
+          97
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "the skill's exit criteria are met",
+      "kind": "review"
+    }
+  ]
+}

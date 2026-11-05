@@ -1,0 +1,61 @@
+{
+  "id": "error-handling",
+  "category": "engineering",
+  "description": "Make failures loud, typed and recoverable instead of swallowed, logged twice or converted to null. Use when writing code that can fail, or when a silent failure is suspected in existing code.",
+  "phase": "implement",
+  "verbs": [
+    "implement",
+    "fix"
+  ],
+  "triggers": [
+    "handle errors",
+    "silent failure",
+    "exception",
+    "error path"
+  ],
+  "keywords": [
+    "error",
+    "exception",
+    "silent",
+    "fallback",
+    "recover"
+  ],
+  "tools": [
+    {
+      "id": "silence-scan",
+      "entry": "tools/silence_scan.py",
+      "risk": "read",
+      "timeout": 15,
+      "description": "Finds swallowed exceptions, null fallbacks and double logging in supplied code.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "files": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "files"
+        ]
+      },
+      "sample": {
+        "files": {
+          "src/safe.py": "try:\n    do_work()\nexcept ValueError as exc:\n    log.warning('work failed', exc_info=exc)\n    raise\n",
+          "src/bad.py": "try:\n    do_work()\nexcept Exception:\n    pass\n"
+        }
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "the skill's exit criteria are met",
+      "kind": "review"
+    }
+  ]
+}

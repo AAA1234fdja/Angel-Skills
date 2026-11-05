@@ -1,0 +1,72 @@
+{
+  "id": "error-taxonomy",
+  "category": "engineering",
+  "description": "Keep one error taxonomy and one policy table: every failure carries a stable code, a severity, an owner and a retry rule. Use when introducing error codes, when two modules name the same failure differently, or when the CLI needs stable exit codes.",
+  "phase": "implement",
+  "verbs": [
+    "implement",
+    "design"
+  ],
+  "triggers": [
+    "error codes",
+    "taxonomy",
+    "exit codes",
+    "error policy"
+  ],
+  "keywords": [
+    "taxonomy",
+    "code",
+    "severity",
+    "owner",
+    "retry",
+    "exit"
+  ],
+  "tools": [
+    {
+      "id": "taxonomy-check",
+      "entry": "tools/taxonomy_check.py",
+      "risk": "read",
+      "timeout": 15,
+      "description": "Validates a policy table for consistency and emits a docs table.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "policy": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "policy"
+        ]
+      },
+      "sample": {
+        "policy": {
+          "E_TOOL_TIMEOUT": {
+            "severity": "error",
+            "retryable": true,
+            "owner": "tool",
+            "exit": 7
+          },
+          "E_SCHEMA_UNSUPPORTED": {
+            "severity": "error",
+            "retryable": false,
+            "owner": "author",
+            "exit": 2
+          }
+        }
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "the skill's exit criteria are met",
+      "kind": "review"
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "id": "contract-design",
+  "category": "contracts",
+  "description": "Design a contract from the consumers' needs: minimal fields, explicit required set, versioned from day one. Use when two components need to exchange structured data and no schema exists yet.",
+  "phase": "plan",
+  "verbs": [
+    "design",
+    "plan"
+  ],
+  "triggers": [
+    "define a contract",
+    "shared schema",
+    "interface between services"
+  ],
+  "keywords": [
+    "contract",
+    "schema",
+    "interface",
+    "consumer",
+    "version"
+  ],
+  "tools": [
+    {
+      "id": "contract-skeleton",
+      "entry": "tools/contract_skeleton.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Turns a field list into a versioned JSON schema skeleton with required set.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "version": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "fields"
+        ]
+      },
+      "sample": {
+        "name": "skill-report",
+        "version": "1.2.0",
+        "fields": [
+          {
+            "name": "skill",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "verdict",
+            "type": "string",
+            "required": true,
+            "enum": [
+              "pass",
+              "fail",
+              "blocked"
+            ]
+          },
+          {
+            "name": "score",
+            "type": "number",
+            "required": false
+          }
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "the skill's exit criteria are met",
+      "kind": "review"
+    }
+  ]
+}

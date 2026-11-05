@@ -1,0 +1,65 @@
+{
+  "id": "secret-scan",
+  "category": "security",
+  "description": "Find credentials and high-entropy strings in the working tree and the diff, then say what to rotate. Use when committing, when a repository becomes public, or after a member leaves.",
+  "phase": "verify",
+  "verbs": [
+    "secure",
+    "verify",
+    "audit"
+  ],
+  "triggers": [
+    "leaked key",
+    "scan for secrets",
+    "going public"
+  ],
+  "keywords": [
+    "secret",
+    "credential",
+    "key",
+    "token",
+    "rotate"
+  ],
+  "tools": [
+    {
+      "id": "scan-text",
+      "entry": "tools/scan_text.py",
+      "risk": "read",
+      "timeout": 15,
+      "description": "Scans provided file contents for credentials and high-entropy candidates.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "files": {
+            "type": "object"
+          },
+          "min_entropy": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "files"
+        ]
+      },
+      "sample": {
+        "min_entropy": 3.6,
+        "files": {
+          "config/settings.py": "DEBUG = False\nDB_URL = 'postgres://app:hunter2@db/app'\n",
+          "config/example.py": "DB_URL = 'postgres://user:password@db/app'  # example\n"
+        }
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "the skill's exit criteria are met",
+      "kind": "review"
+    }
+  ]
+}

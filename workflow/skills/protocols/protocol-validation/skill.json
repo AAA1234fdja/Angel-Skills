@@ -1,0 +1,37 @@
+{
+  "id": "protocol-validation",
+  "category": "protocols",
+  "description": "Validate a file or stream of protocol messages and report the first rejection with its stable code. Use when a producer changed, a queue contains suspicious payloads, or a receiver must prove it refuses malformed input.",
+  "phase": "verify",
+  "verbs": [
+    "verify",
+    "validate"
+  ],
+  "triggers": [
+    "validate messages",
+    "malformed message",
+    "protocol check"
+  ],
+  "keywords": [
+    "validate",
+    "protocol",
+    "reject",
+    "malformed",
+    "stream"
+  ],
+  "tools": [],
+  "contracts": [
+    "message-digest@1.0.0"
+  ],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "the skill's exit criteria are met",
+      "kind": "review"
+    }
+  ]
+}

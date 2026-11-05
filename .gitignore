@@ -4,3 +4,6 @@ workflow/dist/
 __pycache__/
 node_modules/
 .ely/
+
+# estado de ejecución del runtime (journals, no se versionan)
+workflow/.workflow/

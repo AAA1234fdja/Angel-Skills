@@ -1,0 +1,108 @@
+{
+  "id": "skill-audit",
+  "category": "governance",
+  "description": "Audit the catalogue for overlap, dead skills, weak triggers and skills that never fire. Use when the catalogue grows, before a release, or when two skills keep being loaded for the same need.",
+  "phase": "meta",
+  "verbs": [
+    "audit",
+    "review"
+  ],
+  "triggers": [
+    "audit skills",
+    "catalogue overlap",
+    "skill quality"
+  ],
+  "keywords": [
+    "audit",
+    "overlap",
+    "catalogue",
+    "quality",
+    "dead"
+  ],
+  "tools": [
+    {
+      "id": "overlap-score",
+      "entry": "tools/overlap_score.py",
+      "risk": "read",
+      "timeout": 15,
+      "description": "Scores pairs of skills for trigger and keyword overlap.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "skills": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "threshold": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "skills"
+        ]
+      },
+      "sample": {
+        "threshold": 0.5,
+        "skills": [
+          {
+            "id": "code-review",
+            "triggers": [
+              "review this diff"
+            ],
+            "keywords": [
+              "review",
+              "diff"
+            ],
+            "verbs": [
+              "review"
+            ],
+            "phase": "review"
+          },
+          {
+            "id": "security-review",
+            "triggers": [
+              "security review"
+            ],
+            "keywords": [
+              "security",
+              "auth"
+            ],
+            "verbs": [
+              "review",
+              "secure"
+            ],
+            "phase": "review"
+          },
+          {
+            "id": "tdd-workflow",
+            "triggers": [
+              "red green refactor"
+            ],
+            "keywords": [
+              "tdd",
+              "test"
+            ],
+            "verbs": [
+              "test"
+            ],
+            "phase": "test"
+          }
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "the skill's exit criteria are met",
+      "kind": "review"
+    }
+  ]
+}

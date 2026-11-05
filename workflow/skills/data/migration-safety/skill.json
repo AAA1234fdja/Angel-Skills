@@ -1,0 +1,83 @@
+{
+  "id": "migration-safety",
+  "category": "data",
+  "description": "Write reversible migrations with backfill plans, lock analysis and a tested rollback. Use when changing a live schema, backfilling data, or when a migration must run while the old code is still deployed.",
+  "phase": "implement",
+  "verbs": [
+    "migrate",
+    "implement"
+  ],
+  "triggers": [
+    "migration",
+    "alter table",
+    "backfill",
+    "rollback"
+  ],
+  "keywords": [
+    "migration",
+    "rollback",
+    "backfill",
+    "lock",
+    "schema",
+    "table",
+    "data"
+  ],
+  "tools": [
+    {
+      "id": "migration-plan",
+      "entry": "tools/migration_plan.py",
+      "risk": "read",
+      "timeout": 15,
+      "description": "Assesses a migration description for reversibility, locks and backfill needs.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "steps": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "steps"
+        ]
+      },
+      "sample": {
+        "steps": [
+          {
+            "op": "add_column",
+            "table": "orders",
+            "column": "tenant",
+            "nullable": true,
+            "rollback": "drop_column"
+          },
+          {
+            "op": "backfill",
+            "table": "orders",
+            "batched": true,
+            "idempotent": true,
+            "resumable": true
+          }
+        ],
+        "stop_conditions": {
+          "error_rate": 0.01,
+          "lock_seconds": 5,
+          "replication_lag": 2
+        }
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "the skill's exit criteria are met",
+      "kind": "review"
+    }
+  ]
+}

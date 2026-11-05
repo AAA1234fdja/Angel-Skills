@@ -1,0 +1,87 @@
+{
+  "id": "incident-backlog",
+  "category": "errors",
+  "description": "Turn recurring failures into tracked, deduplicated work items with evidence, severity and an owner. Use when the same failure keeps appearing in journals, or when reports need to become a queue instead of a conversation.",
+  "phase": "audit",
+  "verbs": [
+    "audit",
+    "plan"
+  ],
+  "triggers": [
+    "recurring failure",
+    "incident backlog",
+    "deduplicate reports"
+  ],
+  "keywords": [
+    "incident",
+    "backlog",
+    "dedupe",
+    "severity",
+    "owner"
+  ],
+  "tools": [
+    {
+      "id": "dedupe",
+      "entry": "tools/dedupe.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Clusters reported failures by signature and ranks by frequency and severity.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "reports": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "similarity": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "reports"
+        ]
+      },
+      "sample": {
+        "reports": [
+          {
+            "code": "E_TOOL_TIMEOUT",
+            "operation": "fetch",
+            "component": "zev",
+            "seen": 12,
+            "severity": "high",
+            "owner": "platform"
+          },
+          {
+            "code": "E_TOOL_TIMEOUT",
+            "operation": "fetch",
+            "component": "zev",
+            "seen": 3,
+            "severity": "medium"
+          },
+          {
+            "code": "E_SCHEMA_UNSUPPORTED",
+            "operation": "validate",
+            "component": "wev",
+            "seen": 1,
+            "severity": "low",
+            "owner": "author"
+          }
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "the skill's exit criteria are met",
+      "kind": "review"
+    }
+  ]
+}

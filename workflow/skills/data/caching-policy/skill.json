@@ -1,0 +1,74 @@
+{
+  "id": "caching-policy",
+  "category": "data",
+  "description": "Decide what to cache, for how long and how to invalidate, before adding a cache. Use when a cache is proposed as a performance fix, or when stale data starts producing bugs nobody can reproduce.",
+  "phase": "design",
+  "verbs": [
+    "design",
+    "optimize"
+  ],
+  "triggers": [
+    "add a cache",
+    "stale data",
+    "cache invalidation"
+  ],
+  "keywords": [
+    "cache",
+    "invalidation",
+    "ttl",
+    "staleness",
+    "key"
+  ],
+  "tools": [
+    {
+      "id": "cache-review",
+      "entry": "tools/cache_review.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Scores a cache design on key, TTL, invalidation and failure behaviour.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "caches": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "caches"
+        ]
+      },
+      "sample": {
+        "caches": [
+          {
+            "name": "product_page",
+            "key": [
+              "product_id",
+              "locale"
+            ],
+            "ttl_seconds": 300,
+            "tolerance_seconds": 600,
+            "invalidation": "on product update",
+            "bounded": true,
+            "on_outage": "serve stale",
+            "measured": true
+          }
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "the skill's exit criteria are met",
+      "kind": "review"
+    }
+  ]
+}

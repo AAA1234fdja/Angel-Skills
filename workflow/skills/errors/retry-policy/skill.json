@@ -1,0 +1,78 @@
+{
+  "id": "retry-policy",
+  "category": "errors",
+  "description": "Decide retryability per error code, with backoff, budget and a stop condition that cannot loop forever. Use when adding retries, when a job loops on a permanent failure, or when two layers retry the same call.",
+  "phase": "implement",
+  "verbs": [
+    "implement",
+    "fix"
+  ],
+  "triggers": [
+    "add retries",
+    "retry loop",
+    "flaky calls"
+  ],
+  "keywords": [
+    "retry",
+    "backoff",
+    "idempotent",
+    "budget",
+    "stop"
+  ],
+  "tools": [
+    {
+      "id": "retry-plan",
+      "entry": "tools/retry_plan.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Builds a bounded retry schedule per error code and rejects unbounded policies.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "codes": {
+            "type": "object"
+          },
+          "max_attempts": {
+            "type": "integer"
+          },
+          "base_ms": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "codes"
+        ]
+      },
+      "sample": {
+        "max_attempts": 3,
+        "base_ms": 200,
+        "codes": {
+          "E_TOOL_TIMEOUT": {
+            "retryable": true,
+            "idempotent": true
+          },
+          "E_TOOL_INPUT": {
+            "retryable": false,
+            "idempotent": true
+          },
+          "E_PAYMENT_TIMEOUT": {
+            "retryable": true,
+            "idempotent": false
+          }
+        }
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "the skill's exit criteria are met",
+      "kind": "review"
+    }
+  ]
+}

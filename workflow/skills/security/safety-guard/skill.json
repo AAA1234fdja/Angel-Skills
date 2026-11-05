@@ -1,0 +1,62 @@
+{
+  "id": "safety-guard",
+  "category": "security",
+  "description": "Put destructive operations behind risk levels and explicit confirmation instead of trusting good intentions. Use when an agent or a script can delete, force-push, rewrite history or change permissions.",
+  "phase": "implement",
+  "verbs": [
+    "secure",
+    "implement"
+  ],
+  "triggers": [
+    "destructive command",
+    "force push",
+    "delete data",
+    "guard"
+  ],
+  "keywords": [
+    "safety",
+    "destructive",
+    "guard",
+    "confirmation",
+    "risk"
+  ],
+  "tools": [
+    {
+      "id": "classify-command",
+      "entry": "tools/classify_command.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Classifies a shell command by risk and states what confirmation it needs.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "command": {
+            "type": "string"
+          },
+          "profile": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "command"
+        ]
+      },
+      "sample": {
+        "command": "git push --force origin main",
+        "profile": "standard"
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "the skill's exit criteria are met",
+      "kind": "review"
+    }
+  ]
+}

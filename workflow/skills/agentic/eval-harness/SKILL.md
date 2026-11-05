@@ -1,76 +1,73 @@
 ---
 name: eval-harness
-description: Evaluación dirigida por evals — criterios de éxito definidos antes de tocar el agente, calificadores por código/modelo/humano y métricas pass@k y pass^k. Usar cuando se cambia un prompt, una herramienta o un modelo y hay que decidir con números si mejoró.
+description: Eval-driven development: criteria written before the change, the cheapest grader that works, and pass@k versus pass^k. Use when a prompt, tool or model changed and numbers must decide whether it improved.
 metadata:
   origin: ECC · skills/eval-harness
   category: agentic
   phase: verify
-  status: adoptada
+  status: adopted
   version: 1
 ---
 
 # Eval Harness
 
-Si no puedes decir si un cambio en el agente lo mejoró, no lo has mejorado: lo
-has cambiado. Los evals son los tests unitarios del desarrollo con IA, y se
-escriben **antes** de la modificación.
+If you cannot say whether a change improved the agent, you did not improve it: you
+changed it. Evals are the unit tests of AI development, and they are written
+**before** the modification.
 
-## Cuándo usar
+## When to Use
 
-- Se cambia un prompt de sistema, una herramienta, un modelo o una versión.
-- Hay que decidir entre dos configuraciones de agente.
-- Un agente se comporta distinto según el día y hace falta una medida estable.
+- A system prompt, tool, model or version changes.
+- Choosing between two agent configurations.
+- An agent behaves differently from one day to the next and a stable measure is
+  needed.
 
-## Cuándo NO usar
+## When Not to Use
 
-- Para lógica de negocio determinista: eso es un test normal.
-- Cuando no hay forma de ejecutar la tarea de forma repetible: primero se
-  construye el entorno reproducible.
+- Deterministic business logic: that is a normal test.
+- When the task cannot be executed repeatedly: build the reproducible environment
+  first.
 
-## Procedimiento
+## Procedure
 
-1. **Escribir la tarea y el criterio de éxito antes del cambio.** Cada eval es
-   una tarea concreta con criterios marcables, no una impresión general.
-2. **Clasificar el eval**:
-   - *capacidad* — algo que el agente no sabía hacer y ahora debería;
-   - *regresión* — algo que ya hacía y no puede dejar de hacer; se guarda la
-     referencia (commit, versión de modelo) como línea base.
-3. **Elegir el calificador**, del más barato al más caro:
-   - **código**: grep, test, build, esquema, salida esperada → determinista y
-     preferible siempre que se pueda;
-   - **modelo**: otro modelo puntúa con una rúbrica explícita (1–5 con motivos);
-     se usa para salidas abiertas y se valida contra humanos;
-   - **humano**: solo para lo que ni código ni modelo pueden decidir; se reserva.
-4. **Ejecutar k veces** por eval (k ≥ 3). Una sola pasada no dice nada sobre
-   fiabilidad.
-5. **Calcular las métricas**:
-   - `pass@k` — al menos un éxito en k intentos (capacidad);
-   - `pass^k` — **todos** los k intentos salen bien (fiabilidad; es el listón
-     duro);
-   - coste por tarea completada y reintentos por tarea.
-6. **Comparar contra la base** con el mismo conjunto, mismo modelo de
-   calificación y mismo entorno.
-7. **Registrar el resultado** con fecha, versión y diff: un eval sin registro no
-   sirve para comparar la semana siguiente.
+1. **Write the task and success criteria before the change.** Each eval is a
+   concrete task with checkable criteria, not a general impression.
+2. **Classify it**:
+   - *capability* — something the agent could not do and now should;
+   - *regression* — something it already did and cannot stop doing; record the
+     baseline (commit, model version).
+3. **Pick the cheapest grader that works**:
+   - **code**: grep, test, build, schema, exact output — deterministic, always
+     preferred;
+   - **model**: another model scores against an explicit 1–5 rubric with reasons;
+     for open outputs, validated against humans;
+   - **human**: only when neither can decide; reserved.
+4. **Run k ≥ 3 attempts per eval.** One run says nothing about reliability.
+5. **Compute** `pass@k` (at least one success in k — capability) and `pass^k`
+   (**all** k succeed — reliability, the hard bar), plus cost per completed task
+   and retries per task.
+6. **Compare against the baseline** with the same set, the same grader and the same
+   environment.
+7. **Record the result** with date, version and diff. An unrecorded eval is useless
+   next week.
 
-## Criterio de salida
+## Exit Criteria
 
-- [ ] Cada eval tiene tarea, criterio de éxito y calificador explícitos.
-- [ ] La línea base está registrada antes del cambio.
-- [ ] k ≥ 3 ejecuciones por eval; se reporta `pass@k` y `pass^k`.
-- [ ] Se reporta coste por tarea completada además de la tasa de éxito.
-- [ ] El veredicto es una decisión: se queda el cambio, se revierte, o se
-      reformula. Sin veredicto no hay evaluación.
-- [ ] Los evals de regresión quedan versionados para la próxima vez.
+- [ ] Every eval has a task, success criteria and an explicit grader.
+- [ ] The baseline is recorded before the change.
+- [ ] k ≥ 3 per eval, with both `pass@k` and `pass^k` reported.
+- [ ] Cost per completed task reported alongside success rate.
+- [ ] The verdict is a decision: keep, revert or reformulate.
+- [ ] Regression evals are versioned for next time.
 
-## Errores típicos
+## Common Failures
 
-| Error | Corrección |
+| Failure | Fix |
 |---|---|
-| Una sola ejecución y conclusión | k ≥ 3; reportar `pass^k` |
-| Calificador por modelo sin rúbrica | Rúbrica con criterios y escala fijos |
-| Cambiar el eval para que el cambio pase | El eval se escribe antes, y no se toca |
-| Comparar contra una base de otro entorno | Mismo conjunto, mismo entorno |
-| Medir solo éxito y olvidar coste | Coste por tarea completada |
-| Evals que dependen del estado del repo | Entorno reproducible y limpio por corrida |
-| Confundir capacidad con regresión | Series separadas: una sube, la otra no puede bajar |
+| One run and a conclusion | k ≥ 3; report `pass^k` |
+| Model grader with no rubric | Fixed criteria and scale |
+| Editing the eval so the change passes | Evals are written first and not edited |
+| Comparing against another environment | Same set, same environment |
+| Measuring success only | Cost per completed task |
+| Evals depending on repo state | Reproducible, clean environment per run |
+| Mixing capability and regression | Separate series: one rises, the other cannot fall |

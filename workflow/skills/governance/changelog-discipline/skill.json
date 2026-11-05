@@ -1,0 +1,72 @@
+{
+  "id": "changelog-discipline",
+  "category": "governance",
+  "description": "Keep a changelog a consumer can act on: what changed, what breaks and what to do about it. Use when releasing, when a skill version changes, or when readers cannot tell whether an update affects them.",
+  "phase": "document",
+  "verbs": [
+    "document",
+    "review"
+  ],
+  "triggers": [
+    "changelog",
+    "release notes",
+    "what changed"
+  ],
+  "keywords": [
+    "changelog",
+    "version",
+    "breaking",
+    "release",
+    "notes"
+  ],
+  "tools": [
+    {
+      "id": "changelog-lint",
+      "entry": "tools/changelog_lint.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Lints changelog entries for actionability and breaking-change disclosure.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "entries": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "entries"
+        ]
+      },
+      "sample": {
+        "entries": [
+          {
+            "version": "0.3.0",
+            "type": "breaking",
+            "text": "skills are folders with a manifest instead of loose markdown files",
+            "action": "run workflow validate --strict and add skill.json to local skills"
+          },
+          {
+            "version": "0.3.0",
+            "type": "added",
+            "text": "workflow run executes a routed plan and writes a hash-chained journal"
+          }
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "the skill's exit criteria are met",
+      "kind": "review"
+    }
+  ]
+}

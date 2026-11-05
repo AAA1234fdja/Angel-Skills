@@ -1,0 +1,74 @@
+{
+  "id": "error-recovery",
+  "category": "errors",
+  "description": "Attach a recovery contract to every failure path: root-cause hint, safe retry, stop condition. Use when an error message would leave an agent or a person guessing what to do next.",
+  "phase": "implement",
+  "verbs": [
+    "implement",
+    "fix"
+  ],
+  "triggers": [
+    "error message",
+    "what do I do now",
+    "recovery"
+  ],
+  "keywords": [
+    "error",
+    "recovery",
+    "hint",
+    "retry",
+    "stop"
+  ],
+  "tools": [
+    {
+      "id": "recovery-audit",
+      "entry": "tools/recovery_audit.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Checks a set of errors for the three recovery fields and rates them.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "errors"
+        ]
+      },
+      "sample": {
+        "errors": [
+          {
+            "code": "E_TOOL_TIMEOUT",
+            "message": "tool exceeded 10s",
+            "hint": "the selector matched no element; check the page object",
+            "retryable": true,
+            "stop_condition": "after 3 attempts"
+          },
+          {
+            "code": "E_TOOL_INPUT",
+            "message": "payload missing field",
+            "hint": "add the 'diff' field to the payload",
+            "retryable": false
+          }
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "the skill's exit criteria are met",
+      "kind": "review"
+    }
+  ]
+}

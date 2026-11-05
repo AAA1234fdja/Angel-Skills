@@ -1,0 +1,78 @@
+{
+  "id": "accessibility-audit",
+  "category": "product",
+  "description": "Audit a UI against WCAG 2.2 AA: contrast, focus order, target size, semantics and keyboard paths. Use when shipping an interface, reviewing a design, or when a user reports they cannot operate something.",
+  "phase": "review",
+  "verbs": [
+    "review",
+    "audit"
+  ],
+  "triggers": [
+    "accessibility",
+    "wcag",
+    "screen reader",
+    "keyboard navigation"
+  ],
+  "keywords": [
+    "a11y",
+    "wcag",
+    "contrast",
+    "focus",
+    "keyboard",
+    "semantics"
+  ],
+  "tools": [
+    {
+      "id": "contrast-check",
+      "entry": "tools/contrast_check.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Computes WCAG contrast ratios for declared colour pairs.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "pairs": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "pairs"
+        ]
+      },
+      "sample": {
+        "pairs": [
+          {
+            "fg": "#1a1a1a",
+            "bg": "#ffffff",
+            "large": false
+          },
+          {
+            "fg": "#767676",
+            "bg": "#ffffff",
+            "large": false
+          },
+          {
+            "fg": "#ffffff",
+            "bg": "#005fcc",
+            "large": true
+          }
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "the skill's exit criteria are met",
+      "kind": "review"
+    }
+  ]
+}

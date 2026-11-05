@@ -1,0 +1,88 @@
+{
+  "id": "dependency-audit",
+  "category": "security",
+  "description": "Audit imports and dependencies for unused, unpinned or unreviewed packages before they become permanent. Use when adding packages, preparing a release, or after a supply-chain advisory.",
+  "phase": "audit",
+  "verbs": [
+    "audit",
+    "secure"
+  ],
+  "triggers": [
+    "audit dependencies",
+    "supply chain",
+    "unused package"
+  ],
+  "keywords": [
+    "dependency",
+    "audit",
+    "pin",
+    "licence",
+    "supply chain"
+  ],
+  "tools": [
+    {
+      "id": "dependency-report",
+      "entry": "tools/dependency_report.py",
+      "risk": "read",
+      "timeout": 15,
+      "description": "Cross-checks declared dependencies against imports and pinning.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "declared": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "imports": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "declared"
+        ]
+      },
+      "sample": {
+        "imports": [
+          "json",
+          "re",
+          "urllib"
+        ],
+        "declared": [
+          {
+            "name": "requests",
+            "pinned": true,
+            "licence": "Apache-2.0",
+            "last_release_days": 20,
+            "transitive": 6,
+            "install_scripts": false
+          },
+          {
+            "name": "left-pad",
+            "pinned": false,
+            "licence": "MIT",
+            "last_release_days": 900,
+            "transitive": 0,
+            "install_scripts": true
+          }
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "the skill's exit criteria are met",
+      "kind": "review"
+    }
+  ]
+}

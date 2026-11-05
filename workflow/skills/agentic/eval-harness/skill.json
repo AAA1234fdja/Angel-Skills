@@ -1,0 +1,80 @@
+{
+  "id": "eval-harness",
+  "category": "agentic",
+  "description": "Eval-driven development: criteria written before the change, the cheapest grader that works, and pass@k versus pass^k. Use when a prompt, tool or model changed and numbers must decide whether it improved.",
+  "phase": "verify",
+  "verbs": [
+    "verify",
+    "measure",
+    "test"
+  ],
+  "triggers": [
+    "eval",
+    "did it improve",
+    "pass rate",
+    "regression suite"
+  ],
+  "keywords": [
+    "eval",
+    "grader",
+    "pass@k",
+    "pass^k",
+    "reliability"
+  ],
+  "tools": [
+    {
+      "id": "eval-summary",
+      "entry": "tools/eval_summary.py",
+      "risk": "read",
+      "timeout": 15,
+      "description": "Computes pass@k, pass^k and cost per success from per-attempt results.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "evals": {
+            "type": "object"
+          },
+          "k": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "evals"
+        ]
+      },
+      "sample": {
+        "k": 3,
+        "evals": {
+          "auth_flow": {
+            "attempts": [
+              "pass",
+              "pass",
+              "pass"
+            ],
+            "cost": 0.12
+          },
+          "pdf_parse": {
+            "attempts": [
+              "pass",
+              "pass",
+              "fail"
+            ],
+            "cost": 0.3
+          }
+        }
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "the skill's exit criteria are met",
+      "kind": "review"
+    }
+  ]
+}

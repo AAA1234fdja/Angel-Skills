@@ -1,77 +1,69 @@
 ---
 name: agent-architecture-audit
-description: Diagnóstico por capas de una aplicación con agentes o LLM — localizar en qué capa está la falla y producir hallazgos con severidad y parche concreto. Usar cuando un agente "se comporta raro" y no se sabe si el problema es el prompt, la memoria, las herramientas o el transporte.
+description: Layer-by-layer diagnosis of an agent stack with severity-ranked findings and a concrete patch for each. Use when an agent misbehaves and it is unclear whether the fault is the prompt, memory, tools or transport.
 metadata:
   origin: ECC · skills/agent-architecture-audit
   category: agentic
   phase: review
-  status: adoptada
+  status: adopted
   version: 1
 ---
 
 # Agent Architecture Audit
 
-Cuando un agente falla, el reflejo es reescribir el prompt. Casi nunca es el
-prompt. Esta skill obliga a recorrer las capas en orden y a **demostrar** en cuál
-está la falla antes de tocar nada.
+When an agent fails, the reflex is to rewrite the prompt. It is rarely the prompt.
+This skill walks the layers in order and **proves** which one failed before touching
+anything.
 
-## Cuándo usar
+## When to Use
 
-- El agente ignora instrucciones que están en el prompt.
-- Repite llamadas, elige la herramienta equivocada o "olvida" lo que ya hizo.
-- La salida se corrompe (markdown roto, JSON inválido, texto cortado).
-- Antes de publicar una aplicación con agentes en producción.
+- The agent ignores instructions that are in the prompt.
+- It repeats calls, picks the wrong tool, or "forgets" what it just did.
+- Output is corrupted (broken markdown, invalid JSON, truncated text).
+- Before shipping an agent application to production.
 
-## Cuándo NO usar
+## When Not to Use
 
-- Cuando el fallo es de una sola herramienta concreta y ya está identificado:
-  se arregla esa herramienta.
-- Cuando no hay traza de la ejecución: primero se instrumenta
-  (`agent-harness-construction`, paso de observación).
+- A single tool is already identified as broken: fix that tool.
+- There is no trace: instrument first (`agent-harness-construction`).
 
-## Procedimiento
+## Procedure
 
-1. **Reunir evidencia antes de opinar**: traza completa de una ejecución fallida
-   (entrada, system prompt efectivo, herramientas disponibles, cada respuesta de
-   herramienta, cada salida del modelo).
-2. **Recorrer las capas en orden**, descartando cada una con un dato:
-   1. entrada del usuario y validación;
-   2. ensamblado del prompt (¿el system prompt efectivo es el que crees?);
-   3. selección de herramientas (¿estaban disponibles y bien descritas?);
-   4. ejecución de herramientas (¿devolvieron lo que dice el esquema?);
-   5. memoria / contexto recuperado (¿entró basura o se perdió lo importante?);
-   6. transporte y render (¿se truncó, se escapó mal, se perdió un mensaje?).
-3. **Nombrar el patrón de falla** entre los conocidos:
-   - *wrapper regression* — una capa intermedia cambia el mensaje y el agente
-     responde a otra cosa;
-   - *memory contamination* — memoria vieja o irrelevante entra en el contexto;
-   - *tool discipline failure* — la descripción o el esquema de la herramienta
-     induce mal uso;
-   - *rendering/transport corruption* — el contenido es correcto pero se trunca
-     o se escapa mal;
-   - *hidden layer* — hay un sistema intermedio (proxy, plantilla, caché) que no
-     se tenía en cuenta.
-4. **Escribir el hallazgo** con severidad (`bloqueante` / `importante` / `menor`),
-   capa, evidencia (fragmento de traza) y **parche propuesto concreto**.
-5. **Ordenar los hallazgos por impacto** y proponer el orden de arreglo.
-6. **Verificar el arreglo con un eval** del caso que fallaba
-   (`eval-harness`), no con una ejecución "que ya se ve bien".
+1. **Collect evidence first**: a full trace of one failing run — input, effective
+   system prompt, tools available, every tool response, every model output.
+2. **Walk the layers in order**, eliminating each with a datum:
+   1. user input and validation;
+   2. prompt assembly (is the effective system prompt what you think?);
+   3. tool selection (were they available and well described?);
+   4. tool execution (did they return what the schema says?);
+   5. memory and retrieved context (did junk enter, or important context vanish?);
+   6. transport and rendering (truncated, badly escaped, dropped message?).
+3. **Name the failure pattern**:
+   - *wrapper regression* — an intermediate layer rewrites the message;
+   - *memory contamination* — stale or irrelevant memory enters the context;
+   - *tool discipline failure* — description or schema induces misuse;
+   - *rendering/transport corruption* — content is right but arrives wrong;
+   - *hidden layer* — an unaccounted proxy, template or cache.
+4. **Write the finding** with severity, layer, trace excerpt and a concrete patch.
+5. **Order findings by impact** and propose the fix order.
+6. **Verify with an eval** of the failing case (`eval-harness`), not with a run that
+   "looks fine now".
 
-## Criterio de salida
+## Exit Criteria
 
-- [ ] Cada hallazgo dice capa, severidad y evidencia textual de la traza.
-- [ ] Cada hallazgo trae parche concreto, no "revisar el prompt".
-- [ ] Se descartó explícitamente cada capa anterior con un dato.
-- [ ] El caso que fallaba tiene un eval de regresión que antes fallaba.
-- [ ] Se identificó el patrón de falla o se explica por qué no encaja en ninguno.
+- [ ] Each finding states layer, severity and a trace excerpt.
+- [ ] Each finding carries a concrete patch, not "review the prompt".
+- [ ] Each earlier layer was eliminated with a datum.
+- [ ] The failing case has a regression eval that failed before the fix.
+- [ ] The failure pattern is named, or its absence is explained.
 
-## Errores típicos
+## Common Failures
 
-| Error | Corrección |
+| Failure | Fix |
 |---|---|
-| Reescribir el prompt sin leer la traza | La traza decide, no la intuición |
-| Arreglar la capa 1 sin haber mirado la 6 | Orden obligatorio |
-| Hallazgos sin evidencia | Fragmento de traza o no es hallazgo |
-| "Parece que la memoria mete ruido" | Mostrar qué memoria entró y por qué |
-| Arreglar cinco cosas a la vez | Un hallazgo, un cambio, un eval |
-| Cerrar con "ya funciona" | Eval del caso, antes y después |
+| Rewriting the prompt without reading the trace | The trace decides |
+| Fixing layer 1 without checking layer 6 | Order is mandatory |
+| Findings without evidence | Trace excerpt or it is not a finding |
+| "Memory seems noisy" | Show what memory entered and why |
+| Fixing five things at once | One finding, one change, one eval |
+| Closing with "works now" | Eval the case, before and after |

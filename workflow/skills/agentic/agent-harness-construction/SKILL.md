@@ -1,74 +1,70 @@
 ---
 name: agent-harness-construction
-description: Diseñar el espacio de acción de un agente — herramientas, granularidad, formato de observación y recuperación de errores — para subir la tasa de tareas completadas. Usar cuando se define o revisa el conjunto de herramientas, el action space o el formato de observaciones de un agente.
+description: Design action space, tool granularity, observation format and context budget so an agent finishes more tasks. Use when defining or revising an agent's tool set, its observation format, or why it keeps failing halfway.
 metadata:
   origin: ECC · skills/agent-harness-construction
   category: agentic
   phase: plan
-  status: adoptada
+  status: adopted
   version: 1
 ---
 
 # Agent Harness Construction
 
-La calidad de un agente no la decide solo el modelo: la deciden cuatro cosas que
-se pueden diseñar — el espacio de acción, la observación, la recuperación y el
-presupuesto de contexto. Este procedimiento las diseña en ese orden.
+An agent's quality is not decided only by the model. It is decided by four things
+you can design — action space, observation, recovery and context budget — and this
+procedure designs them in that order.
 
-## Cuándo usar
+## When to Use
 
-- Se define el conjunto de herramientas de un agente nuevo.
-- Un agente falla en tareas que "debería" poder hacer.
-- Se revisa por qué un agente repite llamadas, elige mal la herramienta o se
-  queda sin contexto a mitad de tarea.
+- Defining the tool set of a new agent.
+- An agent fails at tasks it "should" be able to do.
+- Reviewing why an agent repeats calls, picks the wrong tool, or runs out of
+  context halfway.
 
-## Cuándo NO usar
+## When Not to Use
 
-- Cuando el problema es el prompt de personalidad o el tono: eso es otra capa.
-- Cuando no hay forma de medir si la tarea se completó (`eval-harness` primero).
+- When the problem is tone or persona: that is another layer.
+- When there is no way to measure completion (`eval-harness` first).
 
-## Procedimiento
+## Procedure
 
-1. **Definir qué es "tarea completada"** antes de diseñar herramientas. Sin
-   criterio de éxito, el diseño no es verificable.
-2. **Espacio de acción**: nombres estables y explícitos; entradas con esquema y
-   estrechas; salidas con forma determinista. Nada de herramientas "que hacen
-   todo" salvo que el aislamiento sea imposible.
-3. **Granularidad** según riesgo:
-   - micro-herramienta para operaciones de alto impacto (desplegar, migrar,
-     tocar permisos): un paso, un efecto, confirmación explícita;
-   - herramienta media para ciclos de leer / editar / buscar;
-   - macro-herramienta solo cuando el coste dominante son los viajes de ida y vuelta.
-4. **Observación**: toda respuesta de herramienta devuelve `status`
-   (`success|warning|error`), `summary` de una línea, `next_actions` y
-   `artifacts` (rutas o ids). Una observación sin siguiente paso deja al agente
-   adivinando.
-5. **Contrato de recuperación**: cada ruta de error incluye pista de causa raíz,
-   instrucción de reintento seguro y condición de parada explícita. "Error 500"
-   no es una observación, es un callejón.
-6. **Presupuesto de contexto**: system prompt mínimo e invariante; la guía larga
-   vive en skills que se cargan bajo demanda; referencias a archivos antes que
-   documentos inline; compactar en fronteras de fase, no por umbral de tokens.
-7. **Medir**: tasa de completado, reintentos por tarea, pass@1 y pass@3, y coste
-   por tarea completada. Sin estos cinco números no hay mejora demostrable.
+1. **Define "task completed"** before designing tools. Without success criteria
+   the design is not verifiable.
+2. **Action space**: stable explicit names, schema-first narrow inputs,
+   deterministic output shapes. No catch-all tool unless isolation is impossible.
+3. **Granularity by risk**:
+   - micro-tool for high-impact operations (deploy, migrate, permissions): one
+     step, one effect, explicit confirmation;
+   - medium tool for read/edit/search loops;
+   - macro-tool only when round trips dominate the cost.
+4. **Observation**: every tool response returns `status`
+   (`success|warning|error`), a one-line `summary`, `next_actions` and `artifacts`.
+   An observation without a next step leaves the agent guessing.
+5. **Recovery contract**: every error path carries a root-cause hint, a safe retry
+   and an explicit stop condition.
+6. **Context budget**: minimal invariant system prompt; long guidance in skills
+   loaded on demand; references to files over inlined documents; compact at phase
+   boundaries, not at token thresholds.
+7. **Measure**: completion rate, retries per task, pass@1 and pass@3, cost per
+   completed task. Without those five numbers there is no demonstrable improvement.
 
-## Criterio de salida
+## Exit Criteria
 
-- [ ] Existe una definición escrita de "tarea completada" y cómo se comprueba.
-- [ ] Cada herramienta tiene esquema de entrada y forma de salida documentados.
-- [ ] Toda herramienta devuelve los cuatro campos de observación.
-- [ ] Toda ruta de error tiene reintento seguro y condición de parada.
-- [ ] El system prompt no contiene guía que pueda vivir en una skill.
-- [ ] Se midieron los cinco indicadores del paso 7 antes y después del cambio.
+- [ ] "Task completed" is written down and checkable.
+- [ ] Every tool has a documented input schema and output shape.
+- [ ] Every tool returns the four observation fields.
+- [ ] Every error path has safe retry and a stop condition.
+- [ ] No guidance in the system prompt that could live in a skill.
+- [ ] The five metrics were measured before and after the change.
 
-## Errores típicos
+## Common Failures
 
-| Error | Corrección |
+| Failure | Fix |
 |---|---|
-| Muchas herramientas con semántica solapada | El agente elige mal: fusionar o eliminar |
-| Salida opaca ("algo falló") | `status` + `summary` + `next_actions` |
-| Herramienta de despliegue que hace tres cosas | Partir en pasos con confirmación |
-| Meter la guía de estilo entera en el system prompt | Skill cargada bajo demanda |
-| Compactar a un número fijo de tokens | Compactar en fronteras de fase |
-| Añadir herramientas sin volver a medir | Cada cambio se mide igual que la base |
-| Diseñar para el caso ideal | Diseñar el contrato de error primero |
+| Many tools with overlapping semantics | The agent picks wrong: merge or remove |
+| Opaque output ("something failed") | `status` + `summary` + `next_actions` |
+| A deploy tool that does three things | Split into confirmed steps |
+| Whole style guide in the system prompt | Skill loaded on demand |
+| Compacting at a fixed token count | Compact at phase boundaries |
+| Adding tools without remeasuring | Every change measured like the baseline |

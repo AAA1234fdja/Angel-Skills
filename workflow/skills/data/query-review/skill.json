@@ -1,0 +1,70 @@
+{
+  "id": "query-review",
+  "category": "data",
+  "description": "Review queries with their access plan: N+1, missing indexes and unbounded scans. Use when a listing is slow, a query looks harmless, or a new endpoint touches a large table.",
+  "phase": "review",
+  "verbs": [
+    "review",
+    "optimize"
+  ],
+  "triggers": [
+    "slow query",
+    "n plus one",
+    "index",
+    "query plan"
+  ],
+  "keywords": [
+    "query",
+    "index",
+    "n+1",
+    "plan",
+    "scan"
+  ],
+  "tools": [
+    {
+      "id": "query-smells",
+      "entry": "tools/query_smells.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Detects query-level smells in supplied SQL and access patterns.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "queries": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "queries"
+        ]
+      },
+      "sample": {
+        "queries": [
+          {
+            "sql": "select id, total from orders where id = $1 limit 1",
+            "rows_scanned": 1,
+            "rows_returned": 1,
+            "plan_node": "index_scan",
+            "index_used": true,
+            "executions": 1
+          }
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "the skill's exit criteria are met",
+      "kind": "review"
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "$schema": "angel/jsonschema-subset",
+  "$id": "workflow/contracts/message-digest@1.0.0",
+  "title": "Message digest",
+  "description": "The stable fingerprint of a protocol message: what it says, independent of who sent it and when. Used to detect replays, duplicates and tampering.",
+  "type": "object",
+  "x-consumers": [
+    "wev",
+    "ely",
+    "journal"
+  ],
+  "required": [
+    "protocol",
+    "version",
+    "digest"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "protocol": {
+      "type": "string",
+      "enum": [
+        "isa-plan",
+        "yev-dispatch",
+        "zev-evidence",
+        "xev-result",
+        "wev-verdict",
+        "ely-meta"
+      ]
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+$"
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{16}$"
+    },
+    "task_id": {
+      "type": "string",
+      "maxLength": 64
+    },
+    "msg_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{12}$"
+    },
+    "parent": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{12}$"
+    },
+    "fields": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}
