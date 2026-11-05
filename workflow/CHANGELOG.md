@@ -4,6 +4,42 @@ Formato: fecha · versión del paquete · cambio. Cada entrada dice qué cambia
 para quien consume el paquete; los cambios de comportamiento incompatibles van primero
 y con la acción requerida.
 
+## 0.4.0 — 2026-11-05
+
+Los agentes pasan a ser servicios administrables: un agente es una API, y toda
+API puede llamar subagentes. El modelo viene de Harness-Candy y aquí se vuelve
+datos que el runtime valida, enruta y deja en el journal.
+
+**compatible** — no se rompe nada de 0.3: las 44 skills, los 41 tools y los 4
+contratos siguen igual. Lo nuevo es aditivo, salvo el manifiesto de Ely, que pasa
+a 0.4.0 con tres comandos más.
+
+- **added** — `angel/agents.py`: direcciones `agent://<space>/<id>@<x.y.z>#<pin>-><hop>`,
+  carta de agente, `Roster` (get/resolve/child/children/parents/tree/cascade_order/
+  validate), `Dispatcher` (plan + ejecución), `Call`/`Outcome`/`Delegation` y un
+  journal por llamada.
+- **added** — cinco reglas que el runtime hace cumplir: la carta valida contra su
+  contrato; las capacidades se intersectan hacia abajo (un subagente nunca recibe
+  más de lo que su padre tiene); `max_depth`/`max_calls`/`budget_share` se
+  comprueban antes de llamar; un ciclo se rechaza al cargar el roster; toda llamada
+  deja un árbol y un journal encadenado por hashes.
+- **added** — 6 cartas en `agents/`: `isa-planner`, `xev-builder`, `xev-tester`,
+  `wev-judge`, `zev-scout`, `governance-auditor`, más `agents/roster.json` (el
+  índice que lee la extensión de Ely, que no puede listar directorios).
+- **added** — `agent-card@1.0.0` como quinto contrato: es la firma de la carta y
+  se valida al cargar el roster, no solo en `validate`.
+- **added** — `workflow agents list|show|validate|tree|address|plan|call`, siete
+  subcomandos (el CLI pasa de 14 a 21).
+- **added** — `AGENTS.md` como documento de referencia del sistema de agentes.
+- **added** — 51 tests nuevos (`tests/test_agents.py`, 47; 4 en la suite de
+  consistencia): direcciones, pines obsoletos, contratos, ciclos, autorización,
+  profundidad, fan-out, presupuesto, techos de ejecución, journal y CLI. Total: 176.
+- **changed** — la extensión de Ely pasa a 0.4.0 con tres comandos de solo lectura
+  (`agents`, `agent tree`, `agent address`). Sigue sin permiso de red.
+- **changed** — `max_depth` se mide desde el propio agente (cuántos saltos por
+  debajo), y el grafo se valida contra ese límite: un grafo más profundo que el
+  límite declarado es un error, no un aviso.
+
 ## 0.3.0 — 2026-11-05
 
 Reescritura completa. El paquete pasa de catálogo de markdown a runtime ejecutable.

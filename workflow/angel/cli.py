@@ -7,6 +7,7 @@ view otherwise. Exit codes come from the error policy, never from ad-hoc
     workflow list / show / plan / validate / pack / install / where   (package)
     workflow route / run / journal                                    (execution)
     workflow protocol / contract / tool / new                         (contracts)
+    workflow agents list|show|validate|tree|address|plan|call         (agents)
 """
 
 from __future__ import annotations
@@ -22,6 +23,7 @@ from typing import Any
 from . import __version__
 from . import contracts as contracts_mod
 from . import journal as journal_mod
+from . import agents as agents_mod
 from . import protocols, registry as registry_mod, router, runner, tools
 from .errors import AngelError
 
@@ -186,8 +188,9 @@ def cmd_pack(args: argparse.Namespace) -> int:
     root = Path(args.root).resolve()
     out = Path(args.out).resolve() if args.out else root / "dist" / "workflow.zip"
     out.parent.mkdir(parents=True, exist_ok=True)
-    include = ["EXTENSION-STANDARD.md", "WORKFLOW.md", "categories.json", "CHANGELOG.md",
-               "README.md", "skills", "contracts", "angel", "tests", "tools", "ely-extension"]
+    include = ["EXTENSION-STANDARD.md", "WORKFLOW.md", "AGENTS.md", "categories.json",
+               "CHANGELOG.md", "README.md", "skills", "contracts", "agents", "angel",
+               "tests", "tools", "ely-extension"]
     targets = [name for name in include if (root / name).exists()]
     if out.exists():
         out.unlink()
@@ -201,7 +204,8 @@ def cmd_pack(args: argparse.Namespace) -> int:
                              check=False)
     entries = [line for line in listing.stdout.splitlines() if line and not line.endswith("/")]
     skills = sum(1 for line in entries if line.endswith("/SKILL.md"))
-    emit({"out": str(out), "entries": len(entries), "skills": skills,
+    agents = sum(1 for line in entries if line.endswith("/agent.json"))
+    emit({"out": str(out), "entries": len(entries), "skills": skills, "agents": agents,
           "bytes": out.stat().st_size}, args.json)
     return 0
 
@@ -619,6 +623,189 @@ def _register_in_registry(root: Path, category: str, skill_id: str, description:
 
 
 
+
+# --------------------------------------------------------------------------
+# agents: every agent is an API, every API may call subagents
+# --------------------------------------------------------------------------
+def _roster(args: argparse.Namespace) -> agents_mod.Roster:
+    return agents_mod.load(args.root, registry=load(args.root))
+
+
+def cmd_agents(args: argparse.Namespace) -> int:
+    roster = _roster(args)
+    action = args.action
+
+    if action == "list":
+        rows = []
+        for agent in sorted(roster.agents.values(), key=lambda a: a.id):
+            rows.append({"id": agent.id, "version": agent.version, "role": agent.role,
+                         "state": agent.state, "skills": len(agent.skills),
+                         "delegates": [d.get("to") for d in agent.delegates],
+                         "address": agent.reference()})
+        if args.json:
+            emit({"agents": rows, "count": len(rows)}, True)
+            return 0
+        if not rows:
+            print(f"{C.yellow('!')} no agents under {args.root / 'agents'}")
+            return 0
+        width = max(len(r["id"]) for r in rows)
+        for row in rows:
+            mark = C.green("●") if row["state"] == "live" else C.yellow("○")
+            kids = ", ".join(row["delegates"]) or "-"
+            print(f"{mark} {row['id']:<{width}}  v{row['version']}  {row['role']:<10} "
+                  f"{row['skills']:>2} skill(s)  -> {kids}")
+            print(f"  {C.dim(row['address'])}")
+        return 0
+
+    if action == "show":
+        agent = roster.get(args.agent)
+        payload = agent.to_dict()
+        payload["endpoint"] = agent.endpoint()
+        payload["parents"] = [a.id for a in roster.parents(agent.id)]
+        if args.json:
+            emit(payload, True)
+            return 0
+        print(C.bold(f"{agent.id}  v{agent.version}  [{agent.state}]  {agent.role}"))
+        print(f"  {C.dim(agent.reference())}")
+        print(f"  {agent.description}")
+        print(f"  model: {agent.model.get('name')} (reasoning {agent.model.get('reasoning', '?')})")
+        print(f"  skills: {', '.join(agent.skills) or '-'}")
+        print(f"  tools: {', '.join(agent.tools) or '-'}")
+        print(f"  limits: {json.dumps(agent.limits, ensure_ascii=False)}")
+        for edge in agent.delegates:
+            print(f"  -> {edge.get('to')}  when {edge.get('when')!r} "
+                  f"({len(edge.get('allow') or [])} skill(s), {edge.get('budget')} budget)")
+        for guard in agent.guardrails:
+            print(f"  ! {guard}")
+        return 0
+
+    if action == "validate":
+        report = roster.validate()
+        if args.json:
+            emit(report, True)
+        else:
+            mark = C.green("✔") if not report["errors"] else C.red("✖")
+            print(f"{mark} {report['agents']} agent(s) · {len(report['errors'])} error(s) "
+                  f"· {len(report['warnings'])} warning(s)")
+            for err in report["errors"]:
+                print(f"  {C.red('✖')} {err}")
+            for warn in report["warnings"]:
+                print(f"  {C.yellow('!')} {warn}")
+        if report["errors"]:
+            return 2
+        return 1 if (args.strict and report["warnings"]) else 0
+
+    if action == "tree":
+        tree = roster.tree(args.agent) if args.agent else {
+            "id": "roster", "children": [roster.tree(a) for a in sorted(roster.agents)]}
+        if args.json:
+            emit(tree, True)
+            return 0
+
+        def draw(node: dict[str, Any], prefix: str = "", last: bool = True,
+                 head_node: bool = True) -> None:
+            mark = ""
+            if node.get("missing"):
+                mark = C.red(" (missing)")
+            elif node.get("cycle"):
+                mark = C.red(" (cycle)")
+            elif node.get("truncated"):
+                mark = C.yellow(" (truncated)")
+            role = f" {C.dim(node['role'])}" if node.get("role") else ""
+            if head_node:
+                print(f"{C.bold(node['id'])}{role}{mark}")
+                child_prefix = ""
+            else:
+                print(f"{prefix}{'└─ ' if last else '├─ '}{node['id']}{role}{mark}")
+                child_prefix = prefix + ("   " if last else "│  ")
+            if node.get("reference"):
+                print(f"{child_prefix}{C.dim(node['reference'])}")
+            kids = node.get("children") or []
+            for index, kid in enumerate(kids):
+                draw(kid, child_prefix, index == len(kids) - 1, False)
+
+        if args.agent:
+            draw(tree)
+        else:
+            roots = [kid for kid in tree["children"] if not roster.parents(kid["id"])]
+            for index, kid in enumerate(roots):
+                if index:
+                    print()
+                draw(kid)
+        return 0
+
+    if action == "address":
+        if not args.address:
+            rows = [a.reference() for a in sorted(roster.agents.values(), key=lambda x: x.id)]
+            if args.json:
+                emit({"addresses": rows}, True)
+            else:
+                print("\n".join(rows))
+            return 0
+        address = agents_mod.parse_address(args.address)
+        agent = roster.resolve(address)
+        payload = {"address": str(address), "space": address.space,
+                   "agent": agent.id, "version": agent.version,
+                   "pin": address.pin, "hop": address.hop,
+                   "resolved": agent.reference(), "endpoint": agent.endpoint()}
+        if args.json:
+            emit(payload, True)
+            return 0
+        print(C.bold(str(address)))
+        print(f"  agent   : {agent.id} v{agent.version}")
+        print(f"  pin     : {address.pin or '(none: latest card)'}")
+        print(f"  hop     : {address.hop or '(none)'}")
+        print(f"  resolve : {agent.reference()}")
+        endp = agent.endpoint()
+        print(f"  endpoint: {json.dumps({k: endp[k] for k in ('address', 'callable', 'calls') if k in endp}, ensure_ascii=False)}")
+        return 0
+
+    if action == "plan":
+        payload = agents_mod.plan(args.root, args.agent, args.need, registry=load(args.root))
+        if args.json:
+            emit(payload, True)
+            return 0
+        print(C.bold(f"plan for {args.agent}: {args.need}"))
+        _draw_call(payload["tree"], args.root)
+        print(f"  {payload['calls']} call(s)")
+        return 0
+
+    if action == "call":
+        payload = agents_mod.call(args.root, args.agent, args.need,
+                                  registry=load(args.root), execute=args.execute,
+                                  profile=args.profile)
+        saved = agents_mod.save_call(args.root, payload)
+        payload["saved"] = str(saved)
+        if args.json:
+            emit(payload, True)
+        else:
+            print(C.bold(f"{payload['address']}  ->  {payload['resolved']['id']}"))
+            _draw_call(payload["tree"], args.root)
+            print(f"  verdict : {payload['verdict']}")
+            print(f"  calls   : {payload['calls']}  executed: {payload['executed']}")
+            print(f"  journal : {C.dim(payload['journal'])}")
+            print(f"  saved   : {C.dim(str(saved))}")
+        return 0 if payload["verdict"] in ("pass", "planned") else 4
+
+    raise AngelError("E_AGENT_INVALID", f"unknown agents action {action!r}",
+                     hint="list, show, validate, tree, address, plan, call")
+
+
+def _draw_call(node: dict[str, Any], root: Path, prefix: str = "") -> None:
+    mark = {"ok": C.green("●"), "planned": C.dim("○"),
+            "error": C.red("✖"), "denied": C.red("✖")}.get(node.get("status"), "·")
+    skills = ", ".join(node.get("skills") or []) or "-"
+    budget = node.get("budget")
+    print(f"{prefix}{mark} {node['agent']} {C.dim(f'[{budget}]')}")
+    print(f"{prefix}  {C.dim(skills)}")
+    for note in node.get("denied") or []:
+        print(f"{prefix}  {C.red('denied')} {note}")
+    if node.get("note"):
+        print(f"{prefix}  {C.dim(node['note'][:120])}")
+    for kid in node.get("children") or []:
+        _draw_call(kid, root, prefix + "   ")
+
+
 # --------------------------------------------------------------------------
 # argument parsing
 # --------------------------------------------------------------------------
@@ -728,7 +915,35 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--no-register", action="store_true")
     p.set_defaults(func=cmd_new)
 
+    p = sub.add_parser("agents", help="agents as APIs: roster, addresses, cascade")
+    sub_a = p.add_subparsers(dest="action")
+    a = sub_a.add_parser("list", help="every agent with its address")
+    a.set_defaults(func=cmd_agents, action="list")
+    a = sub_a.add_parser("show", help="one card in full")
+    a.add_argument("agent")
+    a.set_defaults(func=cmd_agents, action="show")
+    a = sub_a.add_parser("validate", help="check every card, edge and limit")
+    a.add_argument("--strict", action="store_true", help="warnings become failures")
+    a.set_defaults(func=cmd_agents, action="validate")
+    a = sub_a.add_parser("tree", help="the delegation graph")
+    a.add_argument("agent", nargs="?")
+    a.set_defaults(func=cmd_agents, action="tree")
+    a = sub_a.add_parser("address", help="parse, pin and resolve an agent address")
+    a.add_argument("address", nargs="?")
+    a.set_defaults(func=cmd_agents, action="address")
+    a = sub_a.add_parser("plan", help="plan a cascade without running it")
+    a.add_argument("--agent", required=True)
+    a.add_argument("--need", required=True)
+    a.set_defaults(func=cmd_agents, action="plan")
+    a = sub_a.add_parser("call", help="call one agent, optionally executing the cascade")
+    a.add_argument("--agent", required=True, help="id or agent:// address")
+    a.add_argument("--need", required=True)
+    a.add_argument("--execute", action="store_true")
+    a.add_argument("--profile", default="standard", choices=sorted(tools.PROFILES))
+    a.set_defaults(func=cmd_agents, action="call")
+
     return parser
+
 
 
 def main(argv: list[str] | None = None) -> int:

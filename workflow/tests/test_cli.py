@@ -144,6 +144,9 @@ class CliTests(AngelTestCase):
                 self.assertIn("WORKFLOW.md", names)
                 self.assertIn("skills/engineering/tdd-workflow/SKILL.md", names)
                 self.assertIn("contracts/skill-report/1.1.0.schema.json", names)
+                self.assertIn("agents/roster.json", names)
+                self.assertIn("agents/xev-builder/agent.json", names)
+                self.assertIn("AGENTS.md", names)
                 self.assertEqual(sum(1 for n in names if n.endswith("/SKILL.md")),
                                  len(self.registry.skills),
                                  "the zip must carry every skill")

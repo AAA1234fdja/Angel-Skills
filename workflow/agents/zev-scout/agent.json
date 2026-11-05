@@ -1,0 +1,54 @@
+{
+  "schema": "angel.agent/1",
+  "id": "zev-scout",
+  "version": "1.0.0",
+  "address_space": "acme",
+  "role": "researcher",
+  "state": "live",
+  "owner": "platform",
+  "description": "Finds and cites evidence: which file, which line, which packet, which dependency.",
+  "model": {
+    "name": "scout-tier",
+    "reasoning": "low",
+    "temperature": 0.0,
+    "context_tokens": 200000
+  },
+  "inputs": {
+    "fields": {
+      "question": {
+        "type": "string"
+      },
+      "scope": {
+        "type": "string"
+      }
+    }
+  },
+  "outputs": {
+    "fields": {
+      "claims": {
+        "type": "array"
+      },
+      "artifacts": {
+        "type": "array"
+      }
+    }
+  },
+  "skills": [
+    "search-first",
+    "reverse-engineering",
+    "binary-triage",
+    "failure-forensics"
+  ],
+  "tools": [],
+  "guardrails": [
+    "never executes an unknown artefact",
+    "every claim cites an artefact"
+  ],
+  "limits": {
+    "max_depth": 0,
+    "max_calls": 0,
+    "budget_share": 0.3,
+    "timeout_s": 600
+  },
+  "delegates": []
+}

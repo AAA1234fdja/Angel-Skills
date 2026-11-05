@@ -1,4 +1,4 @@
-"""Ely extension tests: six commands, in both install layouts, against the real pack.
+"""Ely extension tests: every command, in both install layouts, against the real pack.
 
 The extension is JavaScript running in an iframe with a sandboxed API, so it is
 tested the way it actually runs: a mock `ely` object, every registered command
@@ -13,7 +13,8 @@ import tempfile
 from support import REAL_ROOT, AngelTestCase, Path
 
 HARNESS = Path(__file__).with_name("ely-harness.mjs")
-BUNDLE_FILES = ("categories.json", "EXTENSION-STANDARD.md", "WORKFLOW.md")
+BUNDLE_FILES = ("categories.json", "EXTENSION-STANDARD.md", "WORKFLOW.md", "AGENTS.md")
+BUNDLE_DIRS = ("skills", "agents")
 
 
 def node_available() -> bool:
@@ -31,7 +32,8 @@ class ElyExtensionTests(AngelTestCase):
     def _checkout_layout(self) -> Path:
         """The repository as it is: bundle at workflow/, extension at workflow/ely-extension/."""
         bundle = self.root / "workflow"
-        shutil.copytree(REAL_ROOT / "skills", bundle / "skills")
+        for folder in BUNDLE_DIRS:
+            shutil.copytree(REAL_ROOT / folder, bundle / folder)
         shutil.copytree(REAL_ROOT / "ely-extension", bundle / "ely-extension")
         for name in BUNDLE_FILES:
             shutil.copy(REAL_ROOT / name, bundle / name)
@@ -40,7 +42,8 @@ class ElyExtensionTests(AngelTestCase):
     def _installed_layout(self) -> Path:
         """After `workflow install --ely`: the bundle sits next to the extension."""
         dest = self.root / "IDE" / "ely-extensions" / "angel.workflow"
-        shutil.copytree(REAL_ROOT / "skills", dest / "skills")
+        for folder in BUNDLE_DIRS:
+            shutil.copytree(REAL_ROOT / folder, dest / folder)
         for name in BUNDLE_FILES:
             shutil.copy(REAL_ROOT / name, dest / name)
         shutil.copy(REAL_ROOT / "ely-extension" / "main.js", dest / "main.js")
@@ -54,15 +57,17 @@ class ElyExtensionTests(AngelTestCase):
         return json.loads(result.stdout)
 
     # -- the extension itself ---------------------------------------------
-    def test_the_manifest_declares_six_commands_with_no_network(self):
+    def test_the_manifest_declares_every_command_with_no_network(self):
         manifest = json.loads(
             (REAL_ROOT / "ely-extension" / "ely-extension.json").read_text(encoding="utf-8"))
         self.assertEqual(manifest["id"], "angel.workflow")
-        self.assertEqual(manifest["version"], "0.3.0")
+        self.assertEqual(manifest["version"], "0.4.0")
         commands = {c["id"] for c in manifest["contributes"]["commands"]}
         self.assertEqual(commands, {
             "angel.workflow.list", "angel.workflow.phase", "angel.workflow.skill",
             "angel.workflow.tools", "angel.workflow.validate", "angel.workflow.standard",
+            "angel.workflow.agents", "angel.workflow.agenttree",
+            "angel.workflow.agentaddress",
         })
         permissions = set(manifest["permissions"])
         self.assertNotIn("network", permissions)

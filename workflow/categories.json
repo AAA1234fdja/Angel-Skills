@@ -1,5 +1,5 @@
 {
-  "version": "0.3.0",
+  "version": "0.4.0",
   "updated": "2026-11-05",
   "standard": "EXTENSION-STANDARD.md",
   "main": "WORKFLOW.md",
@@ -538,6 +538,32 @@
         }
       ],
       "pending": []
+    }
+  ],
+  "agents": [
+    {
+      "id": "governance-auditor",
+      "role": "governor"
+    },
+    {
+      "id": "isa-planner",
+      "role": "planner"
+    },
+    {
+      "id": "wev-judge",
+      "role": "validator"
+    },
+    {
+      "id": "xev-builder",
+      "role": "executor"
+    },
+    {
+      "id": "xev-tester",
+      "role": "executor"
+    },
+    {
+      "id": "zev-scout",
+      "role": "researcher"
     }
   ]
 }

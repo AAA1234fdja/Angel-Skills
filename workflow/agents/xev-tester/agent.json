@@ -1,0 +1,71 @@
+{
+  "schema": "angel.agent/1",
+  "id": "xev-tester",
+  "version": "1.0.0",
+  "address_space": "acme",
+  "role": "executor",
+  "state": "live",
+  "owner": "platform",
+  "description": "Writes the failing test first, then keeps it green; owns the coverage gate for one change.",
+  "model": {
+    "name": "builder-tier",
+    "reasoning": "medium",
+    "temperature": 0.0,
+    "context_tokens": 120000
+  },
+  "inputs": {
+    "fields": {
+      "objective": {
+        "type": "string"
+      },
+      "diff": {
+        "type": "string"
+      }
+    }
+  },
+  "outputs": {
+    "fields": {
+      "tests": {
+        "type": "array"
+      },
+      "coverage": {
+        "type": "number"
+      },
+      "verdict": {
+        "type": "string",
+        "enum": [
+          "pass",
+          "fail",
+          "blocked"
+        ]
+      }
+    }
+  },
+  "skills": [
+    "tdd-workflow",
+    "ai-regression-testing",
+    "e2e-testing"
+  ],
+  "tools": [],
+  "guardrails": [
+    "never edits production code",
+    "one failing test at a time"
+  ],
+  "limits": {
+    "max_depth": 1,
+    "max_calls": 3,
+    "budget_share": 0.4,
+    "timeout_s": 900
+  },
+  "delegates": [
+    {
+      "to": "zev-scout",
+      "when": "the failure needs a cause found in history",
+      "allow": [
+        "search-first",
+        "failure-forensics"
+      ],
+      "budget": 0.2
+    }
+  ]
+}

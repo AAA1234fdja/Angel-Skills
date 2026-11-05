@@ -49,6 +49,14 @@ POLICY: dict[str, dict[str, Any]] = {
     "E_TOOL_DESTRUCTIVE": {"severity": "error", "retryable": False, "owner": "user", "exit": 8},
     # routing / running
     "E_ROUTE_EMPTY": {"severity": "warn", "retryable": False, "owner": "user", "exit": 4},
+    # agents: an unlocked door is not a feature
+    "E_AGENT_INVALID": {"severity": "error", "retryable": False, "owner": "author", "exit": 2},
+    "E_AGENT_NOT_FOUND": {"severity": "error", "retryable": False, "owner": "caller", "exit": 12},
+    "E_AGENT_ADDRESS": {"severity": "error", "retryable": False, "owner": "caller", "exit": 12},
+    "E_AGENT_STALE": {"severity": "error", "retryable": False, "owner": "caller", "exit": 13},
+    "E_AGENT_NOT_LIVE": {"severity": "error", "retryable": False, "owner": "caller", "exit": 13},
+    "E_DELEGATION_DENIED": {"severity": "error", "retryable": False, "owner": "author", "exit": 14},
+    "E_AGENT_DEPTH": {"severity": "error", "retryable": False, "owner": "caller", "exit": 14},
     "E_BUDGET_EXCEEDED": {"severity": "fatal", "retryable": False, "owner": "user", "exit": 9},
     "E_GATE_FAILED": {"severity": "error", "retryable": False, "owner": "producer", "exit": 10},
     "E_STEP_FAILED": {"severity": "error", "retryable": False, "owner": "runtime", "exit": 10},

@@ -14,8 +14,9 @@ tools       discover, authorise and execute per-skill tools
 router      map a need to the smallest set of skills that can satisfy it
 journal     append-only, hash-chained trace of what actually ran
 runner      execute a routed plan with budget, gates and policy
+agents      an agent is an API; every API may call subagents
 cli         the single entry point
 """
 
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 PACKAGE = "workflow"

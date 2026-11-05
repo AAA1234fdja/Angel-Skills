@@ -113,6 +113,29 @@ class ReferenceTests(AngelTestCase):
         changelog = (REAL_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
         self.assertIn(__version__, changelog)
 
+    def test_every_agents_command_documented_in_AGENTS_md_exists(self):
+        """AGENTS.md is a promise: every command it shows must be runnable."""
+        cli = (REAL_ROOT / "angel" / "cli.py").read_text(encoding="utf-8")
+        known = set(re.findall(r'add_parser\("([a-z]+)"', cli))
+        acts = set(re.findall(r'a = sub_a\.add_parser\("([a-z]+)"', cli))
+        body = (REAL_ROOT / "AGENTS.md").read_text(encoding="utf-8")
+        cited = BACKTICKED_COMMAND.findall(body) + re.findall(r"^workflow (agents [^\n]+)$",
+                                                              body, re.MULTILINE)
+        self.assertTrue(cited)
+        for command in cited:
+            words = command.replace("...", "").split()
+            top, _, rest = words[1].partition("|")
+            with self.subTest(command=command):
+                self.assertIn(top, known)
+                if top == "agents":
+                    for action in rest.split("|") if rest else []:
+                        self.assertIn(action, acts)
+
+    def test_every_path_cited_in_AGENTS_md_exists(self):
+        body = (REAL_ROOT / "AGENTS.md").read_text(encoding="utf-8")
+        for cited in re.findall(r"`(agents/[\w./-]+)`", body):
+            self.assertTrue((REAL_ROOT / cited).exists(), cited)
+
     def test_no_skill_cites_a_path_that_does_not_exist(self):
         missing = []
         pattern = re.compile(r"`(skills/[\w/-]+)`")

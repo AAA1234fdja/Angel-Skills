@@ -1,7 +1,7 @@
 # EXTENSION-STANDARD.md — how a skill is written here
 
 > Read this **before** creating or editing any skill. `WORKFLOW.md` explains the
-> purpose; this file is the contract. Package `0.3.0` · updated 2026-11-05
+> purpose; this file is the contract. Package `0.4.0` · updated 2026-11-05
 >
 > Machine check: `workflow validate --strict` implements §5 and §6. If the
 > standard and the validator disagree, the validator wins and this file is a bug.
@@ -223,14 +223,36 @@ Then:
 | Code | Meaning |
 |---|---|
 | 0 | valid |
-| 1 | errors |
-| 2 | warnings present with `--strict` |
+| 1 | errors (or warnings, for `agents validate --strict`) |
+| 2 | a card breaks its contract, or errors with `--strict` |
+| 12 | an agent address does not parse, or no such agent |
+| 13 | a pinned card changed, or the agent is not `live` |
+| 14 | a delegation was denied, or the cascade would go too deep |
 
 Nothing is packed (`workflow pack`) or installed into Ely while validation fails.
 
 ---
 
-## 10. Licence and attribution
+## 10. Adding an agent (the only supported path)
+
+A skill is a procedure; an agent is the service that runs it. Adding one is a
+data change plus a check, never a runtime change:
+
+1. Copy the shape of a card from `agents/` and write `agents/<id>/agent.json`
+   against `contracts/agent-card/1.0.0.schema.json`.
+2. `skills` and `tools` must already exist — a card cannot invent capability.
+3. Declare `limits` before `delegates`; every edge needs a `when` a person would
+   say out loud and an `allow` strictly narrower than what the card holds.
+4. Register the id in `categories.json` (`agents`) and in `agents/roster.json`.
+5. Run `workflow agents validate --strict` and then
+   `workflow agents plan --agent <id> --need "<a real objective>"`.
+
+An agent whose card does not validate is not callable at all: the roster refuses
+to load it. The rules are in `AGENTS.md` §4; the codes are `E_AGENT_*`.
+
+---
+
+## 11. Licence and attribution
 
 ECC is MIT. Skills marked `adopted` keep ECC's id, cite `origin`, and are
 rewritten for this repository — not copied verbatim. `original` skills are this

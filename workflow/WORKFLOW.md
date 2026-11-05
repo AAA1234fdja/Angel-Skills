@@ -3,7 +3,7 @@
 > **This is the first file to read.** `EXTENSION-STANDARD.md` says *how* a skill
 > is written; this file says *why the package exists*, what it must beat, and how
 > a need travels from a sentence to a verified result.
-> Package `0.3.0` · updated 2026-11-05
+> Package `0.4.0` · updated 2026-11-05
 
 ---
 
@@ -133,7 +133,20 @@ Budget: one phase, at most five skills, tools only for the steps that need them.
 
 ---
 
-## 5. Non-negotiable rules
+## 5. Agents: an API that may call subagents
+
+A skill is a procedure; an agent is the service that runs it. Each agent publishes
+a card (`agents/<id>/agent.json`, contract `agent-card@1.0.0`) and answers at
+`agent://<space>/<id>@<x.y.z>#<pin>`. The pin hashes the behaviour surface, not the
+prose, so a pinned reference refuses a changed card instead of silently upgrading.
+
+Authority only narrows: a subagent receives the intersection of what its caller
+holds and what the edge `allow`s, never the union. `max_depth`, `max_calls` and the
+budget share are checked at plan time, a cycle is refused when the roster loads,
+and every call leaves a tree plus a hash-chained journal. `AGENTS.md` is the
+reference; `workflow agents validate --strict` is the check.
+
+## 6. Non-negotiable rules
 
 1. **The registry is the source of truth.** On disk without registered is an
    error; registered without a folder is an error.
@@ -151,14 +164,15 @@ Budget: one phase, at most five skills, tools only for the steps that need them.
 
 ---
 
-## 6. Growth path
+## 7. Growth path
 
 | Phase | What happens | Status |
 |---|---|---|
 | 0.1 | registry, standard, CLI, Ely extension | done |
 | 0.2 | engineering + agentic catalogues in Spanish | superseded |
-| **0.3** | **folder skills, protocols, contracts, errors, tools, router, journal; 44 skills, 41 tools, 4 contracts, 125 tests** | **current** |
-| 0.4 | `product` and `content` filled; tools for the remaining skills | next |
+| 0.3 | folder skills, protocols, contracts, errors, tools, router, journal; 44 skills, 41 tools, 4 contracts, 125 tests | done |
+| **0.4** | **agents as APIs: cards, pinned addresses, cascade planning, `agent-card@1.0.0`; 6 agents, 5 contracts, 176 tests** | **current** |
+| 0.5 | `product` and `content` filled; tools for the remaining skills | next |
 | 1.0 | contracts frozen at major 1; every active skill has at least one tool or a sibling check | later |
 
 Adding a category is a data change in `categories.json`; adding a skill is
@@ -167,7 +181,7 @@ that is the test of whether this design is real or decorative.
 
 ---
 
-## 7. What "better than ECC" concretely means
+## 8. What "better than ECC" concretely means
 
 Not "more skills" — ECC wins that and it does not matter. It means:
 

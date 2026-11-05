@@ -1,23 +1,26 @@
 # workflow · the skill package of Angel
 
-Package **0.3.0** — a self-contained set of **44 skills, 41 executable tools and
-4 contracts**, with
-a registry, a validator, a router, a run engine and an optional Ely extension. No
-external dependencies, no network, no services: Python 3.10+ standard library only.
+Package **0.4.0** — a self-contained set of **44 skills, 41 executable tools,
+5 contracts and 6 agents**, with a registry, a validator, a router, a run engine,
+an agent dispatcher and an optional Ely extension. No external dependencies, no
+network, no services: Python 3.10+ standard library only.
 
 ```text
 workflow/
 ├── WORKFLOW.md            ← read first: purpose, routing path, rules
 ├── EXTENSION-STANDARD.md  ← read before creating or editing a skill
-├── categories.json        ← registry: the source of truth for categories and ids
+├── categories.json        ← registry: the source of truth for categories, ids, agents
 ├── skills/<category>/<id>/
 │   ├── SKILL.md           the procedure (when, when not, steps, exit criteria)
 │   ├── skill.json         the composition (phase, verbs, triggers, tools, contracts)
 │   └── tools/*.py         executables: run(payload) -> dict
 ├── contracts/<name>/<version>.schema.json   versioned promises, immutable
+├── agents/<id>/agent.json the card: an agent is an API with an address
+├── agents/roster.json     the index the Ely extension reads
+├── AGENTS.md              agents and subagents: addresses, cards, the five rules
 ├── angel/                 the runtime (registry, router, protocols, contracts,
-│                          tools, journal, runner, errors, frontmatter, jsonschema, cli)
-├── tests/                 125 tests over the runtime, the catalogue and the extension
+│                          tools, journal, runner, agents, errors, cli)
+├── tests/                 176 tests over the runtime, the catalogue and the extension
 ├── tools/                 maintenance scripts (add_samples.py)
 └── ely-extension/         optional extension for Ely IDE (angel.workflow)
 ```
@@ -35,13 +38,17 @@ python3 -m angel.cli run --need "the build is broken"        # plan → tools �
 python3 -m angel.cli tool --self-test         # every tool on its declared sample
 python3 -m angel.cli contract --check         # contract history and compatibility
 python3 -m angel.cli journal --all            # verify every run's hash chain
+python3 -m angel.cli agents list              # the roster, with pinned addresses
+python3 -m angel.cli agents validate --strict # cards, edges, depth, budgets, cycles
+python3 -m angel.cli agents plan --agent isa-planner --need "review this diff"
+python3 -m angel.cli agents call --agent xev-builder --need "add the endpoint" --execute
 python3 -m angel.cli pack --out dist/workflow.zip
 ```
 
 `--json` before the subcommand gives machine-readable output; the exit code is the
 contract (see `EXTENSION-STANDARD.md` §10).
 
-## The five rules of the package
+## The six rules of the package
 
 1. **A skill is a folder with a procedure and a composition.** `SKILL.md` says what
    to do; `skill.json` says when to load it and what to run. One without the other
@@ -57,6 +64,9 @@ contract (see `EXTENSION-STANDARD.md` §10).
    `tool --self-test` possible.
 5. **A run leaves evidence.** Every hand-off is a typed protocol message and every
    run writes a hash-chained journal: what ran, in what order, under what budget.
+6. **An agent is an API that cannot widen itself.** Its card is a contract, its
+   address carries a behaviour pin, its subagents only ever receive an intersection
+   of what it holds, and a call graph with a cycle is refused before it runs.
 
 ## Current state
 
@@ -92,6 +102,33 @@ The router understands English and Spanish terminology, masks negated clauses ("
 tests" never routes to a test skill), and never offers a skill that only shares a
 verb with the need. `route --explain <skill> --need ...` shows the score breakdown.
 
+## Agents and subagents
+
+An **agent is an API**: it publishes a card, it answers at an address, and every
+API may call subagents. `AGENTS.md` is the reference; the short version:
+
+```
+workflow agents list                      # roster, versions, addresses
+workflow agents show xev-builder          # one card in full
+workflow agents validate --strict         # contract, edges, limits, cycles
+workflow agents tree isa-planner          # the delegation graph
+workflow agents address agent://acme/isa-planner->xev-builder
+workflow agents plan  --agent isa-planner --need "review the security of this diff"
+workflow agents call  --agent xev-builder --need "add the endpoint and its tests" --execute
+```
+
+Addresses carry a pin: `agent://acme/xev-builder@1.0.0#3d6252a9`. The pin is a
+hash of the card's behaviour surface, so an exact reference refuses a card that
+changed instead of quietly upgrading it (`E_AGENT_STALE`, exit 13). Authority is
+intersected down the tree, `max_depth`/`max_calls`/budget are checked before a
+call is attempted, a cycle is refused when the roster loads, and every call
+leaves a tree plus a hash-chained journal.
+
+Six cards ship in `agents/`: `isa-planner`, `xev-builder`, `xev-tester`,
+`wev-judge`, `zev-scout`, `governance-auditor`. Their skills are real skills from
+the registry, checked by `agents validate`, so the graph cannot drift into
+fiction.
+
 ## Adding a skill
 
 1. Read `EXTENSION-STANDARD.md` §1–§7.
@@ -124,6 +161,9 @@ without leaving its sandbox. Commands it adds to the palette:
 | `Workflow: tools of a skill` | its tools, risks and contracts |
 | `Workflow: validate the package` | same rules as the CLI, inside the IDE |
 | `Workflow: read the standard` | opens `EXTENSION-STANDARD.md` |
+| `Workflow: pack agents` | every card with its address, limits and edges |
+| `Workflow: agent tree` | the delegation graph reached from each root |
+| `Workflow: agent address` | one card's address, inputs, outputs, guardrails |
 
 Declared permissions: `workspace:read`, `ui`, `commands`, `chat`. No network, no
 writes. Disabling it leaves the package intact and the CLI working.
@@ -139,22 +179,26 @@ find . -type f \( -name "*.py" -o -name "*.md" -o -name "*.json" -o -name "*.mjs
   | sort | xargs wc -l | tail -1
 ```
 
-Current figure: **15,854 lines**.
+Current figure: **19,050 lines** (4.8% below the ceiling).
 
 | Block | Lines |
 |---|---|
-| runtime `angel/` | 3,645 |
+| runtime `angel/` | 4,981 |
 | skill tools | 2,518 |
-| manifests and contracts (`skill.json`, `categories.json`, schemas) | 4,326 |
+| manifests and contracts (`skill.json`, `categories.json`, schemas) | 4,563 |
 | `SKILL.md` procedures | 2,742 |
-| tests | 1,345 |
-| main documents | 633 |
-| Ely extension | 382 |
+| tests | 1,982 |
+| main documents | 1,002 |
+| Ely extension | 528 |
+| agent cards and index (`agents/`) | 451 |
 | maintenance scripts | 240 |
 
-Growing the catalogue costs roughly 120 lines per skill, so the ceiling allows
-about 30 more skills before the budget has to be renegotiated — which is the
-point of measuring it.
+Growing the catalogue costs roughly 120 lines per skill, so the remaining 950
+lines allow about eight more skills — or fewer, if the agent system keeps growing
+at the pace of 0.4 (3,200 lines for six agents, a contract, a test suite and a
+document). That trade-off is exactly what measuring the budget is for: the next
+round has to choose between more skills and more agents instead of pretending it
+can have both for free.
 
 ## Origin of the patterns
 

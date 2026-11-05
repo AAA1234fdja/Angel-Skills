@@ -1,9 +1,9 @@
 {
   "id": "angel.workflow",
   "name": "Angel Workflow",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "publisher": "angel",
-  "description": "Paquete de skills Angel: listar por categoría, cargar una fase en el chat, abrir una skill con sus herramientas y validar el paquete antes de guardar.",
+  "description": "Paquete de skills Angel: listar por categoría, cargar una fase en el chat, abrir una skill con sus herramientas, recorrer el árbol de agentes y validar el paquete antes de guardar.",
   "main": "main.js",
   "permissions": [
     "workspace:read",
@@ -42,13 +42,25 @@
       {
         "id": "angel.workflow.tools",
         "title": "Workflow: ver herramientas de una skill"
+      },
+      {
+        "id": "angel.workflow.agents",
+        "title": "Workflow: agentes del paquete"
+      },
+      {
+        "id": "angel.workflow.agenttree",
+        "title": "Workflow: árbol de agentes"
+      },
+      {
+        "id": "angel.workflow.agentaddress",
+        "title": "Workflow: dirección de un agente"
       }
     ]
   },
   "l10n": {
     "en": {
       "name": "Angel Workflow",
-      "description": "Angel skill pack: list by category, load a phase into the chat, open a skill with its tools, and validate the pack before saving."
+      "description": "Angel skill pack: list by category, load a phase into the chat, open a skill with its tools, walk the agent tree, and validate the pack before saving."
     }
   }
 }
