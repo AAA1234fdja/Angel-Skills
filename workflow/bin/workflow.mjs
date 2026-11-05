@@ -172,7 +172,7 @@ function cmdPlan(root, argv) {
 }
 
 function cmdPack(root, argv) {
-  const out = flag(argv, "--out") || join(root, "dist", "workflow.zip");
+  const out = resolve(flag(argv, "--out") || join(root, "dist", "workflow.zip"));
   const zip = process.env.WORKFLOW_ZIP_CMD || "zip";
   const rel = ["EXTENSION-STANDARD.md", "categories.json", "CHANGELOG.md", "README.md", "skills", "bin", "src", "ely-extension"];
   mkdirSync(dirname(out), { recursive: true });
