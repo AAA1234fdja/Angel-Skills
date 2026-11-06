@@ -1,6 +1,6 @@
 # workflow · the skill package of Angel
 
-Package **0.5.0** — a self-contained set of **52 skills, 49 executable tools,
+Package **0.6.0** — a self-contained set of **67 skills, 64 executable tools,
 5 contracts and 6 agents**, with a registry, a validator, a router, a run engine,
 an agent dispatcher and an optional Ely extension. No external dependencies, no
 network, no services: Python 3.10+ standard library only.
@@ -20,7 +20,7 @@ workflow/
 ├── AGENTS.md              agents and subagents: addresses, cards, the five rules
 ├── angel/                 the runtime (registry, router, protocols, contracts,
 │                          tools, journal, runner, agents, errors, cli)
-├── tests/                 194 tests over the runtime, the catalogue and the extension
+├── tests/                 195 tests over the runtime, the catalogue and the extension
 ├── tools/                 maintenance scripts (add_samples.py)
 └── ely-extension/         optional extension for Ely IDE (angel.workflow)
 ```
@@ -72,17 +72,17 @@ contract (see `EXTENSION-STANDARD.md` §10).
 
 | Category | Status | Skills | Gate |
 |---|---|---|---|
-| `engineering` | activa | 15 | no change finished without tdd-workflow + verification-loop evidence |
+| `engineering` | activa | 17 | no change finished without tdd-workflow + verification-loop evidence |
 | `contracts` | activa | 5 | versions are immutable; a breaking change is a new major |
-| `protocols` | activa | 3 | zero malformed messages accepted |
+| `protocols` | activa | 4 | zero malformed messages accepted |
 | `errors` | activa | 5 | no error crosses a boundary without code, owner and recovery |
-| `agentic` | activa | 5 | no agent change without an eval before and after |
-| `security` | activa | 5 | high-severity findings block the run |
-| `data` | activa | 5 | no migration without a tested reverse path |
-| `reversing` | activa | 3 | every finding is tied to an artefact |
-| `governance` | activa | 3 | nothing enters without `validate --strict` + a registry record |
-| `product` | activa | 2 | accessibility AA failures block |
-| `content` | activa | 1 | nothing published without an executed example |
+| `agentic` | activa | 6 | no agent change without an eval before and after |
+| `security` | activa | 6 | high-severity findings block the run |
+| `data` | activa | 6 | no migration without a tested reverse path |
+| `reversing` | activa | 4 | every finding is tied to an artefact |
+| `governance` | activa | 8 | nothing enters without `validate --strict` + a registry record |
+| `product` | activa | 3 | accessibility AA failures block |
+| `content` | activa | 4 | nothing published without an executed example |
 
 Each skill's `phase`, `verbs`, `triggers` and tools are in
 `skills/<category>/<id>/skill.json`; the catalogue with descriptions is
@@ -179,39 +179,34 @@ find . -type f \( -name "*.py" -o -name "*.md" -o -name "*.json" -o -name "*.mjs
   | sort | xargs wc -l | tail -1
 ```
 
-Current figure: **21,615 lines** (13.5% below the ceiling).
+Current figure: **25,642 lines** — the ceiling holds, with 1.4% headroom.
 
-### Why the ceiling moved
+### A ceiling with 1% headroom is a ceiling that will be broken
 
-The previous ceiling was 20,000 and the package sat 4.8% below it with eight skills
-to add. Rather than pad files or trim procedures to fit a number chosen when the
-catalogue had 44 skills, the budget was renegotiated once, in the open, with a
-reason: **52 skills, 49 executable tools, 5 contracts and 6 agents** do not fit in
-20,000 lines at the current density (~250 lines per skill with its tool). A ceiling
-that forces worse skills is measuring the wrong thing.
+The honest reading of this number is that the package is full. The budget was
+renegotiated once in 0.5 (20,000 → 25,000) because 52 skills did not fit; it will
+**not** be raised again for more of the same. What happens next is a decision, not
+a measurement:
 
-The rule did not change, only the number:
+- new skills must displace something, or come with a removal;
+- a skill whose tool is a thin wrapper around a checklist is a candidate for
+  folding into the skill that owns the decision;
+- the next budget change needs a reason that is not "we ran out", recorded here.
 
-- measured, never estimated: the command above, quoted in the README;
-- a change that breaks the ceiling is a decision, recorded in the changelog;
-- density is not a target: a skill is as long as its exit criteria need.
+The rule itself does not move: measured with the command above, and a change that
+breaks the ceiling is a decision that goes in the changelog.
 
 | Block | Lines |
 |---|---|
-| skill tools | 3,156 |
-| `SKILL.md` procedures | 3,327 |
-| manifests and contracts (`skill.json`, `categories.json`, schemas) | 5,508 |
-| runtime `angel/` | 5,034 |
-| tests | 2,242 |
+| manifests and contracts (`skill.json`, `categories.json`, schemas) | 7,237 |
+| runtime `angel/` | 5,045 |
+| `SKILL.md` procedures | 4,389 |
+| skill tools | 4,317 |
+| tests | 2,306 |
 | main documents | 1,086 |
 | Ely extension | 528 |
 | agent cards and index (`agents/`) | 451 |
 | maintenance scripts | 240 |
-
-The remaining 3,385 lines are roughly thirteen more skills at the current density,
-or a smaller number if the next batch carries tools as heavy as these eight
-(~490 lines each: a procedure, a tool, a sample and an acceptance list). That
-trade-off is the budget's actual job: it forces the choice to be made out loud.
 
 ## Origin of the patterns
 

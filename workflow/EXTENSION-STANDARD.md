@@ -1,7 +1,7 @@
 # EXTENSION-STANDARD.md — how a skill is written here
 
 > Read this **before** creating or editing any skill. `WORKFLOW.md` explains the
-> purpose; this file is the contract. Package `0.5.0` · updated 2026-11-05
+> purpose; this file is the contract. Package `0.6.0` · updated 2026-11-05
 >
 > Machine check: `workflow validate --strict` implements §5 and §6. If the
 > standard and the validator disagree, the validator wins and this file is a bug.

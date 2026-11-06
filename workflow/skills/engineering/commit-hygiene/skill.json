@@ -1,0 +1,98 @@
+{
+  "id": "commit-hygiene",
+  "category": "engineering",
+  "description": "Write commits a reviewer and a future debugger can use: one change, a subject that says the why, a body that says the what. Use when a branch is about to be reviewed, when history must be bisected, or when a vague message is about to enter the main branch.",
+  "phase": "implement",
+  "verbs": [
+    "implement"
+  ],
+  "triggers": [
+    "commit message",
+    "squash the branch",
+    "what should the commit say",
+    "git history",
+    "commit hygiene"
+  ],
+  "keywords": [
+    "commit",
+    "message",
+    "revert",
+    "bisect",
+    "squash",
+    "subject"
+  ],
+  "tools": [
+    {
+      "id": "commit-lint",
+      "entry": "tools/commit_lint.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Flags vague commit subjects, mixed concerns, oversized diffs and secret-shaped content.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "commits": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "commits"
+        ]
+      },
+      "sample": {
+        "commits": [
+          {
+            "subject": "reject expired tokens",
+            "body": "the issuer moved to 5m TTLs",
+            "files": [
+              "auth/tokens.py"
+            ],
+            "insertions": 20,
+            "deletions": 8,
+            "concerns": [
+              "auth"
+            ]
+          },
+          {
+            "subject": "update",
+            "files": [
+              "a.py",
+              "b.py"
+            ],
+            "insertions": 900,
+            "concerns": [
+              "auth",
+              "billing"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "commit-lint reports no vague subject and no mixed concern",
+      "kind": "tool",
+      "tool": "commit-lint"
+    },
+    {
+      "id": "secrets",
+      "statement": "no commit contains a secret-shaped string",
+      "kind": "review"
+    },
+    {
+      "id": "units",
+      "statement": "each commit can be reverted on its own",
+      "kind": "review"
+    }
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "id": "premortem",
+  "category": "governance",
+  "description": "Assume the project already failed, then write why: failure modes, the earliest signal of each and one cheap prevention. Use when a plan is about to be committed to, when a team is unusually confident, or when a launch has no stated way to fail.",
+  "phase": "plan",
+  "verbs": [
+    "plan",
+    "audit"
+  ],
+  "triggers": [
+    "premortem",
+    "what could go wrong",
+    "assume it failed",
+    "risk of the plan"
+  ],
+  "keywords": [
+    "premortem",
+    "risk",
+    "failure",
+    "signal",
+    "mitigation",
+    "plan",
+    "confidence"
+  ],
+  "tools": [
+    {
+      "id": "premortem-scan",
+      "entry": "tools/premortem_scan.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Flags vague failure modes, missing signals and preventions that cost more than the risk.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "modes": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "modes"
+        ]
+      },
+      "sample": {
+        "modes": [
+          {
+            "mode": "the vendor rate limit forces a queue nobody built",
+            "signal": "429s appear in the integration logs",
+            "likelihood": "high",
+            "impact": "high",
+            "prevention": "add a bounded queue before launch",
+            "cost": "medium",
+            "owner": "platform"
+          },
+          {
+            "mode": "the migration script runs twice on a retry",
+            "signal": "duplicate rows in the ledger",
+            "likelihood": "medium",
+            "impact": "high",
+            "prevention": "idempotency key on the migration",
+            "cost": "low",
+            "owner": "data"
+          },
+          {
+            "mode": "scalability",
+            "likelihood": "high",
+            "impact": "medium",
+            "prevention": "load test",
+            "cost": "high"
+          }
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "premortem-scan reports no mode without a signal or a mechanism",
+      "kind": "tool",
+      "tool": "premortem-scan"
+    },
+    {
+      "id": "three",
+      "statement": "the top three modes each have one cheap prevention with an owner",
+      "kind": "review"
+    },
+    {
+      "id": "reopen",
+      "statement": "a date is set to re-read the premortem",
+      "kind": "artifact"
+    }
+  ]
+}

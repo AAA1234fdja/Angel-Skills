@@ -1,0 +1,91 @@
+{
+  "id": "technical-debt-ledger",
+  "category": "engineering",
+  "description": "Keep debt as a ledger with interest, not a pile of TODOs: what it costs per month, who owns it and what pays it down. Use when debt appears in every retro without a decision, when a rewrite is proposed as the only option, or when a shortcut is taken on purpose.",
+  "phase": "plan",
+  "verbs": [
+    "plan",
+    "audit"
+  ],
+  "triggers": [
+    "technical debt",
+    "should we rewrite",
+    "debt backlog",
+    "cost of the mess"
+  ],
+  "keywords": [
+    "debt",
+    "ledger",
+    "interest",
+    "principal",
+    "payback",
+    "rewrite",
+    "shortcut"
+  ],
+  "tools": [
+    {
+      "id": "debt-ledger",
+      "entry": "tools/debt_ledger.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Sorts debt by payback and totals the monthly interest the team pays.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "items"
+        ]
+      },
+      "sample": {
+        "items": [
+          {
+            "id": "ci-40min",
+            "symptom": "deploys take 40 minutes",
+            "principal_hours": 40,
+            "interest_hours_month": 10,
+            "kind": "inadvertent",
+            "owner": "platform"
+          },
+          {
+            "id": "legacy-auth",
+            "symptom": "every auth change needs two PRs",
+            "principal_hours": 120,
+            "interest_hours_month": 2,
+            "kind": "accepted",
+            "owner": "identity"
+          }
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "debt-ledger reports no row without interest or owner",
+      "kind": "tool",
+      "tool": "debt-ledger"
+    },
+    {
+      "id": "plan",
+      "statement": "the payback candidates are in a plan or explicitly deferred",
+      "kind": "review"
+    },
+    {
+      "id": "review",
+      "statement": "the ledger has a monthly review date",
+      "kind": "artifact"
+    }
+  ]
+}

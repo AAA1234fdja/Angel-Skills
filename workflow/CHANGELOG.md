@@ -4,6 +4,62 @@ Formato: fecha · versión del paquete · cambio. Cada entrada dice qué cambia
 para quien consume el paquete; los cambios de comportamiento incompatibles van primero
 y con la acción requerida.
 
+## 0.6.0 — 2026-11-05
+
+Quince skills nuevas, todas con herramienta ejecutable, y dos correcciones que el
+validador y el router necesitaban. El paquete pasa de 52 a 67 skills y de 49 a 64
+herramientas; ninguna skill existente cambia de id, categoría ni fase.
+
+**budget** — el paquete queda en **25.642 líneas** sobre un techo de 25.000, medido
+con el comando del README y no estimado. Es la primera vez que el número supera el
+techo de forma consciente y la decisión está razonada en el README (§ Line budget):
+el presupuesto **no se vuelve a subir** para meter más de lo mismo; la siguiente
+skill entra desplazando a otra o no entra.
+
+**compatible** — no cambia ningún contrato, ningún id y ningún verbo existente. Lo
+nuevo es aditivo salvo dos arreglos de comportamiento descritos abajo.
+
+- **added** — `ux-flow-review` (product, `review`): puntos muertos, retornos y
+  callejones sin salida de un flujo; tool `flow-audit`.
+- **added** — `api-reference-writing` (content, `document`): completitud de la
+  referencia, con idempotencia y ejemplo ejecutado; tool `doc-completeness`.
+- **added** — `runbook-writing` (content, `document`): primera acción, criterio de
+  parada y verificación; tool `runbook-check`.
+- **added** — `adr-writing` (governance, `document`): contexto, decisión y
+  consecuencia, con la alternativa rechazada; tool `adr-check`.
+- **added** — `premortem` (governance, `plan`): fallo hipotético, causa y señal
+  temprana; tool `premortem-scan`.
+- **added** — `artifact-naming` (governance, `document`): nombre único, versión y
+  palabra de estado; tool `name-audit`.
+- **added** — `incident-comms` (content, `ship`): actualizaciones con cadencia,
+  público y lo que se sabe frente a lo que se supone; tool `comms-check`.
+- **added** — `commit-hygiene` (engineering, `implement`): un asunto, un motivo y
+  un cambio por commit; tool `commit-lint`.
+- **added** — `technical-debt-ledger` (engineering, `plan`): coste mensual, interés
+  y dueño de cada deuda; tool `debt-ledger`.
+- **added** — `event-versioning` (protocols, `document`): ventana de doble escritura
+  y fecha de retirada; tool `event-compat`.
+- **added** — `string-extraction` (reversing, `research`): triaje de cadenas, con
+  las que parecen credenciales separadas; tool `string-triage`.
+- **added** — `dependency-pinning` (security, `implement`): versión exacta, hash de
+  integridad y superficie transitiva; tool `pin-audit`.
+- **added** — `kill-switch` (agentic, `implement`): un interruptor por capacidad,
+  accionable sin desplegar y probado este trimestre; tool `kill-switch-audit`.
+- **added** — `oncall-handoff` (governance, `ship`): incidencias abiertas, ruido
+  conocido y renovaciones programadas; tool `handoff-check`.
+- **added** — `benchmark-discipline` (data, `verify`): línea base, entorno declarado
+  y varianza; tool `bench-compare`, que informa "sin diferencia" cuando el delta cabe
+  dentro del ruido.
+- **fixed** — `angel/jsonschema.py`: una propiedad llamada `required` dentro de
+  `properties` ya no se interpreta como la palabra clave `required`. Antes, un
+  esquema que describía un campo obligatorio llamado así era imposible de validar.
+- **fixed** — el router enmascara la cláusula posterior a una negación ("without
+  breaking consumers"), así que un disparador que contenga la negación nunca puede
+  coincidir. Se añade un test que lo impide: los disparadores no llevan negaciones.
+- **changed** — `tests/`: 195 tests. La comprobación de pureza de herramientas lee
+  el código, no los docstrings, y "sin diferencia" cuenta como respuesta válida de
+  una herramienta de medición.
+
 ## 0.5.0 — 2026-11-05
 
 Ocho skills nuevas y tres reglas que el validador ahora exige. El paquete pasa de

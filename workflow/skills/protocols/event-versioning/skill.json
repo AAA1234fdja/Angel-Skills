@@ -1,0 +1,115 @@
+{
+  "id": "event-versioning",
+  "category": "protocols",
+  "description": "Change an event schema without breaking consumers who read the old shape: additive first, dual-write, then retire. Use when a field is added to an event, when a consumer breaks after a producer deploy, or when just adding a field is the plan.",
+  "phase": "document",
+  "verbs": [
+    "document",
+    "migrate"
+  ],
+  "triggers": [
+    "version an event",
+    "consumer broke",
+    "add a field to the event",
+    "event schema change",
+    "consumers on the old shape"
+  ],
+  "keywords": [
+    "event",
+    "versioning",
+    "consumer",
+    "schema",
+    "dual write",
+    "breaking",
+    "deprecation",
+    "compatible"
+  ],
+  "tools": [
+    {
+      "id": "event-compat",
+      "entry": "tools/event_compat.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Classifies an event schema change as additive or breaking and lists the changes.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "old": {
+            "type": "object"
+          },
+          "new": {
+            "type": "object"
+          },
+          "window_ends": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "old",
+          "new"
+        ]
+      },
+      "sample": {
+        "name": "order.created",
+        "old": {
+          "version": "1",
+          "fields": {
+            "id": {
+              "type": "string",
+              "required": true
+            },
+            "amount": {
+              "type": "integer",
+              "required": true,
+              "unit": "cents"
+            }
+          }
+        },
+        "new": {
+          "version": "2",
+          "fields": {
+            "id": {
+              "type": "string",
+              "required": true
+            },
+            "amount": {
+              "type": "integer",
+              "required": true,
+              "unit": "dollars"
+            },
+            "currency": {
+              "type": "string",
+              "required": false
+            }
+          }
+        }
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "event-compat classifies the change and the window is recorded if breaking",
+      "kind": "tool",
+      "tool": "event-compat"
+    },
+    {
+      "id": "consumers",
+      "statement": "every consumer of the old shape is named with an owner",
+      "kind": "artifact"
+    },
+    {
+      "id": "retire",
+      "statement": "the old shape has a retirement date",
+      "kind": "review"
+    }
+  ]
+}

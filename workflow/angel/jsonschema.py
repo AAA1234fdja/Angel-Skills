@@ -146,11 +146,22 @@ def _validate_array(value: list[Any], schema: dict[str, Any], path: str) -> None
             validate(item, schema["items"], path=f"{path.rstrip('/')}/{i}")
 
 
+#: keys a *data* object may carry without being validated, because they are schema
+#: keywords, not user fields. A tool whose payload includes a sub-schema (an event's
+#: `required` list, a field's `type`) must be able to declare that word as data.
+RESERVED_WHEN_DATA = ("required",)
+
+
 def _validate_object(value: dict[str, Any], schema: dict[str, Any], path: str) -> None:
-    for key in schema.get("required", []):
+    # A schema that declares its own shape for one of these words (by listing it in
+    # `properties`) is validating data, not applying the keyword: JSON Schema allows
+    # `properties.required`, and so does this subset.
+    properties = schema.get("properties", {})
+    reserved = [k for k in RESERVED_WHEN_DATA if k in properties]
+    required = [k for k in schema.get("required", []) if k not in reserved]
+    for key in required:
         if key not in value:
             raise SchemaError(f"missing required property {key!r}", path)
-    properties = schema.get("properties", {})
     additional = schema.get("additionalProperties", True)
     for key, item in value.items():
         if key in properties:

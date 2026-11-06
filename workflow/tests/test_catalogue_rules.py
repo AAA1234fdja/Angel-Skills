@@ -10,6 +10,7 @@ a suggestion, so each one is tested here by breaking it on purpose.
 from __future__ import annotations
 
 import json
+import re
 import shutil
 import tempfile
 
@@ -55,10 +56,19 @@ def _errors(root: Path) -> list[str]:
 
 
 class AcceptanceTests(AngelTestCase):
-    def test_every_skill_added_in_05_declares_machine_readable_criteria(self):
-        new_skills = ("release-readiness", "api-design", "threat-model",
-                      "data-retention", "alert-design", "flaky-test-triage",
-                      "dependency-graph", "prototype-spike")
+    @staticmethod
+    def _new_skills() -> tuple[str, ...]:
+        """Every skill added after 0.4: they must carry acceptance criteria."""
+        return ("release-readiness", "api-design", "threat-model", "data-retention",
+                "alert-design", "flaky-test-triage", "dependency-graph",
+                "prototype-spike", "ux-flow-review", "api-reference-writing",
+                "runbook-writing", "adr-writing", "commit-hygiene", "premortem",
+                "artifact-naming", "incident-comms", "event-versioning",
+                "string-extraction", "technical-debt-ledger", "dependency-pinning",
+                "kill-switch", "oncall-handoff", "benchmark-discipline")
+
+    def test_every_skill_added_after_04_declares_machine_readable_criteria(self):
+        new_skills = cls = AcceptanceTests._new_skills()
         for skill_id in new_skills:
             with self.subTest(skill=skill_id):
                 manifest = json.loads(next(REAL_ROOT.glob(
@@ -158,6 +168,16 @@ class VocabularyTests(AngelTestCase):
                 with self.subTest(skill=skill.id, verb=verb):
                     self.assertIn(verb, router.VERBS)
 
+    def test_the_objective_is_not_the_place_to_put_a_trigger(self):
+        """A trigger is a phrase people say; a need is a sentence they wrote."""
+        manifest = json.loads(next(REAL_ROOT.glob(
+            "skills/*/event-versioning/skill.json")).read_text(encoding="utf-8"))
+        joined = " ".join(manifest["triggers"]).lower()
+        for negator in ("without", "except", "sin "):
+            self.assertNotIn(negator, joined,
+                             "a trigger containing a negator can never match: the "
+                             "router masks the clause after it")
+
     def test_the_two_phase_orderings_are_the_same_ordering(self):
         self.assertEqual(tuple(registry.PHASES), tuple(router.PHASE_ORDER))
 
@@ -170,6 +190,21 @@ class VocabularyTests(AngelTestCase):
 
     def test_each_new_skill_routes_from_its_own_trigger(self):
         cases = {
+            "ux-flow-review": "review the checkout flow, users get stuck at one step",
+            "api-reference-writing": "write the api reference for this endpoint",
+            "runbook-writing": "write a runbook for this alert, first action",
+            "adr-writing": "write an adr for choosing redis",
+            "commit-hygiene": "what should the commit message say, squash the branch",
+            "premortem": "run a premortem: assume the plan failed, what went wrong",
+            "artifact-naming": "naming convention for release artefacts, which file is latest",
+            "incident-comms": "incident update for the status page, tell the customers",
+            "event-versioning": "the consumer broke after we changed the event schema",
+            "string-extraction": "extract strings from the binary without running it",
+            "technical-debt-ledger": "the technical debt backlog needs an interest rate",
+            "dependency-pinning": "pin dependencies and check the lockfile",
+            "kill-switch": "the agent needs a kill switch, how do we stop it",
+            "oncall-handoff": "write the oncall handoff for the rotation change",
+            "benchmark-discipline": "benchmark whether it is faster, with variance",
             "release-readiness": "is it safe to deploy, what is the rollback plan",
             "api-design": "define the endpoint surface and its idempotency",
             "threat-model": "threat model this new trust boundary",
@@ -188,7 +223,12 @@ class NewSkillContentTests(AngelTestCase):
     """The eight new skills must obey the same standard as the rest of the pack."""
 
     NEW = ("release-readiness", "api-design", "threat-model", "data-retention",
-           "alert-design", "flaky-test-triage", "dependency-graph", "prototype-spike")
+           "alert-design", "flaky-test-triage", "dependency-graph", "prototype-spike",
+           "ux-flow-review", "api-reference-writing", "runbook-writing", "adr-writing",
+           "commit-hygiene", "premortem", "artifact-naming", "incident-comms",
+           "event-versioning", "string-extraction", "technical-debt-ledger",
+           "dependency-pinning", "kill-switch", "oncall-handoff",
+           "benchmark-discipline")
 
     def test_every_new_skill_has_a_tool_a_sample_and_an_exit_criterion(self):
         for skill_id in self.NEW:
@@ -205,11 +245,15 @@ class NewSkillContentTests(AngelTestCase):
             skill = self.registry.skill(skill_id)
             for spec in skill.tools:
                 source = (skill.path / spec.entry).read_text(encoding="utf-8")
+                code = "\n".join(line for line in source.splitlines()
+                                 if not line.lstrip().startswith(("#", ">")))
+                # a docstring may *describe* a payload; the check is about code
+                code = re.sub(r'"""[\s\S]*?"""', "", code)
                 with self.subTest(tool=f"{skill_id}/{spec.id}"):
                     self.assertEqual(spec.risk, "read")
                     for forbidden in ("import os", "import socket", "open(",
                                       "subprocess", "requests"):
-                        self.assertNotIn(forbidden, source)
+                        self.assertNotIn(forbidden, code)
 
     def test_every_new_tool_reports_a_denominator_and_an_advice(self):
         box = tools.ToolBox(self.registry, profile="standard")
@@ -230,6 +274,11 @@ class NewSkillContentTests(AngelTestCase):
             ("release-readiness", "release-gate"): {"blocked": "communication"},
             ("dependency-graph", "dependency-audit"): {"cycle": "infra.db"},
             ("threat-model", "threat-coverage"): {"empty": "boundaries"},
+            ("prototype-spike", "spike-budget"): {"over_box": True},
+            ("kill-switch", "kill-switch-audit"): {"untested_switch": True},
+            ("benchmark-discipline", "bench-compare"): {"same_samples": True},
+            ("commit-hygiene", "commit-lint"): {"vague": True},
+            ("event-versioning", "event-compat"): {"breaking": True},
         }
         for (skill_id, tool_id), expectation in failing.items():
             sample = box.sample_for(skill_id, tool_id)
@@ -241,10 +290,25 @@ class NewSkillContentTests(AngelTestCase):
                 sample["edges"] = [{"from": "a", "to": "b"}, {"from": "b", "to": "a"}]
             if "empty" in expectation:
                 sample = {"boundaries": []}
+            if "over_box" in expectation:
+                sample["spent_hours"] = float(sample["box_hours"]) + 5
+            if "untested_switch" in expectation:
+                sample["switches"] = [{"capability": "auto-merge"}]  # nothing else
+            if "same_samples" in expectation:
+                sample["candidate"] = {"samples": list(sample["baseline"]["samples"])}
+            if "vague" in expectation:
+                sample["commits"] = [{"subject": "wip", "concerns": ["a", "b"]}]
+            if "breaking" in expectation:
+                sample["new"]["fields"]["amount"]["unit"] = "dollars"
             result = box.run(skill_id, tool_id, sample)
             with self.subTest(tool=f"{skill_id}/{tool_id}"):
                 self.assertTrue(result.ok, result.error)
-                self.assertFalse(result.output["ok"], "the tool passed a broken input")
+                # "no difference" is a legitimate verdict: the tool must not be able
+                # to claim one either, so the assertion is on the claim, not on `ok`
+                refused = (not result.output["ok"]
+                           or "no difference" in str(result.output.get("verdict"))
+                           or "inconclusive" in str(result.output.get("verdict")))
+                self.assertTrue(refused, f"the tool passed a broken input: {result.output}")
 
     def test_changelog_lint_now_requires_an_audience(self):
         box = tools.ToolBox(self.registry, profile="standard")

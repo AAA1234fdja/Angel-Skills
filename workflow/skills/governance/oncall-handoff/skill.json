@@ -1,0 +1,134 @@
+{
+  "id": "oncall-handoff",
+  "category": "governance",
+  "description": "Hand over an on-call rotation so the next person starts informed: open incidents, recent changes, known noise and what is one step from breaking. Use when a rotation changes, before a holiday, or when the new responder has to read history to find out what is on fire.",
+  "phase": "ship",
+  "verbs": [
+    "ship",
+    "document"
+  ],
+  "triggers": [
+    "oncall handoff",
+    "change of shift",
+    "rotation change",
+    "handover"
+  ],
+  "keywords": [
+    "oncall",
+    "handoff",
+    "rotation",
+    "incident",
+    "noise",
+    "escalation",
+    "shift"
+  ],
+  "tools": [
+    {
+      "id": "handoff-check",
+      "entry": "tools/handoff_check.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Checks a handoff note for open incidents, rollbacks, the known-noise list, scheduled events and contacts.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "window": {
+            "type": "string"
+          },
+          "incidents": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "changes": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "noise": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "fragile": {
+            "type": "string"
+          },
+          "scheduled": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "contacts": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "window"
+        ]
+      },
+      "sample": {
+        "window": "2026-11-05 -> 2026-11-12",
+        "incidents": [
+          {
+            "state": "watching",
+            "owner": "ana",
+            "next": "check error rate after the deploy"
+          }
+        ],
+        "changes": [
+          {
+            "what": "deploy 1.4.2",
+            "rollback": "redeploy 1.4.1"
+          }
+        ],
+        "noise": [
+          "disk-warning closes itself",
+          "cache-hit-rate flap"
+        ],
+        "fragile": "the export worker, surviving on retries",
+        "scheduled": [
+          {
+            "what": "TLS renewal",
+            "when": "2026-11-09"
+          }
+        ],
+        "contacts": [
+          {
+            "area": "payments",
+            "who": "ana"
+          }
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "handoff-check reports every section, including the noise list",
+      "kind": "tool",
+      "tool": "handoff-check"
+    },
+    {
+      "id": "read",
+      "statement": "the next responder read it back and asked questions",
+      "kind": "review"
+    },
+    {
+      "id": "dates",
+      "statement": "scheduled renewals have dates inside the window",
+      "kind": "artifact"
+    }
+  ]
+}

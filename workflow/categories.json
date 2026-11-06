@@ -1,5 +1,5 @@
 {
-  "version": "0.5.0",
+  "version": "0.6.0",
   "updated": "2026-11-05",
   "standard": "EXTENSION-STANDARD.md",
   "main": "WORKFLOW.md",
@@ -166,6 +166,20 @@
           "status": "original",
           "phase": "debug",
           "description": "Turn a flaky test into a diagnosis: quarantine, reproduce, name the source of nondeterminism and fix or delete. Use when CI fails intermittently, when a retry button becomes policy, or before a suite's signal is ignored."
+        },
+        {
+          "id": "commit-hygiene",
+          "origin": "original",
+          "status": "original",
+          "phase": "implement",
+          "description": "Scaffold for commit-hygiene. Use when it is needed."
+        },
+        {
+          "id": "technical-debt-ledger",
+          "origin": "original",
+          "status": "original",
+          "phase": "plan",
+          "description": "Scaffold"
         }
       ],
       "pending": []
@@ -256,6 +270,13 @@
           "status": "adopted",
           "phase": "implement",
           "description": "Derive and maintain a message schema from a dataclass so code and contract cannot drift."
+        },
+        {
+          "id": "event-versioning",
+          "origin": "original",
+          "status": "original",
+          "phase": "document",
+          "description": "Scaffold"
         }
       ],
       "pending": []
@@ -360,6 +381,13 @@
           "status": "adopted",
           "phase": "implement",
           "description": "Run unattended loops safely: explicit stop conditions, budgets, checkpoints and human gates."
+        },
+        {
+          "id": "kill-switch",
+          "origin": "original",
+          "status": "original",
+          "phase": "implement",
+          "description": "Scaffold"
         }
       ],
       "pending": []
@@ -379,18 +407,18 @@
       ],
       "skills": [
         {
-          "id": "security-review",
-          "origin": "ECC · skills/security-review",
+          "id": "dependency-audit",
+          "origin": "ECC · skills/dependencies (pattern)",
           "status": "adopted",
-          "phase": "review",
-          "description": "Adversarial review of a diff for reachable vulnerabilities, ranked by exploitability."
+          "phase": "audit",
+          "description": "Audit imports and dependencies for unused, unpinned or unreviewed packages."
         },
         {
-          "id": "secret-scan",
-          "origin": "ECC · skills/security-scan",
-          "status": "adopted",
-          "phase": "verify",
-          "description": "Find credentials and high-entropy strings in the tree and diff, with rotation guidance."
+          "id": "dependency-pinning",
+          "origin": "original",
+          "status": "original",
+          "phase": "implement",
+          "description": "Pin and verify what you install: exact versions, lockfile integrity, transitive surface and an update path."
         },
         {
           "id": "safety-guard",
@@ -400,11 +428,18 @@
           "description": "Guard destructive operations behind risk levels and explicit confirmation."
         },
         {
-          "id": "dependency-audit",
-          "origin": "ECC · skills/dependencies (pattern)",
+          "id": "secret-scan",
+          "origin": "ECC · skills/security-scan",
           "status": "adopted",
-          "phase": "audit",
-          "description": "Audit imports and dependencies for unused, unpinned or unreviewed packages."
+          "phase": "verify",
+          "description": "Find credentials and high-entropy strings in the tree and diff, with rotation guidance."
+        },
+        {
+          "id": "security-review",
+          "origin": "ECC · skills/security-review",
+          "status": "adopted",
+          "phase": "review",
+          "description": "Adversarial review of a diff for reachable vulnerabilities, ranked by exploitability."
         },
         {
           "id": "threat-model",
@@ -464,6 +499,13 @@
           "status": "original",
           "phase": "design",
           "description": "Decide what is kept, for how long, and what deletes it: purpose, retention window, legal hold and the deletion path. Use when a new dataset is added, a request to delete arrives, or an audit asks why the record still exists."
+        },
+        {
+          "id": "benchmark-discipline",
+          "origin": "original",
+          "status": "original",
+          "phase": "verify",
+          "description": "Scaffold"
         }
       ],
       "pending": []
@@ -483,11 +525,11 @@
       ],
       "skills": [
         {
-          "id": "reverse-engineering",
-          "origin": "ECC · skills/osint-investigation (method) + repo-scan",
+          "id": "api-reconstruction",
+          "origin": "ECC · skills/api-connector-builder",
           "status": "adopted",
-          "phase": "research",
-          "description": "Recover the behaviour of an unknown system: static triage, dynamic observation, protocol reconstruction, report."
+          "phase": "implement",
+          "description": "Rebuild an undocumented HTTP API from captured traffic into an openapi-style spec and a validated client."
         },
         {
           "id": "binary-triage",
@@ -497,11 +539,18 @@
           "description": "First pass on an unknown binary: type, architecture, strings, imports, packing signals, without executing it."
         },
         {
-          "id": "api-reconstruction",
-          "origin": "ECC · skills/api-connector-builder",
+          "id": "reverse-engineering",
+          "origin": "ECC · skills/osint-investigation (method) + repo-scan",
           "status": "adopted",
-          "phase": "implement",
-          "description": "Rebuild an undocumented HTTP API from captured traffic into an openapi-style spec and a validated client."
+          "phase": "research",
+          "description": "Recover the behaviour of an unknown system: static triage, dynamic observation, protocol reconstruction, report."
+        },
+        {
+          "id": "string-extraction",
+          "origin": "original",
+          "status": "original",
+          "phase": "research",
+          "description": "Pull the useful strings out of an artefact you cannot run: URLs, paths, keys, errors and formats, then decide which are evidence."
         }
       ],
       "pending": []
@@ -540,6 +589,34 @@
           "status": "adopted",
           "phase": "meta",
           "description": "Keep a changelog that a consumer can act on: what changed, what breaks, what to do."
+        },
+        {
+          "id": "adr-writing",
+          "origin": "original",
+          "status": "original",
+          "phase": "document",
+          "description": "Scaffold for adr-writing. Use when it is needed."
+        },
+        {
+          "id": "artifact-naming",
+          "origin": "original",
+          "status": "original",
+          "phase": "document",
+          "description": "Scaffold for artifact-naming. Use when it is needed."
+        },
+        {
+          "id": "premortem",
+          "origin": "original",
+          "status": "original",
+          "phase": "plan",
+          "description": "Scaffold"
+        },
+        {
+          "id": "oncall-handoff",
+          "origin": "original",
+          "status": "original",
+          "phase": "ship",
+          "description": "Scaffold"
         }
       ],
       "pending": []
@@ -570,6 +647,13 @@
           "status": "original",
           "phase": "ship",
           "description": "Decide whether a change may ship: the five gates, the rollback path, and the evidence for each. Use when a release is being announced, a flag is about to be turned on, or a hotfix skips the normal path."
+        },
+        {
+          "id": "ux-flow-review",
+          "origin": "original",
+          "status": "original",
+          "phase": "review",
+          "description": "Scaffold for ux-flow-review. Use when it is needed."
         }
       ],
       "pending": []
@@ -592,6 +676,27 @@
           "status": "adopted",
           "phase": "document",
           "description": "Write and review documentation that stays true: source of truth, audience, failure modes, examples that run."
+        },
+        {
+          "id": "api-reference-writing",
+          "origin": "original",
+          "status": "original",
+          "phase": "document",
+          "description": "Scaffold for api-reference-writing. Use when it is needed."
+        },
+        {
+          "id": "runbook-writing",
+          "origin": "original",
+          "status": "original",
+          "phase": "document",
+          "description": "Scaffold for runbook-writing. Use when it is needed."
+        },
+        {
+          "id": "incident-comms",
+          "origin": "original",
+          "status": "original",
+          "phase": "ship",
+          "description": "Scaffold for incident-comms. Use when it is needed."
         }
       ],
       "pending": []

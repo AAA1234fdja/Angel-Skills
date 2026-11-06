@@ -1,0 +1,129 @@
+{
+  "id": "benchmark-discipline",
+  "category": "data",
+  "description": "Produce a number someone can trust: a baseline, a stated environment, repeated runs and the variance. Use when claiming a speedup, comparing two implementations, or when someone says it feels faster.",
+  "phase": "verify",
+  "verbs": [
+    "measure",
+    "verify"
+  ],
+  "triggers": [
+    "benchmark",
+    "is it faster",
+    "compare performance",
+    "performance regression"
+  ],
+  "keywords": [
+    "benchmark",
+    "latency",
+    "p99",
+    "variance",
+    "baseline",
+    "throughput",
+    "measure"
+  ],
+  "tools": [
+    {
+      "id": "bench-compare",
+      "entry": "tools/bench_compare.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Compares two sample sets and reports whether the delta exceeds the noise, including the tail.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "metric": {
+            "type": "string"
+          },
+          "iterations": {
+            "type": "integer"
+          },
+          "environment": {
+            "type": "object"
+          },
+          "baseline": {
+            "type": "object"
+          },
+          "candidate": {
+            "type": "object"
+          },
+          "command": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "metric",
+          "environment",
+          "baseline",
+          "candidate"
+        ]
+      },
+      "sample": {
+        "metric": "p99 latency ms",
+        "iterations": 12,
+        "command": "python bench.py --rows 1e6 --cold",
+        "environment": {
+          "cpu": "4 vCPU",
+          "limits": "cgroup 2GB",
+          "cache": "cold",
+          "dataset": "1M rows"
+        },
+        "baseline": {
+          "samples": [
+            41,
+            43,
+            40,
+            44,
+            42,
+            45,
+            41,
+            43,
+            42,
+            40,
+            44,
+            43
+          ]
+        },
+        "candidate": {
+          "samples": [
+            30,
+            31,
+            29,
+            33,
+            30,
+            32,
+            30,
+            31,
+            29,
+            30,
+            34,
+            31
+          ]
+        }
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "bench-compare reports a difference that exceeds the noise, or no difference",
+      "kind": "tool",
+      "tool": "bench-compare"
+    },
+    {
+      "id": "baseline",
+      "statement": "the baseline was measured in the same environment",
+      "kind": "artifact"
+    },
+    {
+      "id": "repro",
+      "statement": "the command and the artefact are recorded",
+      "kind": "artifact"
+    }
+  ]
+}

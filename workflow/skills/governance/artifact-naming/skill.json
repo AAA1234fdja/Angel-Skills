@@ -1,0 +1,100 @@
+{
+  "id": "artifact-naming",
+  "category": "governance",
+  "description": "Name files, folders, versions and release artefacts so a stranger can find and trust them. Use when a build produces something consumers download, when two files claim to be the latest, or when an artefact must be traced back to the commit that made it.",
+  "phase": "document",
+  "verbs": [
+    "document",
+    "audit"
+  ],
+  "triggers": [
+    "name this artefact",
+    "naming convention",
+    "which file is the latest",
+    "release artefact"
+  ],
+  "keywords": [
+    "naming",
+    "artefact",
+    "version",
+    "provenance",
+    "checksum",
+    "release",
+    "filename"
+  ],
+  "tools": [
+    {
+      "id": "name-audit",
+      "entry": "tools/name_audit.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Checks artefact names for status words, bad characters, ISO dates, versions and provenance.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "artifacts": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "artifacts"
+        ]
+      },
+      "sample": {
+        "artifacts": [
+          {
+            "name": "report-quarterly-1.2.0-2026-11-05.pdf",
+            "version": "1.2.0",
+            "date": "2026-11-05",
+            "provenance": {
+              "commit": "abc123",
+              "job": "42",
+              "checksum": "sha256:9f"
+            }
+          },
+          {
+            "name": "report_final_v2.pdf",
+            "version": "2.0",
+            "date": "11/05/2026"
+          },
+          {
+            "name": "dump-1.2.0-2026-11-05.sql",
+            "version": "1.2.0",
+            "date": "2026-11-05",
+            "provenance": {
+              "commit": "abc123",
+              "job": "43",
+              "checksum": "sha256:aa"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "name-audit reports no status word, no duplicate version and no bad character",
+      "kind": "tool",
+      "tool": "name-audit"
+    },
+    {
+      "id": "provenance",
+      "statement": "every published artefact has commit, job and checksum",
+      "kind": "artifact"
+    },
+    {
+      "id": "scheme",
+      "statement": "the naming scheme is written where producers read it",
+      "kind": "review"
+    }
+  ]
+}
