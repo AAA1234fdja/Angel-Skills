@@ -25,6 +25,7 @@ human reading the source.
 
 - Errors consumed only by the enclosing function and re-raised immediately.
 - Assertions that encode programmer mistakes, which should never be recovered.
+- Programmer mistakes that should not be recovered: `error-taxonomy` records them, and the assertion stands.
 
 ## Procedure
 
@@ -42,6 +43,7 @@ human reading the source.
    detail in the context object.
 6. **Test the recovery path**: one test asserting the hint and the retry flag are
    present for each error class.
+7. **Check that the recovery advice is executable**: a hint that requires a tool the caller does not have is decoration. Name the command, not the concept.
 
 ## Exit Criteria
 
@@ -60,3 +62,4 @@ human reading the source.
 | Hint that names the source file only | Point at the fix, the command or the config |
 | Context dumping the whole payload | Ids and paths; payloads may hold secrets |
 | Recovery hint that changes every release | Stable hint, volatile detail in context |
+| Hint that names a concept | Name the command or the file |

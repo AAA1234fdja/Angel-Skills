@@ -26,6 +26,7 @@ nobody found out". This skill is about the second kind.
 - Pure computation that cannot fail for the inputs it receives.
 - Places where the language already propagates and the caller handles it: adding a
   layer there is noise.
+- Language-native propagation the caller already handles: `error-taxonomy` gives the code, and no layer is added.
 
 ## Procedure
 

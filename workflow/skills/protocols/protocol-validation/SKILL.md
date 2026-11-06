@@ -24,6 +24,7 @@ procedure proves the receiver refuses what it must refuse.
 
 - Messages you just built with the typed factory in the same process.
 - Transport-level validation (TLS, size limits): a different layer.
+- Messages built by a typed factory in the same process: `contract-validation` is what runs at the boundary.
 
 ## Procedure
 
@@ -36,6 +37,11 @@ procedure proves the receiver refuses what it must refuse.
 6. **Keep a corpus of bad messages** and run it as a test: one message per
    rejection class.
 7. **Count rejections** over time; a rising rate is a producer regression.
+8. **Fail before the side effect, not after**: validation that runs after a write is
+   a report, and the report is about data you already corrupted.
+9. **Replay the corpus after every schema change.** The rejection classes are the
+   specification of what the receiver refuses; a change that makes an old rejection
+   pass has widened the protocol without saying so.
 
 ## Exit Criteria
 
@@ -54,3 +60,4 @@ procedure proves the receiver refuses what it must refuse.
 | Logging the whole payload on rejection | It may contain secrets; log the path |
 | No corpus of bad messages | The first production incident becomes the corpus |
 | Retrying a rejected message unchanged | Rejection is not transient (`retry-policy`) |
+| Validation after the write | Parse, validate, then act |

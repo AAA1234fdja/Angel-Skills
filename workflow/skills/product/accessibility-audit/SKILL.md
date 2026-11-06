@@ -24,6 +24,7 @@ broken, not unpolished. WCAG 2.2 AA is the bar because it is testable.
 
 - Non-interactive documents with no structure requirement.
 - As a substitute for testing with real assistive technology on critical flows.
+- Whether the flow itself makes sense before checking its accessibility: `ux-flow-review`.
 
 ## Procedure
 

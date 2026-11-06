@@ -25,6 +25,7 @@ declares it.
 
 - A function call within one process: use the type system.
 - A single producer with a single consumer and no versioning pressure.
+- A call inside one process: `contract-design` covers the payload and the type system does the rest.
 
 ## Procedure
 
@@ -58,3 +59,4 @@ declares it.
 | One protocol for everything | Split by receiver decision |
 | Version in docs, not in the message | The message carries the version |
 | No fixtures | The first test becomes the fixture, late |
+| Protocol version only in the payload | The envelope carries it; receivers refuse the rest |

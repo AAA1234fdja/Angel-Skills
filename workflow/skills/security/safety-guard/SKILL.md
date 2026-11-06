@@ -26,6 +26,7 @@ the removal of the one-call distance.
 
 - Read-only tooling: there is nothing to guard.
 - Operations with a verified, instant reversal, unless the reversal is automated.
+- An autonomous system that must be stoppable, not merely guarded: `kill-switch` is the control that survives an incident.
 
 ## Procedure
 

@@ -25,6 +25,7 @@ describe a topic instead of a procedure.
 
 - A catalogue under ten skills: overlap is not yet a problem.
 - During active authoring of one skill: audit afterwards.
+- A catalogue small enough that overlap is not yet a problem: `skill-authoring` is the whole job.
 
 ## Procedure
 

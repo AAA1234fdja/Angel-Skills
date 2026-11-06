@@ -1,0 +1,129 @@
+{
+  "id": "harness-provenance",
+  "category": "harness",
+  "description": "Decide whether something may be installed into the harness, and on what terms: a named source, a pinned version, a reviewable diff and a removal path. Use before adding a skill pack, a hook, a server or a permission, or when someone proposes installing from a moving branch.",
+  "phase": "design",
+  "verbs": [
+    "design",
+    "secure",
+    "validate"
+  ],
+  "triggers": [
+    "can we install this",
+    "pin a plugin",
+    "install from a branch",
+    "review before installing"
+  ],
+  "keywords": [
+    "install",
+    "provenance",
+    "pin",
+    "hook",
+    "server",
+    "removal",
+    "integrity",
+    "supply chain"
+  ],
+  "tools": [
+    {
+      "id": "install-gate",
+      "entry": "tools/install_gate.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Refuses moving refs, missing integrity, unreviewed executable surface, absent removal path and unstated capability delta.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "source": {
+            "type": "object"
+          },
+          "integrity": {
+            "type": "string"
+          },
+          "executable_surface": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "reviewed_files": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "capability_delta": {
+            "type": "object"
+          },
+          "removal_path": {
+            "type": "string"
+          },
+          "removal_tested": {
+            "type": "boolean"
+          },
+          "update_policy": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "source",
+          "capability_delta"
+        ]
+      },
+      "sample": {
+        "name": "ecc-rules",
+        "source": {
+          "repo": "affaan-m/ECC",
+          "ref": "main"
+        },
+        "executable_surface": [
+          "hooks/pre-tool.sh"
+        ],
+        "reviewed_files": [
+          "install.sh"
+        ],
+        "capability_delta": {
+          "hooks": [
+            "execute"
+          ],
+          "skills": [
+            "read"
+          ]
+        },
+        "removal_path": "ecc uninstall --keep-config",
+        "update_policy": {
+          "reviewer": "platform",
+          "evidence": [
+            "diff"
+          ]
+        }
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "install-gate refuses nothing: source pinned, surface reviewed, removal path tested",
+      "kind": "tool",
+      "tool": "install-gate"
+    },
+    {
+      "id": "delta",
+      "statement": "the capability delta is stated per layer",
+      "kind": "artifact"
+    },
+    {
+      "id": "policy",
+      "statement": "the update policy names a reviewer and the evidence a bump needs",
+      "kind": "artifact"
+    }
+  ]
+}

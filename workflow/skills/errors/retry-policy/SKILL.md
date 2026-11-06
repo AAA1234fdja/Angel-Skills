@@ -26,6 +26,7 @@ to exist before the retry does.
 - Operations with side effects that are not idempotent (a payment, a deploy, an
   email) unless an idempotency key exists.
 - Validation failures and anything the caller must fix.
+- Non-idempotent side effects: the stop condition belongs to `error-recovery`, and no retry is safe without a key.
 
 ## Procedure
 

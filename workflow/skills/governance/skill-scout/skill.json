@@ -1,0 +1,112 @@
+{
+  "id": "skill-scout",
+  "category": "governance",
+  "description": "Search what already exists — local library, sibling repos, external packs — before authoring a new skill or installing one. Use when a case feels new, when someone asks for a skill and nobody checked, or before pulling in a library for one procedure.",
+  "phase": "research",
+  "verbs": [
+    "investigate",
+    "audit"
+  ],
+  "triggers": [
+    "search for an existing skill",
+    "skill catalogue search",
+    "reuse a skill or author one",
+    "does a skill exist for this"
+  ],
+  "keywords": [
+    "scout",
+    "catalogue",
+    "skill library",
+    "reuse",
+    "adapt",
+    "author",
+    "licence",
+    "overlap"
+  ],
+  "tools": [
+    {
+      "id": "scout-report",
+      "entry": "tools/scout_report.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Holds the reuse/adapt/author decision to the overlap evidence, licences and pinned commits.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "need": {
+            "type": "string"
+          },
+          "local_hits": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "external_hits": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "decision": {
+            "type": "string"
+          },
+          "target": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "need",
+          "decision"
+        ]
+      },
+      "sample": {
+        "need": "retire a message schema without breaking consumers",
+        "decision": "author",
+        "target": "schema-retirement",
+        "local_hits": [
+          {
+            "id": "schema-evolution",
+            "overlap": 0.85,
+            "covers": [
+              "compat window"
+            ],
+            "missing": [
+              "retirement date"
+            ]
+          }
+        ],
+        "external_hits": [
+          {
+            "name": "ecc/schema-retire",
+            "overlap": 0.7,
+            "ref": "main"
+          }
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "scout-report accepts the reuse/adapt/author decision with no unexplained overlap",
+      "kind": "tool",
+      "tool": "scout-report"
+    },
+    {
+      "id": "origin",
+      "statement": "the chosen skill records its origin",
+      "kind": "artifact"
+    },
+    {
+      "id": "licence",
+      "statement": "every external hit records licence and pinned commit",
+      "kind": "review"
+    }
+  ]
+}

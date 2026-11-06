@@ -25,6 +25,7 @@ reproduce the bug".
 
 - Before profiling: if you do not know the bottleneck, the cache may be irrelevant.
 - Data that must be strongly consistent for a transaction to be correct.
+- Finding the bottleneck in the first place: `performance-optimizer` profiles before anything is cached.
 
 ## Procedure
 

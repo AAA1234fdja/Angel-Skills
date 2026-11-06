@@ -29,6 +29,7 @@ person, or a blocker. The output is a verdict, never a "looks good to me".
 - Routine merges to a branch nobody runs (nothing ships).
 - Pure refactors already covered by an automated gate that reports on every PR.
 - Deciding *what* to build: that is a product decision, not a readiness check.
+- What should be built, and what counts as done: `intent-driven-development` decides it before any release exists.
 
 ## Procedure
 
@@ -53,6 +54,7 @@ person, or a blocker. The output is a verdict, never a "looks good to me".
    invented under pressure is a plan that fails.
 6. **Ship small and watch.** One change, one deployment, one metric to compare for
    a stated window. If the window is not stated, the release is not over.
+7. **Close the release in writing**: the window, the metric, the verdict. A release nobody declared finished is still being watched by nobody.
 
 ## Exit Criteria
 

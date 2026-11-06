@@ -1,0 +1,118 @@
+{
+  "id": "harness-context-profiles",
+  "category": "harness",
+  "description": "Give one harness several working modes — build, review, research — each with its own instructions, without duplicating the skills underneath. Use when the same runtime needs different behaviour per phase.",
+  "phase": "design",
+  "verbs": [
+    "design",
+    "document"
+  ],
+  "triggers": [
+    "different behaviour in review and build",
+    "context per mode",
+    "system prompt per phase",
+    "split the instruction file",
+    "harness modes"
+  ],
+  "keywords": [
+    "profile",
+    "context",
+    "mode",
+    "instructions",
+    "handover",
+    "phase",
+    "prompt",
+    "harness",
+    "build",
+    "review"
+  ],
+  "tools": [
+    {
+      "id": "profile-check",
+      "entry": "tools/profile_check.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Flags duplicated rules, profiles sharing a decision, missing handovers and unbounded context.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "shared_rules": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "profiles": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "profiles"
+        ]
+      },
+      "sample": {
+        "shared_rules": [
+          "never force-push",
+          "no secrets in prompts"
+        ],
+        "profiles": [
+          {
+            "name": "build",
+            "decision": "how to implement",
+            "rules": [
+              "never force-push",
+              "tdd first"
+            ],
+            "tools": [
+              "edit",
+              "run-tests"
+            ],
+            "context_budget": 8000,
+            "handover": "diff + evidence to review",
+            "switch_rule": "human"
+          },
+          {
+            "name": "review",
+            "decision": "how to implement",
+            "rules": [
+              "never force-push"
+            ],
+            "tools": [
+              "read",
+              "diff"
+            ],
+            "context_budget": 6000,
+            "handover": "",
+            "switch_rule": ""
+          }
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "profile-check reports no duplicated rule and no profile without a distinct decision",
+      "kind": "tool",
+      "tool": "profile-check"
+    },
+    {
+      "id": "handover",
+      "statement": "each profile states its handover to the next mode",
+      "kind": "artifact"
+    },
+    {
+      "id": "switch",
+      "statement": "the switching rule says what happens to work in flight",
+      "kind": "review"
+    }
+  ]
+}

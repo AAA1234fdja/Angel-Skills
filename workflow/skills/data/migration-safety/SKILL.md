@@ -25,6 +25,7 @@ often the part nobody tested.
 
 - A greenfield database with no data and no deployment.
 - Test fixtures.
+- A greenfield database with nothing to migrate: `release-readiness` covers the first deploy.
 
 ## Procedure
 

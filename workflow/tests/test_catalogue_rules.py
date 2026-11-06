@@ -205,6 +205,17 @@ class VocabularyTests(AngelTestCase):
             "kill-switch": "the agent needs a kill switch, how do we stop it",
             "oncall-handoff": "write the oncall handoff for the rotation change",
             "benchmark-discipline": "benchmark whether it is faster, with variance",
+            "skill-stocktake": "audit the skill library, which skills overlap",
+            "skill-scout": "search for an existing skill before authoring one",
+            "harness-inventory": "what is installed in the harness and what can it reach",
+            "harness-provenance": "can we install this plugin from a branch",
+            "harness-gc": "clean up the harness config and remove unused skills",
+            "harness-context-profiles": "different behaviour in review and build, context per mode",
+            "intent-driven-development": "the request is ambiguous, scope the acceptance criteria",
+            "test-suite-adoption": "we inherited a test suite, which tests can actually fail",
+            "regression-ledger": "which modules depend on this, cross module regression",
+            "test-data-strategy": "tests share fixtures, deterministic test data",
+            "release-notes-audit": "check the release notes before publishing",
             "release-readiness": "is it safe to deploy, what is the rollback plan",
             "api-design": "define the endpoint surface and its idempotency",
             "threat-model": "threat model this new trust boundary",
@@ -219,6 +230,47 @@ class VocabularyTests(AngelTestCase):
                 self.assertEqual(router.route(self.registry, need).skill_ids[0], skill_id)
 
 
+class SkillShapeTests(AngelTestCase):
+    """The stated standard, enforced over the whole catalogue instead of one batch.
+
+    README § Line budget declares what a skill is here: at least 60 lines of body,
+    seven numbered steps, five failure modes, and both "when" sections. A standard
+    that applies only to the skills of the moment is a preference.
+    """
+
+    MIN_LINES = 60
+    MIN_STEPS = 7
+    MIN_FAILURES = 5
+
+    def test_every_skill_meets_the_declared_shape(self):
+        for skill in self.registry.skills.values():
+            body = (skill.path / "SKILL.md").read_text(encoding="utf-8")
+            steps = len(re.findall(r"^\d+\. \*\*", body, re.M))
+            failures = len(re.findall(r"^\| ", body, re.M)) - 2  # header + separator
+            with self.subTest(skill=skill.id):
+                self.assertIn("When to Use", skill.sections)
+                self.assertIn("When Not to Use", skill.sections)
+                self.assertIn("Exit Criteria", skill.sections)
+                self.assertGreaterEqual(len(body.splitlines()), self.MIN_LINES,
+                                        "body is thinner than the stated minimum")
+                self.assertGreaterEqual(steps, self.MIN_STEPS,
+                                        "a procedure needs at least seven decided steps")
+                self.assertGreaterEqual(failures, self.MIN_FAILURES,
+                                        "fewer than five failure modes is a summary")
+
+    def test_a_skill_states_the_sibling_that_owns_the_case_it_refuses(self):
+        """'When not to use' must name who does own it, or it is a shrug."""
+        for skill in self.registry.skills.values():
+            body = (skill.path / "SKILL.md").read_text(encoding="utf-8")
+            try:
+                section = body.split("## When Not to Use", 1)[1].split("##", 1)[0]
+            except IndexError:  # covered by the shape test
+                continue
+            with self.subTest(skill=skill.id):
+                self.assertRegex(section, r"`[a-z][a-z0-9-]+`",
+                                 "the refusal should name the skill that owns the case")
+
+
 class NewSkillContentTests(AngelTestCase):
     """The eight new skills must obey the same standard as the rest of the pack."""
 
@@ -228,7 +280,11 @@ class NewSkillContentTests(AngelTestCase):
            "commit-hygiene", "premortem", "artifact-naming", "incident-comms",
            "event-versioning", "string-extraction", "technical-debt-ledger",
            "dependency-pinning", "kill-switch", "oncall-handoff",
-           "benchmark-discipline")
+           "benchmark-discipline", "skill-stocktake", "skill-scout",
+           "harness-inventory", "harness-provenance", "harness-gc",
+           "harness-context-profiles", "intent-driven-development",
+           "test-suite-adoption", "regression-ledger", "test-data-strategy",
+           "release-notes-audit")
 
     def test_every_new_skill_has_a_tool_a_sample_and_an_exit_criterion(self):
         for skill_id in self.NEW:

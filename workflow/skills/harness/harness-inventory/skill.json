@@ -1,0 +1,134 @@
+{
+  "id": "harness-inventory",
+  "category": "harness",
+  "description": "Know what your agent runtime actually has installed: skills, hooks, commands, servers, permissions and where each came from. Use when the harness behaves in a way nobody configured, when adopting a library, or before installing one more thing into it.",
+  "phase": "audit",
+  "verbs": [
+    "audit",
+    "investigate"
+  ],
+  "triggers": [
+    "what is installed in the harness",
+    "why did the agent do that",
+    "inventory the config",
+    "what can the agent reach"
+  ],
+  "keywords": [
+    "harness",
+    "inventory",
+    "hooks",
+    "permissions",
+    "servers",
+    "provenance",
+    "blast radius",
+    "orphan"
+  ],
+  "tools": [
+    {
+      "id": "surface-audit",
+      "entry": "tools/surface_audit.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Reports unknown provenance, untriggerable entries, unowned orphans, wide grants and unenumerated layers.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "layers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "entries": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "previous": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "owned": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "entries"
+        ]
+      },
+      "sample": {
+        "layers": [
+          "skills",
+          "hooks",
+          "commands",
+          "servers",
+          "permissions",
+          "env"
+        ],
+        "owned": [
+          "docs-site"
+        ],
+        "entries": [
+          {
+            "name": "docs-site",
+            "layer": "skills",
+            "provenance": "ecc@2.2.3",
+            "trigger": "when writing docs",
+            "can": [
+              "read",
+              "network"
+            ]
+          },
+          {
+            "name": "post-tool",
+            "layer": "hooks",
+            "provenance": "unknown",
+            "trigger": "",
+            "can": [
+              "write",
+              "execute"
+            ]
+          }
+        ],
+        "previous": [
+          {
+            "name": "docs-site",
+            "provenance": "ecc@2.2.1",
+            "can": [
+              "read"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "surface-audit reports no unknown provenance and no unowned orphan",
+      "kind": "tool",
+      "tool": "surface-audit"
+    },
+    {
+      "id": "layers",
+      "statement": "all seven layers are enumerated, empty ones stated as empty",
+      "kind": "artifact"
+    },
+    {
+      "id": "diff",
+      "statement": "the diff against the previous inventory is included",
+      "kind": "artifact"
+    }
+  ]
+}

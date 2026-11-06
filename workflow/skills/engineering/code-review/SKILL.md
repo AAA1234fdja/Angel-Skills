@@ -42,6 +42,7 @@ the diff, with as little memory as possible of the conversation that produced it
 5. **Propose the minimal patch** only when it is obvious; otherwise state the
    condition that must hold.
 6. **Close with a verdict**: approve, approve with minors, or request changes.
+7. **Refuse a diff you cannot hold in your head**: ask for it to be split, and say where. "Reviewing" two thousand lines in ten minutes is approving, not reviewing.
 
 ## Exit Criteria
 
@@ -60,3 +61,4 @@ the diff, with as little memory as possible of the conversation that produced it
 | Rewriting the module in a comment | Name the defect and let the author decide |
 | Approving "because tests pass" | Tests cover neither design nor security |
 | Commenting style the formatter already fixes | Run the formatter |
+| A 2000-line diff approved in minutes | Ask for a split; approval is not review |

@@ -31,6 +31,7 @@ code under test, not in the test.
 - Timing assertions in a load test where variance is the subject.
 - Quarantining more than a handful of tests at once: that is a broken suite, and
   the fix is the suite.
+- A test that fails consistently in one environment: that is `build-fix`.
 
 ## Procedure
 

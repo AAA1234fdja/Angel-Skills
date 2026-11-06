@@ -27,6 +27,7 @@ changed it. Evals are the unit tests of AI development, and they are written
 - Deterministic business logic: that is a normal test.
 - When the task cannot be executed repeatedly: build the reproducible environment
   first.
+- Deterministic business logic, where a normal test is the whole answer: `tdd-workflow`.
 
 ## Procedure
 

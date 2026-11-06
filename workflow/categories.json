@@ -1,5 +1,5 @@
 {
-  "version": "0.6.0",
+  "version": "0.7.0",
   "updated": "2026-11-05",
   "standard": "EXTENSION-STANDARD.md",
   "main": "WORKFLOW.md",
@@ -63,39 +63,11 @@
       ],
       "skills": [
         {
-          "id": "tdd-workflow",
-          "origin": "ECC · skills/tdd-workflow",
+          "id": "ai-regression-testing",
+          "origin": "ECC · skills/ai-regression-testing",
           "status": "adopted",
           "phase": "test",
-          "description": "Red-green-refactor with a coverage gate so a task is never called done on inspection alone."
-        },
-        {
-          "id": "verification-loop",
-          "origin": "ECC · skills/verification-loop",
-          "status": "adopted",
-          "phase": "verify",
-          "description": "Six-phase verification (build, types, lint, tests+coverage, security, diff review) with quotable evidence for each."
-        },
-        {
-          "id": "coding-standards",
-          "origin": "ECC · skills/coding-standards",
-          "status": "adopted",
-          "phase": "implement",
-          "description": "Baseline conventions for naming, size, immutability and error visibility so review discusses behaviour, not style."
-        },
-        {
-          "id": "code-review",
-          "origin": "ECC · skills/code-review",
-          "status": "adopted",
-          "phase": "review",
-          "description": "Fresh-context diff review: real defects ranked by severity, with a verdict at the end."
-        },
-        {
-          "id": "search-first",
-          "origin": "ECC · skills/search-first",
-          "status": "adopted",
-          "phase": "plan",
-          "description": "Search the repo, npm and PyPI before writing a dependency, helper or module."
+          "description": "Turn every fixed defect into a permanent regression test that runs without external services."
         },
         {
           "id": "build-fix",
@@ -105,18 +77,32 @@
           "description": "Incremental build, type and lint repair: one error per cycle, root cause before patch."
         },
         {
-          "id": "refactor-clean",
-          "origin": "ECC · agent refactor-cleaner",
+          "id": "code-review",
+          "origin": "ECC · skills/code-review",
           "status": "adopted",
-          "phase": "implement",
-          "description": "Verified removal of dead code and duplicate logic, one candidate per commit, suite green throughout."
+          "phase": "review",
+          "description": "Fresh-context diff review: real defects ranked by severity, with a verdict at the end."
         },
         {
-          "id": "performance-optimizer",
-          "origin": "ECC · agent performance-optimizer",
+          "id": "coding-standards",
+          "origin": "ECC · skills/coding-standards",
           "status": "adopted",
           "phase": "implement",
-          "description": "Turn 'it is slow' into a measured change: baseline, one bottleneck, one hypothesis, compare."
+          "description": "Baseline conventions for naming, size, immutability and error visibility so review discusses behaviour, not style."
+        },
+        {
+          "id": "commit-hygiene",
+          "origin": "original",
+          "status": "original",
+          "phase": "implement",
+          "description": "Scaffold for commit-hygiene. Use when it is needed."
+        },
+        {
+          "id": "dependency-graph",
+          "origin": "original",
+          "status": "original",
+          "phase": "plan",
+          "description": "Audit the dependency graph before changing it: cycles, depth, fan-in and orphans. Use when a refactor could cascade, a build order is disputed, or a module seems to know about everything."
         },
         {
           "id": "e2e-testing",
@@ -124,13 +110,6 @@
           "status": "adopted",
           "phase": "test",
           "description": "End-to-end flows with page objects, stable locators and quarantine for flaky tests."
-        },
-        {
-          "id": "ai-regression-testing",
-          "origin": "ECC · skills/ai-regression-testing",
-          "status": "adopted",
-          "phase": "test",
-          "description": "Turn every fixed defect into a permanent regression test that runs without external services."
         },
         {
           "id": "error-handling",
@@ -147,11 +126,18 @@
           "description": "One taxonomy, one policy: every failure carries a stable code, severity, owner and retry rule."
         },
         {
-          "id": "dependency-graph",
+          "id": "flaky-test-triage",
           "origin": "original",
           "status": "original",
-          "phase": "plan",
-          "description": "Audit the dependency graph before changing it: cycles, depth, fan-in and orphans. Use when a refactor could cascade, a build order is disputed, or a module seems to know about everything."
+          "phase": "debug",
+          "description": "Turn a flaky test into a diagnosis: quarantine, reproduce, name the source of nondeterminism and fix or delete. Use when CI fails intermittently, when a retry button becomes policy, or before a suite's signal is ignored."
+        },
+        {
+          "id": "performance-optimizer",
+          "origin": "ECC · agent performance-optimizer",
+          "status": "adopted",
+          "phase": "implement",
+          "description": "Turn 'it is slow' into a measured change: baseline, one bottleneck, one hypothesis, compare."
         },
         {
           "id": "prototype-spike",
@@ -161,18 +147,25 @@
           "description": "Run a spike with a box, a question and a delete date. Use when an estimate hides an unknown, a library choice needs evidence, or the team argues about feasibility instead of measuring it."
         },
         {
-          "id": "flaky-test-triage",
-          "origin": "original",
-          "status": "original",
-          "phase": "debug",
-          "description": "Turn a flaky test into a diagnosis: quarantine, reproduce, name the source of nondeterminism and fix or delete. Use when CI fails intermittently, when a retry button becomes policy, or before a suite's signal is ignored."
+          "id": "refactor-clean",
+          "origin": "ECC · agent refactor-cleaner",
+          "status": "adopted",
+          "phase": "implement",
+          "description": "Verified removal of dead code and duplicate logic, one candidate per commit, suite green throughout."
         },
         {
-          "id": "commit-hygiene",
-          "origin": "original",
-          "status": "original",
-          "phase": "implement",
-          "description": "Scaffold for commit-hygiene. Use when it is needed."
+          "id": "search-first",
+          "origin": "ECC · skills/search-first",
+          "status": "adopted",
+          "phase": "plan",
+          "description": "Search the repo, npm and PyPI before writing a dependency, helper or module."
+        },
+        {
+          "id": "tdd-workflow",
+          "origin": "ECC · skills/tdd-workflow",
+          "status": "adopted",
+          "phase": "test",
+          "description": "Red-green-refactor with a coverage gate so a task is never called done on inspection alone."
         },
         {
           "id": "technical-debt-ledger",
@@ -180,6 +173,13 @@
           "status": "original",
           "phase": "plan",
           "description": "Scaffold"
+        },
+        {
+          "id": "verification-loop",
+          "origin": "ECC · skills/verification-loop",
+          "status": "adopted",
+          "phase": "verify",
+          "description": "Six-phase verification (build, types, lint, tests+coverage, security, diff review) with quotable evidence for each."
         }
       ],
       "pending": []
@@ -198,6 +198,20 @@
         "Validation runs before the payload is used, not after it fails."
       ],
       "skills": [
+        {
+          "id": "api-compatibility",
+          "origin": "ECC · skills/api-design",
+          "status": "adopted",
+          "phase": "review",
+          "description": "Check a consumer against a producer across majors and report what breaks and where."
+        },
+        {
+          "id": "api-design",
+          "origin": "original",
+          "status": "original",
+          "phase": "design",
+          "description": "Design the shape of a call before anyone implements it: operations, errors, idempotency and what the consumer must be able to ignore. Use when an endpoint, SDK method or shared schema is being added, or when a client breaks because the surface was never specified."
+        },
         {
           "id": "contract-design",
           "origin": "ECC · skills/api-design + contract-first",
@@ -218,20 +232,6 @@
           "status": "adopted",
           "phase": "design",
           "description": "Evolve a schema without breaking consumers: classify every change and require the right version bump."
-        },
-        {
-          "id": "api-compatibility",
-          "origin": "ECC · skills/api-design",
-          "status": "adopted",
-          "phase": "review",
-          "description": "Check a consumer against a producer across majors and report what breaks and where."
-        },
-        {
-          "id": "api-design",
-          "origin": "original",
-          "status": "original",
-          "phase": "design",
-          "description": "Design the shape of a call before anyone implements it: operations, errors, idempotency and what the consumer must be able to ignore. Use when an endpoint, SDK method or shared schema is being added, or when a client breaks because the surface was never specified."
         }
       ],
       "pending": []
@@ -251,6 +251,20 @@
       ],
       "skills": [
         {
+          "id": "event-versioning",
+          "origin": "original",
+          "status": "original",
+          "phase": "document",
+          "description": "Scaffold"
+        },
+        {
+          "id": "message-schema",
+          "origin": "ECC · skills/agent-harness-construction",
+          "status": "adopted",
+          "phase": "implement",
+          "description": "Derive and maintain a message schema from a dataclass so code and contract cannot drift."
+        },
+        {
           "id": "protocol-design",
           "origin": "ECC · skills/agent-harness-construction (pattern)",
           "status": "adopted",
@@ -263,20 +277,6 @@
           "status": "adopted",
           "phase": "verify",
           "description": "Validate a stream or file of protocol messages and report the first rejection with its code."
-        },
-        {
-          "id": "message-schema",
-          "origin": "ECC · skills/agent-harness-construction",
-          "status": "adopted",
-          "phase": "implement",
-          "description": "Derive and maintain a message schema from a dataclass so code and contract cannot drift."
-        },
-        {
-          "id": "event-versioning",
-          "origin": "original",
-          "status": "original",
-          "phase": "document",
-          "description": "Scaffold"
         }
       ],
       "pending": []
@@ -296,6 +296,13 @@
       ],
       "skills": [
         {
+          "id": "alert-design",
+          "origin": "original",
+          "status": "original",
+          "phase": "implement",
+          "description": "Design alerts that a tired person can act on: symptom over cause, a threshold with a reason and a runbook line. Use when adding monitoring, when an alert is being silenced, or after an incident nobody was paged for."
+        },
+        {
           "id": "error-recovery",
           "origin": "ECC · skills/agent-introspection-debugging",
           "status": "adopted",
@@ -310,13 +317,6 @@
           "description": "Reconstruct a run from its journal: what ran, what failed, what was retried, and where the chain broke."
         },
         {
-          "id": "retry-policy",
-          "origin": "ECC · skills/agent-harness-construction (pattern)",
-          "status": "adopted",
-          "phase": "implement",
-          "description": "Decide retryability per error code, with backoff, budget and a stop condition that cannot loop forever."
-        },
-        {
           "id": "incident-backlog",
           "origin": "ECC · skills/issue-review",
           "status": "adopted",
@@ -324,11 +324,11 @@
           "description": "Turn recurring failures into tracked, deduplicated work items with evidence and owners."
         },
         {
-          "id": "alert-design",
-          "origin": "original",
-          "status": "original",
+          "id": "retry-policy",
+          "origin": "ECC · skills/agent-harness-construction (pattern)",
+          "status": "adopted",
           "phase": "implement",
-          "description": "Design alerts that a tired person can act on: symptom over cause, a threshold with a reason and a runbook line. Use when adding monitoring, when an alert is being silenced, or after an incident nobody was paged for."
+          "description": "Decide retryability per error code, with backoff, budget and a stop condition that cannot loop forever."
         }
       ],
       "pending": []
@@ -348,6 +348,13 @@
       ],
       "skills": [
         {
+          "id": "agent-architecture-audit",
+          "origin": "ECC · skills/agent-architecture-audit",
+          "status": "adopted",
+          "phase": "review",
+          "description": "Layer-by-layer diagnosis of an agent stack with severity-ranked findings and concrete patches."
+        },
+        {
           "id": "agent-harness-construction",
           "origin": "ECC · skills/agent-harness-construction",
           "status": "adopted",
@@ -355,18 +362,11 @@
           "description": "Design action space, tool granularity, observation format and context budget for higher completion rates."
         },
         {
-          "id": "eval-harness",
-          "origin": "ECC · skills/eval-harness",
+          "id": "autonomous-loop",
+          "origin": "ECC · skills/autonomous-loops + continuous-agent-loop",
           "status": "adopted",
-          "phase": "verify",
-          "description": "Eval-driven development: criteria before the change, cheapest grader that works, pass@k and pass^k."
-        },
-        {
-          "id": "agent-architecture-audit",
-          "origin": "ECC · skills/agent-architecture-audit",
-          "status": "adopted",
-          "phase": "review",
-          "description": "Layer-by-layer diagnosis of an agent stack with severity-ranked findings and concrete patches."
+          "phase": "implement",
+          "description": "Run unattended loops safely: explicit stop conditions, budgets, checkpoints and human gates."
         },
         {
           "id": "context-budget",
@@ -376,11 +376,11 @@
           "description": "Spend context deliberately: measure what is loaded, cap it, and compact at phase boundaries."
         },
         {
-          "id": "autonomous-loop",
-          "origin": "ECC · skills/autonomous-loops + continuous-agent-loop",
+          "id": "eval-harness",
+          "origin": "ECC · skills/eval-harness",
           "status": "adopted",
-          "phase": "implement",
-          "description": "Run unattended loops safely: explicit stop conditions, budgets, checkpoints and human gates."
+          "phase": "verify",
+          "description": "Eval-driven development: criteria before the change, cheapest grader that works, pass@k and pass^k."
         },
         {
           "id": "kill-switch",
@@ -466,11 +466,32 @@
       ],
       "skills": [
         {
+          "id": "benchmark-discipline",
+          "origin": "original",
+          "status": "original",
+          "phase": "verify",
+          "description": "Scaffold"
+        },
+        {
+          "id": "caching-policy",
+          "origin": "ECC · skills/redis-patterns + content-hash-cache-pattern",
+          "status": "adopted",
+          "phase": "design",
+          "description": "Decide what to cache, for how long, and how to invalidate, before adding a cache."
+        },
+        {
           "id": "data-contracts",
           "origin": "ECC · skills/database-patterns + api-design",
           "status": "adopted",
           "phase": "plan",
           "description": "Define the shape and invariants of persisted data before the code that touches it."
+        },
+        {
+          "id": "data-retention",
+          "origin": "original",
+          "status": "original",
+          "phase": "design",
+          "description": "Decide what is kept, for how long, and what deletes it: purpose, retention window, legal hold and the deletion path. Use when a new dataset is added, a request to delete arrives, or an audit asks why the record still exists."
         },
         {
           "id": "migration-safety",
@@ -485,35 +506,97 @@
           "status": "adopted",
           "phase": "review",
           "description": "Review queries with their access plan: N+1, missing indexes, unbounded scans."
-        },
-        {
-          "id": "caching-policy",
-          "origin": "ECC · skills/redis-patterns + content-hash-cache-pattern",
-          "status": "adopted",
-          "phase": "design",
-          "description": "Decide what to cache, for how long, and how to invalidate, before adding a cache."
-        },
-        {
-          "id": "data-retention",
-          "origin": "original",
-          "status": "original",
-          "phase": "design",
-          "description": "Decide what is kept, for how long, and what deletes it: purpose, retention window, legal hold and the deletion path. Use when a new dataset is added, a request to delete arrives, or an audit asks why the record still exists."
-        },
-        {
-          "id": "benchmark-discipline",
-          "origin": "original",
-          "status": "original",
-          "phase": "verify",
-          "description": "Scaffold"
         }
       ],
       "pending": []
     },
     {
+      "id": "harness",
+      "status": "activa",
+      "gate": "Nothing is installed, widened or removed without provenance, an inventory entry and a tested way back.",
+      "skills": [
+        {
+          "id": "harness-context-profiles",
+          "origin": "original",
+          "status": "original",
+          "phase": "design",
+          "description": "Several working modes per harness without duplicating the rules underneath."
+        },
+        {
+          "id": "harness-gc",
+          "origin": "original",
+          "status": "original",
+          "phase": "meta",
+          "description": "Remove what the harness no longer needs, on evidence and with a way back."
+        },
+        {
+          "id": "harness-inventory",
+          "origin": "original",
+          "status": "original",
+          "phase": "audit",
+          "description": "Know what the runtime has installed, where each entry came from and what it can reach."
+        },
+        {
+          "id": "harness-provenance",
+          "origin": "original",
+          "status": "original",
+          "phase": "design",
+          "description": "Decide whether something may be installed: pinned source, reviewed diff, removal path."
+        }
+      ],
+      "name": "Harness",
+      "order": 8,
+      "description": "The runtime itself: what is installed, where it came from, what it can reach, how it loads context per mode and what gets collected. Every other category assumes this surface is known.",
+      "rules": [
+        "An install is a trust decision: a commit or a hash, never a branch.",
+        "Every entry has an owner, a trigger and a stated blast radius.",
+        "Modes are defined by the decision they own, and shared rules live once.",
+        "Removal runs on evidence with a window, and never takes the last copy.",
+        "A config that grows without collecting is a config nobody can audit."
+      ]
+    },
+    {
+      "id": "tests",
+      "status": "activa",
+      "gate": "No suite is trusted until a baseline ran, and no regression is closed without a check that can fail.",
+      "skills": [
+        {
+          "id": "regression-ledger",
+          "origin": "original",
+          "status": "original",
+          "phase": "verify",
+          "description": "Which module a change can break downstream, and the check that proves it did not."
+        },
+        {
+          "id": "test-data-strategy",
+          "origin": "original",
+          "status": "original",
+          "phase": "design",
+          "description": "Where test data comes from and how it stays deterministic."
+        },
+        {
+          "id": "test-suite-adoption",
+          "origin": "original",
+          "status": "original",
+          "phase": "audit",
+          "description": "Adopt or rescue a suite: which tests can fail, what the honest baseline is."
+        }
+      ],
+      "name": "Tests",
+      "order": 9,
+      "description": "The suite as an asset: what it can actually prove, which module a change can break downstream, and where the data that makes it deterministic comes from.",
+      "rules": [
+        "A test with no assertion is not a test; it is a file that runs.",
+        "Every skip carries a reason and an owner.",
+        "A published surface has named consumers, and each consumer has a check.",
+        "Tests own their data; nothing depends on what another test left behind.",
+        "Determinism is configured (clock, seed, ids), never hoped for."
+      ]
+    },
+    {
       "id": "reversing",
       "name": "Reverse engineering",
-      "order": 8,
+      "order": 10,
       "status": "activa",
       "description": "Understand and reconstruct systems from artefacts: binaries, traffic, undocumented APIs.",
       "gate": "Every finding is tied to an artefact (offset, string, packet) or it is a guess.",
@@ -558,7 +641,7 @@
     {
       "id": "governance",
       "name": "Governance",
-      "order": 9,
+      "order": 11,
       "status": "activa",
       "description": "The package administers itself: registration, audit of existing skills, versioning and changelog discipline.",
       "gate": "Nothing enters the package without passing `workflow validate --strict` and a registration record.",
@@ -569,27 +652,6 @@
         "A skill that cannot state its exit criteria is a note, not a skill."
       ],
       "skills": [
-        {
-          "id": "skill-authoring",
-          "origin": "ECC · skills/skill-create + configure-ecc",
-          "status": "original",
-          "phase": "meta",
-          "description": "Register and author a new skill end to end: decision tests, scaffolding, manifest, validation, changelog."
-        },
-        {
-          "id": "skill-audit",
-          "origin": "ECC · skills/skill-stocktake",
-          "status": "adopted",
-          "phase": "meta",
-          "description": "Audit the catalogue for overlap, dead skills, weak triggers and skills that never fire."
-        },
-        {
-          "id": "changelog-discipline",
-          "origin": "ECC · skills/conventional-commit-review",
-          "status": "adopted",
-          "phase": "meta",
-          "description": "Keep a changelog that a consumer can act on: what changed, what breaks, what to do."
-        },
         {
           "id": "adr-writing",
           "origin": "original",
@@ -605,11 +667,11 @@
           "description": "Scaffold for artifact-naming. Use when it is needed."
         },
         {
-          "id": "premortem",
-          "origin": "original",
-          "status": "original",
-          "phase": "plan",
-          "description": "Scaffold"
+          "id": "changelog-discipline",
+          "origin": "ECC · skills/conventional-commit-review",
+          "status": "adopted",
+          "phase": "meta",
+          "description": "Keep a changelog that a consumer can act on: what changed, what breaks, what to do."
         },
         {
           "id": "oncall-handoff",
@@ -617,6 +679,41 @@
           "status": "original",
           "phase": "ship",
           "description": "Scaffold"
+        },
+        {
+          "id": "premortem",
+          "origin": "original",
+          "status": "original",
+          "phase": "plan",
+          "description": "Scaffold"
+        },
+        {
+          "id": "skill-audit",
+          "origin": "ECC · skills/skill-stocktake",
+          "status": "adopted",
+          "phase": "meta",
+          "description": "Audit the catalogue for overlap, dead skills, weak triggers and skills that never fire."
+        },
+        {
+          "id": "skill-authoring",
+          "origin": "ECC · skills/skill-create + configure-ecc",
+          "status": "original",
+          "phase": "meta",
+          "description": "Register and author a new skill end to end: decision tests, scaffolding, manifest, validation, changelog."
+        },
+        {
+          "id": "skill-scout",
+          "origin": "original",
+          "status": "original",
+          "phase": "research",
+          "description": "Search the library, the dependencies and external packs before authoring or installing a skill."
+        },
+        {
+          "id": "skill-stocktake",
+          "origin": "original",
+          "status": "original",
+          "phase": "audit",
+          "description": "Audit an existing skill library for quality: dead skills, duplicate ownership, drift and uncheckable criteria."
         }
       ],
       "pending": []
@@ -624,7 +721,7 @@
     {
       "id": "product",
       "name": "Product and UX",
-      "order": 10,
+      "order": 12,
       "status": "activa",
       "description": "User-facing quality: accessibility, flows and interface craft.",
       "gate": "Accessibility findings of level AA failures block, level AAA advise.",
@@ -640,6 +737,13 @@
           "status": "adopted",
           "phase": "review",
           "description": "Audit a UI against WCAG 2.2 AA: contrast, focus order, targets, semantics, keyboard paths."
+        },
+        {
+          "id": "intent-driven-development",
+          "origin": "original",
+          "status": "original",
+          "phase": "design",
+          "description": "Turn an ambiguous request into scoped, verifiable acceptance criteria before code."
         },
         {
           "id": "release-readiness",
@@ -661,7 +765,7 @@
     {
       "id": "content",
       "name": "Content and docs",
-      "order": 11,
+      "order": 13,
       "status": "activa",
       "description": "Written artefacts that ship with the code: documentation and changelogs.",
       "gate": "nothing published without an executed example, a named source of truth and a last-verified date",
@@ -671,13 +775,6 @@
       ],
       "skills": [
         {
-          "id": "doc-writing",
-          "origin": "ECC · skills/article-writing + update-docs",
-          "status": "adopted",
-          "phase": "document",
-          "description": "Write and review documentation that stays true: source of truth, audience, failure modes, examples that run."
-        },
-        {
           "id": "api-reference-writing",
           "origin": "original",
           "status": "original",
@@ -685,11 +782,11 @@
           "description": "Scaffold for api-reference-writing. Use when it is needed."
         },
         {
-          "id": "runbook-writing",
-          "origin": "original",
-          "status": "original",
+          "id": "doc-writing",
+          "origin": "ECC · skills/article-writing + update-docs",
+          "status": "adopted",
           "phase": "document",
-          "description": "Scaffold for runbook-writing. Use when it is needed."
+          "description": "Write and review documentation that stays true: source of truth, audience, failure modes, examples that run."
         },
         {
           "id": "incident-comms",
@@ -697,6 +794,20 @@
           "status": "original",
           "phase": "ship",
           "description": "Scaffold for incident-comms. Use when it is needed."
+        },
+        {
+          "id": "release-notes-audit",
+          "origin": "original",
+          "status": "original",
+          "phase": "ship",
+          "description": "Release notes that describe what actually shipped, breaking first."
+        },
+        {
+          "id": "runbook-writing",
+          "origin": "original",
+          "status": "original",
+          "phase": "document",
+          "description": "Scaffold for runbook-writing. Use when it is needed."
         }
       ],
       "pending": []

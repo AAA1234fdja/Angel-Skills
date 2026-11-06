@@ -25,6 +25,7 @@ decoration.
 
 - Internal refactors with no observable change.
 - During the change itself: write the entry when the change is ready.
+- The release view of the same change: `release-notes-audit` checks that the notes match what shipped.
 
 ## Procedure
 

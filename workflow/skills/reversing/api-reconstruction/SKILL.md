@@ -25,6 +25,7 @@ request instead of discovered again.
 
 - Documentation exists but is partial: read it first, fill the gaps.
 - The capture was taken without authorisation: check first.
+- Documentation exists and is merely incomplete: `api-reference-writing` fixes the source rather than inferring from traffic.
 
 ## Procedure
 

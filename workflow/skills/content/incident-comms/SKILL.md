@@ -28,6 +28,7 @@ that the last one is a promise, and its value is that it is kept.
 - An internal-only blip that no user can observe: fix it, then record it.
 - Writing the technical postmortem: that comes later and is a different document.
 - Explaining a decision that has not been made yet — say that it has not been made.
+- The technical postmortem, which explains causes rather than informing users: `failure-forensics`.
 
 ## Procedure
 

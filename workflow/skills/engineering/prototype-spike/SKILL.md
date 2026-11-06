@@ -29,6 +29,7 @@ form that can be wrong, then throw the code away and keep the finding.
 - The question is a product decision, not a technical unknown.
 - Nobody has agreed to the timebox: an unbounded spike is a rewrite.
 - The answer can be found by reading the source or the docs for ten minutes.
+- Work that is already understood: `tdd-workflow` builds it once, properly.
 
 ## Procedure
 

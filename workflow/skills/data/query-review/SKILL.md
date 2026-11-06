@@ -25,6 +25,7 @@ orders of magnitude.
 
 - Queries on tables with tens of rows: the plan cannot matter yet.
 - Analytical workloads where a full scan is the correct plan.
+- A query whose plan cannot matter at that size: `performance-optimizer` measures before anything is rewritten.
 
 ## Procedure
 

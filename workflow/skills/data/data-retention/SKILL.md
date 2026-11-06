@@ -29,6 +29,7 @@ decision per dataset instead of an accident of what the database accepted.
 - Fields with no personal or regulated content and no cost to keep.
 - Retroactively justifying what already exists — that is an audit, and it should
   produce the same table, honestly dated.
+- Choosing the storage engine or the partition key: `data-contracts`.
 
 ## Procedure
 

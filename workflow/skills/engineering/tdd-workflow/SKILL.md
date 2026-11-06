@@ -27,6 +27,7 @@ construction, which is the same as not testing.
 - Throwaway exploration that will be deleted.
 - When the project has no test runner: choose one first, do not write
   implementation blind.
+- Purely cosmetic edits: `code-review` is the only gate a rename needs.
 
 ## Procedure
 

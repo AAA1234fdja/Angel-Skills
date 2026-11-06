@@ -1,0 +1,103 @@
+{
+  "id": "harness-gc",
+  "category": "harness",
+  "description": "Remove what the harness no longer needs: unused skills, silent hooks, forgotten servers, expired grants and orphaned config. Use when the config has grown by accretion, when context is spent on things nobody uses, or on a schedule.",
+  "phase": "meta",
+  "verbs": [
+    "audit",
+    "refactor"
+  ],
+  "triggers": [
+    "clean up the harness config",
+    "remove unused skills",
+    "config has too much stuff",
+    "garbage collect the config"
+  ],
+  "keywords": [
+    "gc",
+    "cleanup",
+    "remove",
+    "unused",
+    "quarantine",
+    "orphan",
+    "expired",
+    "config"
+  ],
+  "tools": [
+    {
+      "id": "gc-plan",
+      "entry": "tools/gc_plan.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Refuses removals without evidence, removals of a capability's last copy, and incomplete removals.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "window_days": {
+            "type": "integer"
+          },
+          "candidates": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "candidates"
+        ]
+      },
+      "sample": {
+        "window_days": 30,
+        "candidates": [
+          {
+            "name": "old-lint-hook",
+            "category": "superseded",
+            "evidence": "0 invocations in 30 days; successor lint-v2",
+            "replacement": "lint-v2",
+            "quarantined": true,
+            "last_copy": false,
+            "parts": [
+              "artefact",
+              "registration",
+              "docs"
+            ]
+          },
+          {
+            "name": "legacy-skill",
+            "category": "unused",
+            "evidence": "",
+            "quarantined": false,
+            "last_copy": true,
+            "parts": [
+              "artefact"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "gc-plan refuses nothing and the inventory diff shows the reduction",
+      "kind": "tool",
+      "tool": "gc-plan"
+    },
+    {
+      "id": "evidence",
+      "statement": "every 'unused' claim states its evidence window",
+      "kind": "review"
+    },
+    {
+      "id": "back",
+      "statement": "no removal takes the last path to a capability",
+      "kind": "review"
+    }
+  ]
+}

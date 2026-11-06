@@ -26,6 +26,7 @@ a stable exit code, and a human read a journal six months later.
 - A single throwaway script: a message is enough.
 - Language-native exceptions that already carry type and context and are consumed
   locally.
+- A single throwaway script: `error-handling` inline is enough.
 
 ## Procedure
 
@@ -40,6 +41,7 @@ a stable exit code, and a human read a journal six months later.
    `--list` command) and keep it generated from the single source.
 6. **Treat the table as a contract**: adding a code is minor, changing the meaning
    or exit code of an existing one is breaking (`schema-evolution`).
+7. **Retire codes deliberately**: a code nobody has emitted for a release cycle is either dead or undocumented; decide which and record it.
 
 ## Exit Criteria
 

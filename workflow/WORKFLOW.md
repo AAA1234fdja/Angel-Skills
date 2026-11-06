@@ -3,7 +3,7 @@
 > **This is the first file to read.** `EXTENSION-STANDARD.md` says *how* a skill
 > is written; this file says *why the package exists*, what it must beat, and how
 > a need travels from a sentence to a verified result.
-> Package `0.6.0` · updated 2026-11-05
+> Package `0.7.0` · updated 2026-11-05
 
 ---
 
@@ -62,7 +62,7 @@ prose; with it, the runtime can decide when to load it and what to run.
 ## 3. Categories and the routing path
 
 Eleven categories, each with a gate (a rule that blocks "done" inside it) and a
-set of rules. All eleven are active: 67 skills, 64 tools, 5 contracts. A category
+set of rules. All thirteen are active: 78 skills, 75 tools, 5 contracts. A category
 exists only if it names a hole the others do not cover — that is why there are
 eleven and not forty.
 
@@ -173,8 +173,9 @@ reference; `workflow agents validate --strict` is the check.
 | 0.3 | folder skills, protocols, contracts, errors, tools, router, journal; 44 skills, 41 tools, 4 contracts, 125 tests | done |
 | 0.4 | agents as APIs: cards, pinned addresses, cascade planning, `agent-card@1.0.0`; 6 agents, 5 contracts, 176 tests | done |
 | 0.5 | 8 more skills with executable tools (52 total), `acceptance` validated, `ship` and `validate` verbs, 194 tests | done |
-| **0.6** | **15 more skills with executable tools (67 total), 64 tools, 195 tests, package at 25,642 / 25,000-line ceiling** | **current** |
-| 0.7 | budget is a decision, not a measurement: displace or fold before adding | next |
+| 0.6 | 15 more skills with executable tools (67 total), 64 tools, 195 tests | done |
+| **0.7** | **11 more skills (78 total) and a shape standard enforced by tests over all 78; two new categories, `harness` and `tests`; 197 tests** | **current** |
+| 0.8 | growth by displacement: every addition names what it folds or retires | next |
 | 1.0 | contracts frozen at major 1; every active skill has at least one tool or a sibling check | later |
 
 Adding a category is a data change in `categories.json`; adding a skill is

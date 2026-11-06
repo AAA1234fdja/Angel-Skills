@@ -48,6 +48,7 @@ anything.
 5. **Order findings by impact** and propose the fix order.
 6. **Verify with an eval** of the failing case (`eval-harness`), not with a run that
    "looks fine now".
+7. **Say what an eval would have to change to catch this**: if the failure cannot be turned into a check, the diagnosis is a story, not a finding.
 
 ## Exit Criteria
 

@@ -26,6 +26,7 @@ in the repo, or it genuinely does not and must be built.
 
 - Domain logic: it is in no package, and searching wastes the turn.
 - When the repository forbids new dependencies by policy.
+- The catalogue, rather than the package ecosystem: `skill-scout` searches what already exists here.
 
 ## Procedure
 
@@ -40,6 +41,8 @@ in the repo, or it genuinely does not and must be built.
    searched, what you found, why you chose it (or why you wrote it by hand).
 5. **If writing by hand**, keep it minimal, define the interface first and add a
    test (hand off to `tdd-workflow`).
+6. **Set a time box on the search**: thirty minutes for the repository, thirty more for the ecosystem. Past that, the information gain is lower than the cost of writing it.
+7. **Write down what you rejected, in one line each**: the next person will search the same three packages, and the reasons are the only thing that saves them the trip.
 
 ## Exit Criteria
 
@@ -57,3 +60,4 @@ in the repo, or it genuinely does not and must be built.
 | Choosing the most popular package without checking maintenance | Look at last release and open issues |
 | Searching the name of the solution you already have in mind | Search the problem |
 | Adopting code with an incompatible licence | Check the licence before integrating |
+| Searching until the perfect package appears | Time box it; decide with what you have |

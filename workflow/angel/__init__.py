@@ -18,5 +18,5 @@ agents      an agent is an API; every API may call subagents
 cli         the single entry point
 """
 
-__version__ = "0.6.0"
+__version__ = "0.7.0"
 PACKAGE = "workflow"

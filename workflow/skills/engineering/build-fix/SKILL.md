@@ -24,6 +24,7 @@ the first error. The rest are usually consequences. Hence one error per cycle.
 
 - Environment failures (missing binary, SDK, credentials): fix the environment.
 - Failures in vendored or generated code: regenerate.
+- A failing test that is right about the code: the loop is `tdd-workflow`, not this one.
 
 ## Procedure
 
@@ -39,6 +40,7 @@ the first error. The rest are usually consequences. Hence one error per cycle.
    wrong: revert and return to step 3.
 6. **Repeat** until zero, then run the full suite (other failures may be masked).
 7. If the patch changes a public interface, say so: it is a contract change.
+7. **Confirm nothing else moved**: `git diff --stat` against the pre-fix state. A patch that fixes the build and quietly changes three files is two changes.
 
 ## Exit Criteria
 
@@ -57,3 +59,4 @@ the first error. The rest are usually consequences. Hence one error per cycle.
 | Reinstalling dependencies "just in case" | Only when the error points at the tree |
 | Loosening the compiler config to pass | Config changes are their own PR with a reason |
 | Committing with `--no-verify` | Forbidden: the hook exists for a reason |
+| Fix that also reformats the file | One cause, one patch; reformat separately |

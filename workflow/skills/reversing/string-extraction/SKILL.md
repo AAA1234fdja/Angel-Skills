@@ -28,6 +28,7 @@ each group to be tied to an observation before it becomes a claim.
 - You can run it in a sandbox: observe it first, strings are the fallback.
 - The artefact is source code: read the source, do not grep the compiled form.
 - You need a verdict on safety: strings suggest, they never prove.
+- A sample you can run in a sandbox: `binary-triage` observes behaviour, and strings are the fallback.
 
 ## Procedure
 

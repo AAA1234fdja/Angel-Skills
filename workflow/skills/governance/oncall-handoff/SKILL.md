@@ -28,6 +28,7 @@ context. Fifteen minutes of writing replaces an hour of an incident.
 - Same person, same shift: there is nothing to transfer.
 - A full postmortem of the week: that is a different document.
 - The handoff of a project, not a system: that is a plan, not a rotation.
+- The postmortem of the week that just ended: `failure-forensics`.
 
 ## Procedure
 

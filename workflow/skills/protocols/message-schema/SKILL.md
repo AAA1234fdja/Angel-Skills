@@ -25,6 +25,7 @@ schema — never both maintained by hand.
 
 - A schema with no code behind it (pure external contract).
 - One-off payloads with no consumer.
+- A contract with no code behind it: `contract-design` shapes the payload, and there is nothing to drift from.
 
 ## Procedure
 
@@ -37,6 +38,8 @@ schema — never both maintained by hand.
 4. **Keep ordering stable** so diffs are readable.
 5. **Treat a rename as remove + add**, so the drift check catches half-done renames.
 6. **Version the generated file** with the code that produced it.
+7. **Snapshot the generated artefact in tests**, so a regeneration that changes the shape fails loudly instead of arriving with the next deploy.
+8. **Record who owns the generator**: an unowned codegen step is the first thing to rot when the author changes team.
 
 ## Exit Criteria
 
@@ -55,3 +58,4 @@ schema — never both maintained by hand.
 | Silent rename on one side | Renames are remove + add |
 | Unstable field ordering | Sort or declare the order explicitly |
 | Generated file with no provenance | Header with source and version |
+| Generator owned by nobody | Name the owner next to the command |

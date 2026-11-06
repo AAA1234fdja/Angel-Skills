@@ -28,6 +28,7 @@ who was on call the day it was produced.
 - Local scratch files that never leave the machine.
 - Names inside source code: those follow the language's convention, not this one.
 - Renaming a large archive whose consumers already link to it — that is a migration.
+- Identifiers inside source code: `coding-standards` governs those, and local scratch files need no rule.
 
 ## Procedure
 

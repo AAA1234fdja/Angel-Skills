@@ -25,6 +25,7 @@ decision in the whole system.
 
 - Ephemeral data that never leaves one request.
 - Caches whose content can be rebuilt from the source of truth.
+- Per-request payloads that never rest in a shared store: `contract-design`.
 
 ## Procedure
 

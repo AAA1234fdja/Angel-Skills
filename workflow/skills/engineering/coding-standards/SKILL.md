@@ -25,6 +25,7 @@ wins; this document covers what is usually left unwritten.
 
 - When a linter and formatter are configured: run them instead of debating.
 - Generated or vendored files.
+- A rule the team disagrees with: change it in its own change, and `code-review` judges the result.
 
 ## Procedure
 
@@ -61,3 +62,4 @@ wins; this document covers what is usually left unwritten.
 | Comments that restate the code | Comment intent, or delete it |
 | `try { } catch (e) {}` to "avoid failures" | Fail fast with context |
 | A 900-line module "because it belongs together" | Split by responsibility, backed by tests |
+| Convention discovered after the PR | Read two neighbouring files before the first line |

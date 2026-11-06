@@ -30,6 +30,7 @@ that writing it forces the alternatives to be named.
 - Reversible-in-an-hour choices: the cost of the record exceeds the decision.
 - Style conventions the linter enforces: the rule is the record.
 - A decision already made elsewhere and merely relayed: link to that record.
+- Choices reversible within the hour: `commit-hygiene` records the why in the message.
 
 ## Procedure
 

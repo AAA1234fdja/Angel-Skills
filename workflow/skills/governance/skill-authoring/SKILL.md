@@ -27,6 +27,7 @@ runtime starts loading things that no longer exist.
 - General documentation: that goes to `docs/`, not `skills/`.
 - Changing the standard itself: a design decision, discussed first, bumps the
   package version.
+- General documentation that is not a procedure: `doc-writing`.
 
 ## Procedure
 

@@ -27,6 +27,7 @@ the first failure** instead of stacking debt.
 - Changes that only touch non-executable text (a README with no commands).
 - When CI already ran exactly these phases on the same commit: quote CI instead
   of repeating it.
+- Non-executable text, where no phase can fail: say so, and let `code-review` judge the prose.
 
 ## Procedure
 
@@ -43,6 +44,7 @@ of output). A failure restarts the loop at that phase.
    input, file paths built from external data.
 6. **Diff review.** Read `git diff` top to bottom with one question: is this the
    smallest change that solves the task? Everything else is out.
+7. **Fail closed on the weakest phase**: if any phase cannot run (no types, no lint config), say so explicitly instead of silently dropping it from the loop.
 
 ## Exit Criteria
 

@@ -60,3 +60,4 @@ before forming a hypothesis.
 | Hypothesising before the timeline | Timeline first, always |
 | Blaming the tool | Check authorisation and payload in the journal |
 | No guard added afterwards | Without a guard, it returns |
+| Blaming the last event in the log | Find the first anomaly; the last is a consequence |

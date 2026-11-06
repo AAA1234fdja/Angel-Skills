@@ -25,6 +25,7 @@ whether it surfaces three layers down as `undefined is not a function`.
 
 - Inside a single function's local data, where the type system already holds.
 - For data you just constructed in the same statement.
+- Values built and consumed inside one function: no skill applies; the boundary checks belong to `protocol-validation`.
 
 ## Procedure
 
@@ -38,6 +39,7 @@ whether it surfaces three layers down as `undefined is not a function`.
    unknown fields hide producer bugs.
 6. **Log the contract version with the payload** so a later failure can be traced.
 7. **Test both sides**: one test with a valid payload and one per rejected case.
+8. **Make the rejection observable**: a counter per violated keyword. A validator that only logs to a console nobody reads is a validator with no effect.
 
 ## Exit Criteria
 
@@ -56,3 +58,4 @@ whether it surfaces three layers down as `undefined is not a function`.
 | "Latest" contract in production | Pin the major version |
 | Allowing any extra field | Unknown fields hide producer regressions |
 | Repairing the payload in the validator | Coercion belongs to an explicit migration |
+| Validator with no rejection metrics | Count per keyword; a rising rate is a producer bug |

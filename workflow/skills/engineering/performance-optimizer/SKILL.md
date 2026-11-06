@@ -26,6 +26,7 @@ is simple: **baseline first, then one hypothesis, and the number decides**.
 - When the cause is a network or database wait: fix the cause (N+1, missing index)
   before touching client code.
 - Code that is not on the critical path and has not been profiled.
+- Optimisation with no measurement behind it: `benchmark-discipline` produces the number first.
 
 ## Procedure
 

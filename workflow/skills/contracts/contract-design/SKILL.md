@@ -25,6 +25,7 @@ designing from what a producer happens to have.
 
 - Data that never crosses a boundary (a local variable, a private helper).
 - A single consumer that owns the producer: the contract is the code.
+- Data that never crosses a boundary: no skill applies, the type is the contract; `contract-validation` starts where the payload enters.
 
 ## Procedure
 
@@ -58,3 +59,4 @@ designing from what a producer happens to have.
 | Free strings where an enum exists | Enums make evolution detectable |
 | No version on v1 | Retro-fitting versions is a breaking change |
 | Contract describes transport (headers, retries) | Contract shapes the payload only |
+| Contract designed without its failure behaviour | Say what a consumer does with a missing optional field |

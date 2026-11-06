@@ -4,6 +4,55 @@ Formato: fecha · versión del paquete · cambio. Cada entrada dice qué cambia
 para quien consume el paquete; los cambios de comportamiento incompatibles van primero
 y con la acción requerida.
 
+## 0.7.0 — 2026-11-05
+
+Once skills nuevas y, más importante, un estándar de forma que ahora se aplica a las
+**78** skills del paquete en vez de a las de la última tanda. Es el cambio de fondo:
+0.6 presumía de un techo de líneas y lo rompió; esta versión mide otra cosa.
+
+**budget** — el techo de líneas deja de ser una puerta y pasa a ser un dato (28.443
+líneas, en el README). La razón está escrita allí: el techo se podía cumplir recortando
+procedimientos, que es exactamente lo que 0.5 hizo y lo que empeoró el producto. Lo que
+se mide ahora es la forma: 60 líneas mínimas de cuerpo, 7 pasos numerados con la
+decisión en negrita, 5 modos de fallo, las cuatro secciones obligatorias y un
+`When Not to Use` que nombra a la skill que sí cubre el caso. Está en tests, no en un
+párrafo.
+
+**breaking** para quien tenía skills de relleno: 23 skills antiguas no cumplían el
+estándar y se reescribieron en vez de perdonarse, y las 78 ganaron un handoff explícito
+en `When Not to Use`. Si un procedimiento tuyo vive en una de ellas, su numeración
+cambió. Acción: relee la sección `Procedure` de las skills que uses.
+
+- **added** — categoría `harness` (4 skills) con su puerta: nada se instala, se amplía
+  ni se retira sin procedencia, entrada de inventario y una vuelta atrás probada.
+- **added** — categoría `tests` (3 skills): la suite como activo, no como trámite.
+- **added** — `skill-stocktake` (governance, `audit`): duplicados de propiedad, skills
+  muertas, prosa que creció más que su herramienta; tool `stocktake`.
+- **added** — `skill-scout` (governance, `research`): reutilizar o adaptar antes de
+  escribir; exige licencia y commit fijado; tool `scout-report`.
+- **added** — `harness-inventory` (harness, `audit`): siete capas, procedencia, gatillo
+  y radio de impacto; tool `surface-audit`.
+- **added** — `harness-provenance` (harness, `design`): una rama no es una versión;
+  tool `install-gate`, que rechaza refs móviles y superficies sin revisar.
+- **added** — `harness-gc` (harness, `meta`): retirar con evidencia, ventana y vuelta
+  atrás; tool `gc-plan`, que se niega a tocar la última copia de una capacidad.
+- **added** — `harness-context-profiles` (harness, `design`): modos por decisión, reglas
+  compartidas una sola vez; tool `profile-check`.
+- **added** — `intent-driven-development` (product, `design`): intención ambigua a
+  criterios observables; tool `intent-check`, que rechaza adjetivos.
+- **added** — `test-suite-adoption` (tests, `audit`): qué tests pueden fallar de verdad;
+  tool `suite-baseline`, que cuenta los que no pueden.
+- **added** — `regression-ledger` (tests, `verify`): consumidores por módulo y el check
+  que prueba que no se rompió; tool `ledger-check`.
+- **added** — `test-data-strategy` (tests, `design`): datos propios, deterministas y sin
+  producción sin anonimizar; tool `data-strategy-check`.
+- **added** — `release-notes-audit` (content, `ship`): notas que describen lo que salió,
+  breaking primero; tool `notes-audit`.
+- **changed** — `tests/`: 197. Dos pruebas nuevas recorren todo el catálogo (forma y
+  handoff), y la de rutas se extendió a las 26 skills añadidas desde 0.5.
+- **fixed** — cinco skills nuevas declaraban `status: adapted`, que el registro no
+  admite (`adopted|original|experimental`); la adaptación vive en `origin`.
+
 ## 0.6.0 — 2026-11-05
 
 Quince skills nuevas, todas con herramienta ejecutable, y dos correcciones que el

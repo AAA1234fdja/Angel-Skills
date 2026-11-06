@@ -25,6 +25,7 @@ whoever shouted last.
 
 - A single one-off failure that is already being fixed.
 - When the failure rate is unknown: instrument first.
+- A single failure already being fixed: `failure-forensics` explains that one.
 
 ## Procedure
 
@@ -38,6 +39,7 @@ whoever shouted last.
 6. **Close duplicates explicitly**, linking them to the canonical item.
 7. **Re-run the clustering monthly**: a closed item that keeps appearing means the
    fix did not hold.
+8. **Report the queue's own health**: how many items were closed, reopened and merged this cycle. A backlog that only grows is a journal, not a queue.
 
 ## Exit Criteria
 
@@ -56,3 +58,4 @@ whoever shouted last.
 | Severity set by the reporter | Severity from the taxonomy's policy |
 | No owner | Unassigned items are wishes |
 | Closing without checking recurrence | Re-run clustering; fixes regress |
+| Ranking by recency | Frequency × severity; the newest is rarely the biggest |

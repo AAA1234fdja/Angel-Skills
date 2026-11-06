@@ -30,6 +30,7 @@ towards the conclusion.
 - Correctness: a benchmark says nothing about whether the result is right.
 - A single long-running job where variance is irrelevant and one run is the truth.
 - Capacity planning at a scale you cannot reproduce: that needs a model, not a micro-benchmark.
+- Correctness questions, where a benchmark proves nothing: `verification-loop`.
 
 ## Procedure
 

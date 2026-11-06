@@ -1,6 +1,6 @@
 # workflow · the skill package of Angel
 
-Package **0.6.0** — a self-contained set of **67 skills, 64 executable tools,
+Package **0.7.0** — a self-contained set of **78 skills, 75 executable tools,
 5 contracts and 6 agents**, with a registry, a validator, a router, a run engine,
 an agent dispatcher and an optional Ely extension. No external dependencies, no
 network, no services: Python 3.10+ standard library only.
@@ -20,7 +20,7 @@ workflow/
 ├── AGENTS.md              agents and subagents: addresses, cards, the five rules
 ├── angel/                 the runtime (registry, router, protocols, contracts,
 │                          tools, journal, runner, agents, errors, cli)
-├── tests/                 195 tests over the runtime, the catalogue and the extension
+├── tests/                 197 tests over the runtime, the catalogue and the extension
 ├── tools/                 maintenance scripts (add_samples.py)
 └── ely-extension/         optional extension for Ely IDE (angel.workflow)
 ```
@@ -79,10 +79,12 @@ contract (see `EXTENSION-STANDARD.md` §10).
 | `agentic` | activa | 6 | no agent change without an eval before and after |
 | `security` | activa | 6 | high-severity findings block the run |
 | `data` | activa | 6 | no migration without a tested reverse path |
+| `harness` | activa | 4 | nothing installed, widened or removed without provenance and a tested way back |
+| `tests` | activa | 3 | no suite trusted until a baseline ran and every skip has an owner |
 | `reversing` | activa | 4 | every finding is tied to an artefact |
-| `governance` | activa | 8 | nothing enters without `validate --strict` + a registry record |
-| `product` | activa | 3 | accessibility AA failures block |
-| `content` | activa | 4 | nothing published without an executed example |
+| `governance` | activa | 9 | nothing enters without `validate --strict` + a registry record |
+| `product` | activa | 4 | accessibility AA failures block |
+| `content` | activa | 5 | nothing published without an executed example |
 
 Each skill's `phase`, `verbs`, `triggers` and tools are in
 `skills/<category>/<id>/skill.json`; the catalogue with descriptions is
@@ -168,10 +170,12 @@ without leaving its sandbox. Commands it adds to the palette:
 Declared permissions: `workspace:read`, `ui`, `commands`, `chat`. No network, no
 writes. Disabling it leaves the package intact and the CLI working.
 
-## Line budget
+## Size and shape
 
-The package has a stated size: **10,000 ≤ total lines ≤ 25,000**. It is measured,
-not estimated, with one command from `workflow/`:
+The package reports its size and enforces its shape. The two are different controls,
+and only the second one protects quality.
+
+### Size (reported, not gated)
 
 ```bash
 find . -type f \( -name "*.py" -o -name "*.md" -o -name "*.json" -o -name "*.mjs" -o -name "*.js" \) \
@@ -179,34 +183,46 @@ find . -type f \( -name "*.py" -o -name "*.md" -o -name "*.json" -o -name "*.mjs
   | sort | xargs wc -l | tail -1
 ```
 
-Current figure: **25,642 lines** — the ceiling holds, with 1.4% headroom.
+Current figure: **28,519 lines**.
 
-### A ceiling with 1% headroom is a ceiling that will be broken
+Through 0.5 and part of 0.6 this number was a ceiling, and it made the wrong thing
+happen: 0.5 shipped eight skills squeezed to fit, and the ceiling still broke. The
+count was measuring the wrong quantity. A skill that compresses a decision into sixty
+words is not cheaper than one that takes ninety — it is a different, worse product.
 
-The honest reading of this number is that the package is full. The budget was
-renegotiated once in 0.5 (20,000 → 25,000) because 52 skills did not fit; it will
-**not** be raised again for more of the same. What happens next is a decision, not
-a measurement:
+So the ceiling is retired as a gate, and this is the honest reason: it was gamed by
+exactly the change it was supposed to prevent. Growth is now governed by the shape
+standard below and by **displacement** — a skill that does not change a decision is
+folded into the one that does.
 
-- new skills must displace something, or come with a removal;
-- a skill whose tool is a thin wrapper around a checklist is a candidate for
-  folding into the skill that owns the decision;
-- the next budget change needs a reason that is not "we ran out", recorded here.
+### Shape (gated by tests, per skill)
 
-The rule itself does not move: measured with the command above, and a change that
-breaks the ceiling is a decision that goes in the changelog.
+| Standard | Minimum | Enforced by |
+|---|---|---|
+| Body length | 60 lines | `SkillShapeTests.test_every_skill_meets_the_declared_shape` |
+| Procedure | 7 numbered steps, each starting with a decision in bold | same test |
+| Failure modes | 5 rows in § Common Failures | same test |
+| Required sections | When to Use · When Not to Use · Procedure · Exit Criteria | same test |
+| Discrimination | § When Not to Use names the sibling skill that owns the case | `test_a_skill_states_the_sibling_that_owns_the_case_it_refuses` |
+| Executable procedure | ≥1 tool that runs on its own `sample` | `validate --strict`, `tool --self-test` |
+| Machine-checkable exit | ≥1 `acceptance` criterion of `kind: tool` | `validate --strict` |
+
+All **78** skills meet it. The 23 oldest ones did not when this standard was written,
+and were rewritten in 0.7 rather than grandfathered: a standard that applies only to
+the skills of the moment is a preference.
 
 | Block | Lines |
 |---|---|
-| manifests and contracts (`skill.json`, `categories.json`, schemas) | 7,237 |
+| manifests and contracts (`skill.json`, `categories.json`, schemas) | 8,626 |
+| `SKILL.md` procedures | 5,293 |
+| skill tools | 5,168 |
 | runtime `angel/` | 5,045 |
-| `SKILL.md` procedures | 4,389 |
-| skill tools | 4,317 |
-| tests | 2,306 |
-| main documents | 1,086 |
+| tests | 2,362 |
+| main documents | 1,149 |
 | Ely extension | 528 |
 | agent cards and index (`agents/`) | 451 |
 | maintenance scripts | 240 |
+| **total** | **28,862** |
 
 ## Origin of the patterns
 

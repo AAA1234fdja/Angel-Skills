@@ -25,6 +25,7 @@ version number carry that classification.
 
 - A contract with no consumers yet: change freely, still keep the history.
 - A private schema that never leaves one module.
+- A greenfield schema with no consumers yet: `contract-design` decides it once, without a migration.
 
 ## Procedure
 

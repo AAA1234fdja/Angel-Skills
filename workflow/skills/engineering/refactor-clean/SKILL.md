@@ -27,6 +27,7 @@ green after each step**.
 - On code published as an API (exports, endpoints, routes): consumers may exist
   outside the repository, so "unused" cannot be verified by grep.
 - Before a release: cleanup is not a safe last-minute change.
+- A defect in the same file: `build-fix` first, and cleanup in a separate change.
 
 ## Procedure
 

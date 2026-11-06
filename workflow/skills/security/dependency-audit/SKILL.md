@@ -24,6 +24,7 @@ moment to decide whether the liability is still worth paying.
 
 - A repository with no dependency manifest.
 - During an incident: audit after, restore first.
+- A repository with no manifest at all: `dependency-graph` still finds the edges from imports.
 
 ## Procedure
 
@@ -38,6 +39,7 @@ moment to decide whether the liability is still worth paying.
 6. **Check install-time scripts**: postinstall hooks are arbitrary code execution
    at install time.
 7. **Record the decision** per dependency: keep, pin, replace, remove, with a reason.
+8. **Re-audit on adoption, not on release**: the licence or maintenance state you check at release time is a fact about the package a year ago.
 
 ## Exit Criteria
 
@@ -57,3 +59,4 @@ moment to decide whether the liability is still worth paying.
 | No licence check until release | Check at adoption |
 | Postinstall scripts unreviewed | Treat as code you are running |
 | Auditing only direct dependencies | Transitives are the supply chain |
+| Audit at release time only | Audit when adopting; re-check on the bump |

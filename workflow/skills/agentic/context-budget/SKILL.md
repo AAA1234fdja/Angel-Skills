@@ -25,6 +25,7 @@ exact moment it needs them.
 
 - Sessions under a few thousand tokens: the overhead exceeds the benefit.
 - When the real problem is a bloated system prompt — fix that first.
+- The real problem is a bloated system prompt or a bad action space — `agent-harness-construction` owns that diagnosis.
 
 ## Procedure
 
@@ -58,3 +59,4 @@ exact moment it needs them.
 | Inlining a 2000-line file | Reference it and load the section |
 | Trimming the system prompt first | Trim history and exploration first |
 | Losing decisions after compaction | Keep a decisions block in the summary |
+| Budget "managed" by feel | Measure per category; the number is the control |

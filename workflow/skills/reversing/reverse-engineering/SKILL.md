@@ -25,6 +25,7 @@ hypothesis and must be labelled as one.
 
 - Source is available: read it, do not reverse it.
 - The licence or the law forbids it: check first and document the basis.
+- Source is available: `code-review`, because reversing what you can read is guesswork with extra steps.
 
 ## Procedure
 

@@ -37,6 +37,8 @@ the matrix explicit so an upgrade is a decision instead of a hope.
 6. **Record the sunset date** for every deprecated major; without one, "deprecated"
    means "forever".
 7. **Re-run the matrix in CI** when either side changes.
+8. **Price the consumer's upgrade**: effort, coordination and the window in which it must happen. A matrix with no cost column produces a plan nobody schedules.
+9. **Publish the matrix where consumers can read it**, not in the reviewer's head: a compatibility guarantee nobody can look up is a rumour.
 
 ## Exit Criteria
 
@@ -55,3 +57,4 @@ the matrix explicit so an upgrade is a decision instead of a hope.
 | Consumers pinning "latest" | Pin a major; latest is a moving target |
 | Treating semver as a guarantee | Check the diff; the number is a claim |
 | Matrix built once and never refreshed | Run it in CI on both sides |
+| Matrix with no cost per upgrade | Add effort and window, or the plan never happens |

@@ -1,0 +1,108 @@
+{
+  "id": "regression-ledger",
+  "category": "tests",
+  "description": "Keep a ledger of cross-module regressions: which module a change can break downstream, and the executable acceptance that proves it did not. Use in a large repo where every module has consumers nobody has listed.",
+  "phase": "verify",
+  "verbs": [
+    "verify",
+    "document"
+  ],
+  "triggers": [
+    "which modules depend on this",
+    "a change broke a distant caller",
+    "cross module regression",
+    "consumers of a shared module"
+  ],
+  "keywords": [
+    "regression",
+    "ledger",
+    "consumer",
+    "downstream",
+    "module",
+    "coupling",
+    "surface"
+  ],
+  "tools": [
+    {
+      "id": "ledger-check",
+      "entry": "tools/ledger_check.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Flags consumers with no executable check, modules with no listed consumers, and entries stale against their module.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "as_of": {
+            "type": "string"
+          },
+          "stale_days": {
+            "type": "integer"
+          },
+          "modules": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "modules"
+        ]
+      },
+      "sample": {
+        "as_of": "2026-11-05",
+        "stale_days": 180,
+        "modules": [
+          {
+            "name": "billing",
+            "surface": [
+              "charge",
+              "refund"
+            ],
+            "updated_on": "2026-09-01",
+            "changed_on": "2026-10-20",
+            "consumers": [
+              {
+                "name": "checkout",
+                "coupling": "runtime",
+                "check": "e2e: checkout.mjs"
+              }
+            ]
+          },
+          {
+            "name": "legacy-export",
+            "surface": [
+              "dump"
+            ],
+            "updated_on": "2025-01-10",
+            "changed_on": "2026-10-30",
+            "consumers": []
+          }
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "ledger-check reports no unchecked consumer and no stale entry",
+      "kind": "tool",
+      "tool": "ledger-check"
+    },
+    {
+      "id": "sample",
+      "statement": "a sample was verified by breaking a module on purpose",
+      "kind": "review"
+    },
+    {
+      "id": "same-change",
+      "statement": "the ledger was updated in the change that touched the surface",
+      "kind": "review"
+    }
+  ]
+}

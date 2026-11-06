@@ -40,6 +40,7 @@ net that cannot be broken again unnoticed.
 6. **When a test fails, ask first whether the code or the test is wrong.** An old
    test may be obsolete after a legitimate contract change: update it in the same
    commit and say why.
+7. **Keep the register small enough to run on every change**: a regression suite that takes twenty minutes is skipped precisely when it matters.
 
 ## Exit Criteria
 

@@ -25,6 +25,7 @@ be wrong about and how to check it.
 
 - When the code can say it better: a well-named function over a paragraph.
 - Generated reference for a public API: generate it instead of writing it.
+- Generated reference for a public API, where the generator is the author: `api-reference-writing`.
 
 ## Procedure
 

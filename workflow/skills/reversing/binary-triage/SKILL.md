@@ -25,6 +25,7 @@ of reading the header.
 
 - Source is available: read it.
 - Full reverse engineering is the goal: triage is the first step, not the work.
+- Source is available: `code-review` reads it without guessing from a binary.
 
 ## Procedure
 
@@ -59,3 +60,4 @@ of reading the header.
 | Ignoring entropy | Packed files look boring until you measure |
 | No hash in the report | The analysis cannot be referenced later |
 | Claiming it is benign without evidence | List the unknowns; say "no indicators found" |
+| Triage with no recommendation | End with discard, static, dynamic or escalate |

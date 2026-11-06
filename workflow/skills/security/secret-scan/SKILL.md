@@ -26,6 +26,7 @@ clone, cache and backup.
 
 - As a replacement for rotation: the scan finds, the rotation fixes.
 - For values that are demonstrably public (a public client id in a public SDK).
+- The fix rather than the finding: rotate first, and `incident-comms` owns who is told and when.
 
 ## Procedure
 
@@ -39,6 +40,7 @@ clone, cache and backup.
    destructive and needs consent.
 5. **Add the pattern to the project's scanner config** so it cannot return.
 6. **Document the incident**: what leaked, exposure window, rotation time.
+7. **Make the scan asynchronous to the incident**: a pre-commit hook and a scheduled history scan, so detection does not depend on somebody remembering to look.
 
 ## Exit Criteria
 
@@ -57,3 +59,4 @@ clone, cache and backup.
 | Rewriting history for a live secret | Rotate first; history is secondary |
 | Ignoring high-entropy strings | Verify each: a key usually looks random |
 | No rule added afterwards | The same shape returns next month |
+| Manual scans only | Hook the diff and schedule the history scan |

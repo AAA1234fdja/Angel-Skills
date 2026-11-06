@@ -1,7 +1,12 @@
 # EXTENSION-STANDARD.md — how a skill is written here
 
 > Read this **before** creating or editing any skill. `WORKFLOW.md` explains the
-> purpose; this file is the contract. Package `0.6.0` · updated 2026-11-05
+> purpose; this file is the contract. Package `0.7.0` · updated 2026-11-05
+>
+> **From 0.7 the standard is enforced, not advised.** The minimums in §3.2 are checked
+> by `tests/test_catalogue_rules.py::SkillShapeTests` over every skill in the
+> catalogue. A skill below them fails the suite, which is what makes them a standard
+> rather than a suggestion.
 >
 > Machine check: `workflow validate --strict` implements §5 and §6. If the
 > standard and the validator disagree, the validator wins and this file is a bug.
@@ -37,7 +42,7 @@ skills/<category>/<id>/
 | Skill id | `^[a-z0-9]+(-[a-z0-9]+)*$`, unique, **stable forever** |
 | Category id | same pattern; must exist in `categories.json` |
 | Registry | a skill on disk that is not registered is an **error** |
-| Size | `SKILL.md` ≤ 400 lines, body ≤ 260 before splitting into `references/` |
+| Size | `SKILL.md` ≥ 60 lines of body (see §3.2) and ≤ 400; past 260, split into `references/` |
 | Placement | one skill lives in exactly one category: the one of its primary trigger |
 
 ---
@@ -64,6 +69,18 @@ metadata:
 ## Exit Criteria
 ## Common Failures
 ```
+
+**3.0 The shape minimums (enforced by tests)** — every skill declares a procedure
+that decides something. The numbers are not style preferences; each one closes a
+failure the catalogue actually had:
+
+| Minimum | Why it exists |
+|---|---|
+| 60 lines of body | Below that, a "procedure" is a summary with headings |
+| 7 numbered steps, each starting with a bolded decision | Fewer steps means the skill is a checklist; the bolded lead-in forces the step to name what it decides |
+| 5 rows in § Common Failures | Four failure modes is a rounded list; five forces a real one |
+| All four sections present | A skill without `When Not to Use` is offered everywhere |
+| One sibling named in § When Not to Use | A refusal that names nobody is a shrug; the router needs a handoff |
 
 **3.1 `description`** — the only field a model reads to decide whether to load the
 skill. It must: start with the outcome, contain the literal trigger `Use when`,
@@ -182,14 +199,16 @@ Errors (block):
 - [ ] `description` contains `Use when` and ≤ 700 chars
 - [ ] `When to Use`, `Procedure`, `Exit Criteria` exist
 - [ ] `skill.json` exists with `id`, `category`, `description`
+- [ ] body ≥ 60 lines, ≥ 7 numbered steps and ≥ 5 failure rows (§3.0)
+- [ ] § When Not to Use names the sibling skill that owns the case
 - [ ] every declared tool has an existing `entry` file, a valid `risk` and a `sample`
 - [ ] `acceptance` (if declared) has valid `kind`s and names only real tools
 - [ ] registered in `categories.json` (`workflow validate` green)
 
 Warnings (review):
 
-- [ ] missing `When Not to Use` / `Common Failures`
-- [ ] body > 260 lines (should it be split?)
+- [ ] body > 260 lines (should it be split into `references/`?)
+- [ ] a step that restates the description instead of deciding something (see §6)
 - [ ] no `triggers` in the manifest (routing will be weak)
 - [ ] no `acceptance`: the exit criteria are prose only (required for skills added from 0.5)
 - [ ] destructive tool without a documented confirmation path

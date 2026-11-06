@@ -27,6 +27,7 @@ forever" is the guards you write before starting.
 - The success condition is subjective.
 - Steps are destructive or irreversible: those need human gates.
 - The task is a one-off; a loop adds machinery for nothing.
+- Choosing what the loop should pursue: the task space is `agent-harness-construction`.
 
 ## Procedure
 

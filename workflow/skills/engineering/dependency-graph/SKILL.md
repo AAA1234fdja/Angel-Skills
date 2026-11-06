@@ -30,6 +30,7 @@ week of reading answers badly.
 - Judging *design quality*: a clean dependency graph can still be the wrong
   design. This skill measures coupling, not intent.
 - As a gate on every PR: run it when the shape of the code is in question.
+- Whether the design is any good: a clean graph is still the wrong design — that is `code-review`, and cycles inside one package belong to `dependency-audit`.
 
 ## Procedure
 
@@ -48,6 +49,7 @@ week of reading answers badly.
    refactor.
 6. **Record the decision** — the edge removed, the layer rule, or the accepted
    cycle with its reason — next to the graph, so the next audit starts informed.
+7. **Re-run the audit after the refactor**, not only before: a cycle removed in one file often reappears through the helper introduced to remove it.
 
 ## Exit Criteria
 
