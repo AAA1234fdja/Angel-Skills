@@ -216,6 +216,16 @@ class VocabularyTests(AngelTestCase):
             "regression-ledger": "which modules depend on this, cross module regression",
             "test-data-strategy": "tests share fixtures, deterministic test data",
             "release-notes-audit": "check the release notes before publishing",
+            "sourced-answer": "answer with sources i can check",
+            "research-ops": "research this question with a stop condition",
+            "codebase-onboarding": "new to this codebase, where do i start reading",
+            "change-impact": "what will this change break, blast radius",
+            "code-tour": "walk through this flow in order",
+            "docs-governance": "our docs are out of date, which document is current",
+            "failure-replay": "cannot reproduce the bug, make the failure happen again",
+            "santa-review": "two reviewers must approve this high impact change",
+            "scraping-ethics": "can we scrape this site",
+            "webhook-contract": "design a webhook for our customers",
             "release-readiness": "is it safe to deploy, what is the rollback plan",
             "api-design": "define the endpoint surface and its idempotency",
             "threat-model": "threat model this new trust boundary",
@@ -284,7 +294,10 @@ class NewSkillContentTests(AngelTestCase):
            "harness-inventory", "harness-provenance", "harness-gc",
            "harness-context-profiles", "intent-driven-development",
            "test-suite-adoption", "regression-ledger", "test-data-strategy",
-           "release-notes-audit")
+           "release-notes-audit", "sourced-answer", "research-ops",
+           "codebase-onboarding", "change-impact", "code-tour", "docs-governance",
+           "failure-replay", "santa-review", "scraping-ethics",
+           "webhook-contract")
 
     def test_every_new_skill_has_a_tool_a_sample_and_an_exit_criterion(self):
         for skill_id in self.NEW:
@@ -335,6 +348,14 @@ class NewSkillContentTests(AngelTestCase):
             ("benchmark-discipline", "bench-compare"): {"same_samples": True},
             ("commit-hygiene", "commit-lint"): {"vague": True},
             ("event-versioning", "event-compat"): {"breaking": True},
+            ("sourced-answer", "source-audit"): {},
+            ("change-impact", "impact-diff"): {},
+            ("code-tour", "tour-check"): {},
+            ("docs-governance", "docs-audit"): {},
+            ("failure-replay", "replay-check"): {},
+            ("santa-review", "dual-review"): {},
+            ("scraping-ethics", "scrape-policy"): {},
+            ("webhook-contract", "webhook-contract-check"): {},
         }
         for (skill_id, tool_id), expectation in failing.items():
             sample = box.sample_for(skill_id, tool_id)

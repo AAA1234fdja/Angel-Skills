@@ -1,0 +1,113 @@
+{
+  "id": "docs-governance",
+  "category": "content",
+  "description": "Give every document a job, an owner and a shelf life, so a long-lived project stops generating stale pages. Use when documentation contradicts itself, when nobody knows which doc is current, or before adding another file to a folder of forty.",
+  "phase": "audit",
+  "verbs": [
+    "audit",
+    "document"
+  ],
+  "triggers": [
+    "docs are out of date",
+    "which document is current",
+    "documentation governance",
+    "we have too many docs"
+  ],
+  "keywords": [
+    "docs",
+    "documentation",
+    "governance",
+    "owner",
+    "role",
+    "stale",
+    "duplicate"
+  ],
+  "tools": [
+    {
+      "id": "docs-audit",
+      "entry": "tools/docs_audit.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Flags documents with no role, no real owner or no review date, facts duplicated across documents, and decisions outside the record.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "documents": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "decisions_outside_record": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "documents"
+        ]
+      },
+      "sample": {
+        "documents": [
+          {
+            "path": "docs/SETUP.md",
+            "role": "status",
+            "owner": "ana",
+            "review_by": "2027-01-01",
+            "facts": [
+              "db port 5432"
+            ]
+          },
+          {
+            "path": "docs/OLD-SETUP.md",
+            "role": "",
+            "owner": "team",
+            "facts": [
+              "db port 5432",
+              "db host db1"
+            ]
+          },
+          {
+            "path": "docs/adr/0007-db.md",
+            "role": "history",
+            "owner": "ana",
+            "facts": [
+              "chose postgres"
+            ]
+          }
+        ],
+        "decisions_outside_record": [
+          {
+            "decision": "we use redis for cache",
+            "document": "docs/MAP.md"
+          }
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "docs-audit reports no unowned document and no duplicated fact",
+      "kind": "tool",
+      "tool": "docs-audit"
+    },
+    {
+      "id": "roles",
+      "statement": "every document has exactly one of the four roles",
+      "kind": "artifact"
+    },
+    {
+      "id": "schedule",
+      "statement": "link and role audits are scheduled with an owner",
+      "kind": "review"
+    }
+  ]
+}

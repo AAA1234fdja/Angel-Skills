@@ -1,7 +1,7 @@
 # EXTENSION-STANDARD.md — how a skill is written here
 
 > Read this **before** creating or editing any skill. `WORKFLOW.md` explains the
-> purpose; this file is the contract. Package `0.7.0` · updated 2026-11-05
+> purpose; this file is the contract. Package `0.8.0` · updated 2026-11-05
 >
 > **From 0.7 the standard is enforced, not advised.** The minimums in §3.2 are checked
 > by `tests/test_catalogue_rules.py::SkillShapeTests` over every skill in the

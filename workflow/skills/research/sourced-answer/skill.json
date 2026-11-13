@@ -1,0 +1,125 @@
+{
+  "id": "sourced-answer",
+  "category": "research",
+  "description": "Answer a factual question so a reader can check it: one source per claim, the date it was read, and the contradictions stated instead of smoothed. Use when the answer will drive a decision, when sources may have moved, or when two documents disagree.",
+  "phase": "research",
+  "verbs": [
+    "investigate",
+    "document"
+  ],
+  "triggers": [
+    "answer with sources",
+    "can you check this claim",
+    "two sources disagree",
+    "is this still true"
+  ],
+  "keywords": [
+    "source",
+    "citation",
+    "claim",
+    "evidence",
+    "contradiction",
+    "confidence",
+    "date"
+  ],
+  "tools": [
+    {
+      "id": "source-audit",
+      "entry": "tools/source_audit.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Flags unsourced claims, undated sources, unsourced numbers and contradictions with no way to settle them.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "question": {
+            "type": "string"
+          },
+          "decision": {
+            "type": "string"
+          },
+          "sub_questions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "claims": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "contradictions": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "claims"
+        ]
+      },
+      "sample": {
+        "question": "should we move to Postgres 17",
+        "decision": "choose the database version for the 2027 migration",
+        "sub_questions": [
+          "is 17 supported by our host"
+        ],
+        "claims": [
+          {
+            "text": "17 is GA on the host",
+            "source": "host docs",
+            "published": "2026-09-01",
+            "read": "2026-11-04",
+            "kind": "evidence"
+          },
+          {
+            "text": "extensions will work unchanged",
+            "source": "",
+            "kind": "inference"
+          },
+          {
+            "text": "it is about 30% faster",
+            "source": "blog",
+            "published": "",
+            "read": "2026-11-04",
+            "kind": "evidence"
+          }
+        ],
+        "contradictions": [
+          {
+            "topic": "extension support",
+            "a": "host docs",
+            "b": "forum",
+            "would_settle": ""
+          }
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "source-audit reports no unsourced claim and no undated source",
+      "kind": "tool",
+      "tool": "source-audit"
+    },
+    {
+      "id": "decision",
+      "statement": "the answer names the decision it serves",
+      "kind": "artifact"
+    },
+    {
+      "id": "condition",
+      "statement": "the recommendation states when it stops being true",
+      "kind": "review"
+    }
+  ]
+}

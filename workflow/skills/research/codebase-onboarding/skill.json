@@ -1,0 +1,149 @@
+{
+  "id": "codebase-onboarding",
+  "category": "research",
+  "description": "Learn an unfamiliar codebase fast enough to change it safely: entry points, three traced paths, and the first change that proves you understand it. Use when joining a repository, inheriting a service, or before a first change in code you have only read.",
+  "phase": "research",
+  "verbs": [
+    "investigate",
+    "document"
+  ],
+  "triggers": [
+    "new to this codebase",
+    "onboard onto the service",
+    "where do i start reading",
+    "inherited a repository"
+  ],
+  "keywords": [
+    "onboarding",
+    "codebase",
+    "entry point",
+    "trace",
+    "conventions",
+    "first change"
+  ],
+  "tools": [
+    {
+      "id": "onboarding-check",
+      "entry": "tools/onboarding_check.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Flags missing entry commands, untraced paths, unconfirmed conventions and a first change that was never predicted.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "repo": {
+            "type": "string"
+          },
+          "commands": {
+            "type": "object"
+          },
+          "traced_paths": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "boundaries": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "conventions": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "first_change": {
+            "type": "object"
+          },
+          "open_questions": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "commands",
+          "traced_paths"
+        ]
+      },
+      "sample": {
+        "repo": "billing-service",
+        "commands": {
+          "start": "make dev",
+          "test": "pytest",
+          "single": "pytest -k"
+        },
+        "traced_paths": [
+          {
+            "kind": "read",
+            "from": "GET /invoices",
+            "to": "db"
+          },
+          {
+            "kind": "write",
+            "from": "POST /refunds",
+            "to": "queue"
+          }
+        ],
+        "boundaries": [
+          "stripe client",
+          "validation at the router"
+        ],
+        "conventions": [
+          {
+            "rule": "errors are returned, not raised",
+            "confirmed_file": "refunds.py"
+          },
+          {
+            "rule": "snake_case everywhere",
+            "confirmed_file": ""
+          }
+        ],
+        "first_change": {
+          "predicted_files": [
+            "refunds.py",
+            "test_refunds.py"
+          ],
+          "actual_files": [
+            "refunds.py",
+            "test_refunds.py",
+            "models.py"
+          ]
+        },
+        "open_questions": [
+          {
+            "question": "who owns models.py",
+            "owner": "ana"
+          }
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "onboarding-check reports no missing path and no unconfirmed convention",
+      "kind": "tool",
+      "tool": "onboarding-check"
+    },
+    {
+      "id": "change",
+      "statement": "one change was predicted and compared against reality",
+      "kind": "artifact"
+    },
+    {
+      "id": "questions",
+      "statement": "open questions are recorded with an owner",
+      "kind": "review"
+    }
+  ]
+}

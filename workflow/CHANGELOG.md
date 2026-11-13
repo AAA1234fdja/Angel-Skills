@@ -4,6 +4,45 @@ Formato: fecha · versión del paquete · cambio. Cada entrada dice qué cambia
 para quien consume el paquete; los cambios de comportamiento incompatibles van primero
 y con la acción requerida.
 
+## 0.8.0 — 2026-11-05
+
+Diez skills nuevas y una categoría, `research`: es el hueco más grande que quedaba
+frente al ECC, que dedica 31 skills a convertir una incógnita en una respuesta con
+fuentes. El paquete pasa de 78 a 88 skills y de 75 a 85 herramientas; ningún id,
+categoría ni fase existente cambia.
+
+**compatible** — aditivo salvo la entrada nueva en `categories.json`, que cambia el
+orden de las categorías (ahora `research` va entre `data` y `harness`). Si algo leía
+`order` posicionalmente, usa el campo, no el índice.
+
+- **added** — `sourced-answer` (research, `research`): una fuente por afirmación,
+  fecha de publicación y de lectura, contradicciones declaradas en vez de promediadas;
+  tool `source-audit`.
+- **added** — `research-ops` (research, `research`): la investigación como operación
+  con barra de evidencia, cajas de tiempo y huecos declarados; tool `research-plan`.
+- **added** — `codebase-onboarding` (research, `research`): entrar en un repositorio
+  hasta poder **predecir** el primer cambio; tool `onboarding-check`.
+- **added** — `change-impact` (research, `plan`): radio de impacto predicho antes del
+  cambio y comparado después; tool `impact-diff`.
+- **added** — `code-tour` (research, `document`): un recorrido por un flujo, anclado a
+  ficheros y símbolos que existen, ocho pasos como máximo; tool `tour-check`.
+- **added** — `docs-governance` (content, `audit`): cuatro roles, un dueño y una fecha
+  de revisión por documento, un origen por dato; tool `docs-audit`.
+- **added** — `failure-replay` (errors, `debug`): reconstruir el fallo hasta que ocurra
+  a demanda y probar que la reproducción es **el mismo** fallo; tool `replay-check`.
+  Cierra el hueco entre `failure-forensics` (explica) y el test de regresión (protege).
+- **added** — `santa-review` (product, `review`): dos revisores independientes, lentes
+  distintas, ambos deben pasar; "apruebo con reservas" cuenta como fallo; tool
+  `dual-review`.
+- **added** — `scraping-ethics` (engineering, `design`): términos, robots, tasa, datos
+  personales y vía de retirada **antes** de escribir el colector; tool `scrape-policy`.
+- **added** — `webhook-contract` (protocols, `design`): firma, ventana de replay,
+  at-least-once con clave de idempotencia, orden por entidad y camino de dead-letter;
+  tool `webhook-contract-check`, que rechaza "exactly-once" por imposible.
+- **changed** — `tests/`: 197. Las 10 nuevas entran en las pruebas de forma, de rutas
+  y de "la herramienta sabe decir no", sin escribir casos nuevos: el estándar de 0.7
+  ya las cubre porque recorre todo el catálogo.
+
 ## 0.7.0 — 2026-11-05
 
 Once skills nuevas y, más importante, un estándar de forma que ahora se aplica a las

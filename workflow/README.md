@@ -1,6 +1,6 @@
 # workflow · the skill package of Angel
 
-Package **0.7.0** — a self-contained set of **78 skills, 75 executable tools,
+Package **0.8.0** — a self-contained set of **88 skills, 85 executable tools,
 5 contracts and 6 agents**, with a registry, a validator, a router, a run engine,
 an agent dispatcher and an optional Ely extension. No external dependencies, no
 network, no services: Python 3.10+ standard library only.
@@ -72,19 +72,20 @@ contract (see `EXTENSION-STANDARD.md` §10).
 
 | Category | Status | Skills | Gate |
 |---|---|---|---|
-| `engineering` | activa | 17 | no change finished without tdd-workflow + verification-loop evidence |
+| `engineering` | activa | 18 | no change finished without tdd-workflow + verification-loop evidence |
 | `contracts` | activa | 5 | versions are immutable; a breaking change is a new major |
-| `protocols` | activa | 4 | zero malformed messages accepted |
-| `errors` | activa | 5 | no error crosses a boundary without code, owner and recovery |
+| `protocols` | activa | 5 | zero malformed messages accepted |
+| `errors` | activa | 6 | no error crosses a boundary without code, owner and recovery |
 | `agentic` | activa | 6 | no agent change without an eval before and after |
 | `security` | activa | 6 | high-severity findings block the run |
 | `data` | activa | 6 | no migration without a tested reverse path |
+| `research` | activa | 5 | no claim without a source, no change without a predicted impact |
 | `harness` | activa | 4 | nothing installed, widened or removed without provenance and a tested way back |
 | `tests` | activa | 3 | no suite trusted until a baseline ran and every skip has an owner |
 | `reversing` | activa | 4 | every finding is tied to an artefact |
 | `governance` | activa | 9 | nothing enters without `validate --strict` + a registry record |
-| `product` | activa | 4 | accessibility AA failures block |
-| `content` | activa | 5 | nothing published without an executed example |
+| `product` | activa | 5 | accessibility AA failures block |
+| `content` | activa | 6 | nothing published without an executed example |
 
 Each skill's `phase`, `verbs`, `triggers` and tools are in
 `skills/<category>/<id>/skill.json`; the catalogue with descriptions is
@@ -183,7 +184,7 @@ find . -type f \( -name "*.py" -o -name "*.md" -o -name "*.json" -o -name "*.mjs
   | sort | xargs wc -l | tail -1
 ```
 
-Current figure: **28,519 lines**.
+Current figure: **31,463 lines**.
 
 Through 0.5 and part of 0.6 this number was a ceiling, and it made the wrong thing
 happen: 0.5 shipped eight skills squeezed to fit, and the ceiling still broke. The
@@ -207,22 +208,22 @@ folded into the one that does.
 | Executable procedure | ≥1 tool that runs on its own `sample` | `validate --strict`, `tool --self-test` |
 | Machine-checkable exit | ≥1 `acceptance` criterion of `kind: tool` | `validate --strict` |
 
-All **78** skills meet it. The 23 oldest ones did not when this standard was written,
+All **88** skills meet it. The 23 oldest ones did not when this standard was written,
 and were rewritten in 0.7 rather than grandfathered: a standard that applies only to
 the skills of the moment is a preference.
 
 | Block | Lines |
 |---|---|
-| manifests and contracts (`skill.json`, `categories.json`, schemas) | 8,626 |
-| `SKILL.md` procedures | 5,293 |
-| skill tools | 5,168 |
+| manifests and contracts (`skill.json`, `categories.json`, schemas) | 9,976 |
+| `SKILL.md` procedures | 6,026 |
+| skill tools | 5,969 |
 | runtime `angel/` | 5,045 |
-| tests | 2,362 |
-| main documents | 1,149 |
+| tests | 2,383 |
+| main documents | 1,223 |
 | Ely extension | 528 |
 | agent cards and index (`agents/`) | 451 |
 | maintenance scripts | 240 |
-| **total** | **28,862** |
+| **total** | **31,841** |
 
 ## Origin of the patterns
 

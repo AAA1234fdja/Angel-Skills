@@ -1,5 +1,5 @@
 {
-  "version": "0.7.0",
+  "version": "0.8.0",
   "updated": "2026-11-05",
   "standard": "EXTENSION-STANDARD.md",
   "main": "WORKFLOW.md",
@@ -154,6 +154,13 @@
           "description": "Verified removal of dead code and duplicate logic, one candidate per commit, suite green throughout."
         },
         {
+          "id": "scraping-ethics",
+          "origin": "original",
+          "status": "original",
+          "phase": "design",
+          "description": "Whether and how to collect from a source you do not own."
+        },
+        {
           "id": "search-first",
           "origin": "ECC · skills/search-first",
           "status": "adopted",
@@ -277,6 +284,13 @@
           "status": "adopted",
           "phase": "verify",
           "description": "Validate a stream or file of protocol messages and report the first rejection with its code."
+        },
+        {
+          "id": "webhook-contract",
+          "origin": "original",
+          "status": "original",
+          "phase": "design",
+          "description": "A webhook a consumer can verify, dedupe, order and reconcile."
         }
       ],
       "pending": []
@@ -315,6 +329,13 @@
           "status": "adopted",
           "phase": "debug",
           "description": "Reconstruct a run from its journal: what ran, what failed, what was retried, and where the chain broke."
+        },
+        {
+          "id": "failure-replay",
+          "origin": "original",
+          "status": "original",
+          "phase": "debug",
+          "description": "Rebuild a failure until it happens on demand, then turn it into a test."
         },
         {
           "id": "incident-backlog",
@@ -511,6 +532,58 @@
       "pending": []
     },
     {
+      "id": "research",
+      "name": "Research",
+      "order": 8,
+      "status": "activa",
+      "description": "Turning an unknown into a sourced answer: reading a foreign codebase, pricing the blast radius of a change before making it, and citing evidence a reader can check. An unsourced claim is a guess with confidence.",
+      "gate": "No claim without a source, and no change without a predicted impact compared against the actual one.",
+      "rules": [
+        "Every claim names where it came from and when it was read.",
+        "A contradiction between sources is a finding, never an average.",
+        "Onboarding ends at the first safe change, not at a diagram.",
+        "Impact is predicted before the change and compared after it.",
+        "A walkthrough anchors to real lines; a tour that is not run is fiction."
+      ],
+      "skills": [
+        {
+          "id": "change-impact",
+          "origin": "original",
+          "status": "original",
+          "phase": "plan",
+          "description": "Predict the blast radius, then compare it with what actually moved."
+        },
+        {
+          "id": "code-tour",
+          "origin": "original",
+          "status": "original",
+          "phase": "document",
+          "description": "A route through one flow, anchored to files that exist."
+        },
+        {
+          "id": "codebase-onboarding",
+          "origin": "original",
+          "status": "original",
+          "phase": "research",
+          "description": "Learn a codebase to the point of a predicted first change."
+        },
+        {
+          "id": "research-ops",
+          "origin": "original",
+          "status": "original",
+          "phase": "research",
+          "description": "Research as an operation: question, evidence bar, time boxes, gaps."
+        },
+        {
+          "id": "sourced-answer",
+          "origin": "original",
+          "status": "original",
+          "phase": "research",
+          "description": "An answer a reader can check: one source per claim, dated, contradictions stated."
+        }
+      ]
+    },
+    {
       "id": "harness",
       "status": "activa",
       "gate": "Nothing is installed, widened or removed without provenance, an inventory entry and a tested way back.",
@@ -545,7 +618,7 @@
         }
       ],
       "name": "Harness",
-      "order": 8,
+      "order": 9,
       "description": "The runtime itself: what is installed, where it came from, what it can reach, how it loads context per mode and what gets collected. Every other category assumes this surface is known.",
       "rules": [
         "An install is a trust decision: a commit or a hash, never a branch.",
@@ -583,7 +656,7 @@
         }
       ],
       "name": "Tests",
-      "order": 9,
+      "order": 10,
       "description": "The suite as an asset: what it can actually prove, which module a change can break downstream, and where the data that makes it deterministic comes from.",
       "rules": [
         "A test with no assertion is not a test; it is a file that runs.",
@@ -596,7 +669,7 @@
     {
       "id": "reversing",
       "name": "Reverse engineering",
-      "order": 10,
+      "order": 11,
       "status": "activa",
       "description": "Understand and reconstruct systems from artefacts: binaries, traffic, undocumented APIs.",
       "gate": "Every finding is tied to an artefact (offset, string, packet) or it is a guess.",
@@ -641,7 +714,7 @@
     {
       "id": "governance",
       "name": "Governance",
-      "order": 11,
+      "order": 12,
       "status": "activa",
       "description": "The package administers itself: registration, audit of existing skills, versioning and changelog discipline.",
       "gate": "Nothing enters the package without passing `workflow validate --strict` and a registration record.",
@@ -721,7 +794,7 @@
     {
       "id": "product",
       "name": "Product and UX",
-      "order": 12,
+      "order": 13,
       "status": "activa",
       "description": "User-facing quality: accessibility, flows and interface craft.",
       "gate": "Accessibility findings of level AA failures block, level AAA advise.",
@@ -753,6 +826,13 @@
           "description": "Decide whether a change may ship: the five gates, the rollback path, and the evidence for each. Use when a release is being announced, a flag is about to be turned on, or a hotfix skips the normal path."
         },
         {
+          "id": "santa-review",
+          "origin": "original",
+          "status": "original",
+          "phase": "review",
+          "description": "Two independent reviewers, different lenses, both must pass."
+        },
+        {
           "id": "ux-flow-review",
           "origin": "original",
           "status": "original",
@@ -765,7 +845,7 @@
     {
       "id": "content",
       "name": "Content and docs",
-      "order": 13,
+      "order": 14,
       "status": "activa",
       "description": "Written artefacts that ship with the code: documentation and changelogs.",
       "gate": "nothing published without an executed example, a named source of truth and a last-verified date",
@@ -787,6 +867,13 @@
           "status": "adopted",
           "phase": "document",
           "description": "Write and review documentation that stays true: source of truth, audience, failure modes, examples that run."
+        },
+        {
+          "id": "docs-governance",
+          "origin": "original",
+          "status": "original",
+          "phase": "audit",
+          "description": "Every document has a role, an owner and a shelf life."
         },
         {
           "id": "incident-comms",

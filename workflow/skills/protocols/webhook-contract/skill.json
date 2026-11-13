@@ -1,0 +1,113 @@
+{
+  "id": "webhook-contract",
+  "category": "protocols",
+  "description": "Design the webhook you send so a consumer can trust it: signature, replay window, ordering guarantee, retry schedule and dead-letter path. Use when publishing events to other teams or customers.",
+  "phase": "design",
+  "verbs": [
+    "design",
+    "document"
+  ],
+  "triggers": [
+    "design a webhook",
+    "consumers report duplicates",
+    "webhook signature",
+    "customers get no events"
+  ],
+  "keywords": [
+    "webhook",
+    "signature",
+    "replay",
+    "idempotency",
+    "delivery",
+    "retry",
+    "dead letter",
+    "ordering"
+  ],
+  "tools": [
+    {
+      "id": "webhook-contract-check",
+      "entry": "tools/webhook_check.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Refuses missing signature, no replay window, exactly-once claims, unordered promises, no retry schedule and silent dead letters.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "event": {
+            "type": "string"
+          },
+          "signature": {
+            "type": "object"
+          },
+          "delivery": {
+            "type": "object"
+          },
+          "retries": {
+            "type": "object"
+          },
+          "dead_letter": {
+            "type": "object"
+          },
+          "version_header": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "event",
+          "signature",
+          "delivery",
+          "retries"
+        ]
+      },
+      "sample": {
+        "event": "invoice.paid",
+        "signature": {
+          "algorithm": "hmac-sha256",
+          "header": "X-Sig",
+          "covers_body": true,
+          "timestamp_header": "X-Timestamp",
+          "replay_window_s": 300
+        },
+        "delivery": {
+          "idempotency_key": "event_id",
+          "semantics": "exactly-once",
+          "ordering": "ordered",
+          "ordering_key": ""
+        },
+        "retries": {
+          "attempts": 0,
+          "window_s": 0,
+          "backoff": ""
+        },
+        "dead_letter": {
+          "mode": "",
+          "visible": false
+        },
+        "version_header": ""
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "webhook-contract-check refuses nothing: signed, bounded, retried, dead-lettered",
+      "kind": "tool",
+      "tool": "webhook-contract-check"
+    },
+    {
+      "id": "docs",
+      "statement": "the verification algorithm is documented for consumers",
+      "kind": "artifact"
+    },
+    {
+      "id": "ordering",
+      "statement": "the ordering guarantee names its key or says there is none",
+      "kind": "review"
+    }
+  ]
+}
