@@ -1,0 +1,92 @@
+{
+  "id": "api-reconstruction",
+  "category": "reversing",
+  "description": "Rebuild an undocumented HTTP API from captured traffic into an openapi-style spec and a validated client. Use when integrating with a service that has no documentation and traffic captures exist.",
+  "phase": "implement",
+  "verbs": [
+    "extract",
+    "generate",
+    "investigate"
+  ],
+  "triggers": [
+    "undocumented api",
+    "reconstruct api",
+    "from traffic"
+  ],
+  "keywords": [
+    "api",
+    "openapi",
+    "traffic",
+    "reconstruct",
+    "client"
+  ],
+  "tools": [
+    {
+      "id": "traffic-to-spec",
+      "entry": "tools/traffic_to_spec.py",
+      "risk": "read",
+      "timeout": 20,
+      "description": "Groups captured requests into endpoints and infers an openapi-style spec.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "requests": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "min_samples": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "requests"
+        ]
+      },
+      "sample": {
+        "min_samples": 2,
+        "requests": [
+          {
+            "method": "GET",
+            "path": "/users/123",
+            "status": 200,
+            "body": {
+              "id": 123,
+              "name": "ana",
+              "role": "admin"
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/users/456",
+            "status": 200,
+            "body": {
+              "id": 456,
+              "name": "luis",
+              "role": "member"
+            }
+          },
+          {
+            "method": "GET",
+            "path": "/users/789",
+            "status": 200,
+            "body": {}
+          }
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "the skill's exit criteria are met",
+      "kind": "review"
+    }
+  ]
+}

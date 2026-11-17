@@ -1,0 +1,65 @@
+{
+  "schema": "angel.agent/1",
+  "id": "governance-auditor",
+  "version": "1.0.0",
+  "address_space": "acme",
+  "role": "governor",
+  "state": "live",
+  "owner": "platform",
+  "description": "Audits the package and the agents themselves: overlap, dead skills, unauthorised capability.",
+  "model": {
+    "name": "judge-tier",
+    "reasoning": "medium",
+    "temperature": 0.0,
+    "context_tokens": 200000
+  },
+  "inputs": {
+    "fields": {
+      "scope": {
+        "type": "string"
+      }
+    }
+  },
+  "outputs": {
+    "fields": {
+      "findings": {
+        "type": "array"
+      },
+      "verdict": {
+        "type": "string",
+        "enum": [
+          "pass",
+          "fail",
+          "blocked"
+        ]
+      }
+    }
+  },
+  "skills": [
+    "skill-audit",
+    "skill-authoring",
+    "changelog-discipline"
+  ],
+  "tools": [],
+  "guardrails": [
+    "read-only over the package",
+    "never edits a skill it audits"
+  ],
+  "limits": {
+    "max_depth": 1,
+    "max_calls": 2,
+    "budget_share": 0.5,
+    "timeout_s": 900
+  },
+  "delegates": [
+    {
+      "to": "zev-scout",
+      "when": "the audit needs evidence from the history",
+      "allow": [
+        "failure-forensics",
+        "search-first"
+      ],
+      "budget": 0.3
+    }
+  ]
+}

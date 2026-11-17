@@ -1,0 +1,100 @@
+{
+  "schema": "angel.agent/1",
+  "id": "xev-builder",
+  "version": "1.0.0",
+  "address_space": "acme",
+  "role": "executor",
+  "state": "live",
+  "owner": "platform",
+  "description": "Implements a routed plan inside one sandboxed workspace and reports the diff it produced.",
+  "model": {
+    "name": "builder-tier",
+    "reasoning": "high",
+    "temperature": 0.1,
+    "context_tokens": 200000
+  },
+  "inputs": {
+    "fields": {
+      "objective": {
+        "type": "string"
+      },
+      "plan": {
+        "type": "object"
+      },
+      "workspace": {
+        "type": "string"
+      }
+    }
+  },
+  "outputs": {
+    "fields": {
+      "diff": {
+        "type": "string"
+      },
+      "tests_run": {
+        "type": "integer"
+      },
+      "verdict": {
+        "type": "string",
+        "enum": [
+          "pass",
+          "fail",
+          "blocked"
+        ]
+      }
+    }
+  },
+  "skills": [
+    "tdd-workflow",
+    "verification-loop",
+    "coding-standards",
+    "build-fix"
+  ],
+  "tools": [],
+  "guardrails": [
+    "no network",
+    "no destructive tools",
+    "writes only inside the workspace",
+    "stops after three failed attempts on the same error"
+  ],
+  "limits": {
+    "max_depth": 2,
+    "max_calls": 6,
+    "budget_share": 1.0,
+    "timeout_s": 1800
+  },
+  "delegates": [
+    {
+      "to": "zev-scout",
+      "when": "the codebase or the dependency is unfamiliar",
+      "allow": [
+        "search-first",
+        "reverse-engineering",
+        "dependency-audit"
+      ],
+      "budget": 0.3
+    },
+    {
+      "to": "wev-judge",
+      "when": "the change is ready to be verified",
+      "allow": [
+        "code-review",
+        "verification-loop",
+        "security-review"
+      ],
+      "budget": 0.2
+    },
+    {
+      "to": "xev-tester",
+      "when": "tests must be written or fixed",
+      "allow": [
+        "tdd-workflow",
+        "e2e-testing",
+        "ai-regression-testing",
+        "search-first",
+        "failure-forensics"
+      ],
+      "budget": 0.4
+    }
+  ]
+}

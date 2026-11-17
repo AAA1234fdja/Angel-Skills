@@ -1,0 +1,136 @@
+{
+  "id": "scraping-ethics",
+  "category": "engineering",
+  "description": "Decide whether and how to collect data from a public source before writing the collector: terms, robots, rate, personal data and load on someone else's system. Use when building a scraper or pointing an agent at a site nobody asked permission from.",
+  "phase": "design",
+  "verbs": [
+    "design",
+    "secure"
+  ],
+  "triggers": [
+    "can we scrape this site",
+    "build a data collector",
+    "is scraping allowed",
+    "rate limit our crawler"
+  ],
+  "keywords": [
+    "scraping",
+    "crawler",
+    "robots",
+    "terms",
+    "rate limit",
+    "personal data",
+    "takedown"
+  ],
+  "tools": [
+    {
+      "id": "scrape-policy",
+      "entry": "tools/scrape_policy.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Refuses unread terms or robots, no rate budget, personal data without a basis, evasion of blocks and a missing takedown path.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "type": "string"
+          },
+          "official_api": {
+            "type": "boolean"
+          },
+          "api_rejected_because": {
+            "type": "string"
+          },
+          "terms": {
+            "type": "object"
+          },
+          "robots": {
+            "type": "object"
+          },
+          "data_class": {
+            "type": "string"
+          },
+          "legal_basis": {
+            "type": "string"
+          },
+          "retention_days": {
+            "type": "integer"
+          },
+          "rate_per_second": {
+            "type": "number"
+          },
+          "user_agent": {
+            "type": "string"
+          },
+          "evasion": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "provenance_recorded": {
+            "type": "boolean"
+          },
+          "takedown": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "source",
+          "terms",
+          "robots",
+          "data_class"
+        ]
+      },
+      "sample": {
+        "source": "example.com/listings",
+        "official_api": false,
+        "api_rejected_because": "",
+        "terms": {
+          "read": true,
+          "quote": "no automated collection without written consent",
+          "allows": false
+        },
+        "robots": {
+          "read": true,
+          "disallows_path": true
+        },
+        "data_class": "personal",
+        "legal_basis": "",
+        "retention_days": 0,
+        "rate_per_second": 0,
+        "user_agent": "",
+        "evasion": [
+          "rotating proxies"
+        ],
+        "provenance_recorded": false,
+        "takedown": {
+          "command": "kubectl scale deploy scraper --replicas=0"
+        }
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "scrape-policy refuses nothing: terms read, rate set, takedown tested",
+      "kind": "tool",
+      "tool": "scrape-policy"
+    },
+    {
+      "id": "official",
+      "statement": "the official interface was considered and its rejection justified",
+      "kind": "artifact"
+    },
+    {
+      "id": "data",
+      "statement": "personal data has a legal basis and a retention period",
+      "kind": "review"
+    }
+  ]
+}

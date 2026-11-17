@@ -1,0 +1,82 @@
+{
+  "id": "skill-authoring",
+  "category": "governance",
+  "description": "Register and author a new skill end to end: the three decision tests, scaffolding, manifest, validation and changelog. Use when the runtime or a person is about to add, move or restructure anything inside workflow/skills.",
+  "phase": "meta",
+  "verbs": [
+    "register",
+    "generate"
+  ],
+  "triggers": [
+    "new skill",
+    "add a skill",
+    "edit a skill",
+    "register"
+  ],
+  "keywords": [
+    "skill",
+    "register",
+    "scaffold",
+    "validate",
+    "changelog"
+  ],
+  "tools": [
+    {
+      "id": "skill-lint",
+      "entry": "tools/skill_lint.py",
+      "risk": "read",
+      "timeout": 15,
+      "description": "Lints a proposed skill (frontmatter, sections, manifest) before it is written.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "skill": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "skill"
+        ]
+      },
+      "sample": {
+        "skill": {
+          "id": "flaky-selector-fix",
+          "category": "engineering",
+          "frontmatter": {
+            "description": "Repair selectors that match several elements. Use when a browser test passes locally and fails in CI."
+          },
+          "sections": [
+            "When to Use",
+            "When Not to Use",
+            "Procedure",
+            "Exit Criteria",
+            "Common Failures"
+          ],
+          "manifest": {
+            "phase": "test",
+            "verbs": [
+              "fix",
+              "test"
+            ],
+            "triggers": [
+              "flaky selector"
+            ],
+            "tools": []
+          }
+        }
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "the skill's exit criteria are met",
+      "kind": "review"
+    }
+  ]
+}

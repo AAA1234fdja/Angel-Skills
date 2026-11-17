@@ -1,0 +1,116 @@
+{
+  "id": "test-data-strategy",
+  "category": "tests",
+  "description": "Decide where test data comes from and how it stays deterministic: factories, fixtures and seeds with a stated owner. Use when tests share state, when fixtures rot, or when a suite depends on production dumps.",
+  "phase": "design",
+  "verbs": [
+    "design",
+    "test"
+  ],
+  "triggers": [
+    "tests share data",
+    "flaky because of fixtures",
+    "test data from production",
+    "deterministic test data"
+  ],
+  "keywords": [
+    "fixtures",
+    "factory",
+    "seed",
+    "deterministic",
+    "anonymise",
+    "shared state",
+    "data"
+  ],
+  "tools": [
+    {
+      "id": "data-strategy-check",
+      "entry": "tools/data_strategy_check.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Flags shared mutable fixtures, tests that do not own their data, production-derived data and unseeded determinism.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "fixtures": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "tests": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "determinism": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "fixtures",
+          "tests"
+        ]
+      },
+      "sample": {
+        "fixtures": [
+          {
+            "name": "users_shared",
+            "mutable": true,
+            "shared": true,
+            "provenance": "production dump 2023",
+            "anonymised": false
+          },
+          {
+            "name": "currencies",
+            "mutable": false,
+            "shared": true,
+            "provenance": "synthetic",
+            "anonymised": true
+          }
+        ],
+        "tests": [
+          {
+            "id": "test_refund",
+            "owns_data": true,
+            "seeded": true
+          },
+          {
+            "id": "test_invoice",
+            "owns_data": false,
+            "seeded": false
+          }
+        ],
+        "determinism": {
+          "clock_pinned": true,
+          "random_seeded": false,
+          "ids_fixed": true
+        }
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "data-strategy-check reports no shared mutable fixture and no unowned test data",
+      "kind": "tool",
+      "tool": "data-strategy-check"
+    },
+    {
+      "id": "determinism",
+      "statement": "clock, seed and identifiers are pinned where behaviour depends on them",
+      "kind": "artifact"
+    },
+    {
+      "id": "safe",
+      "statement": "production-derived data is anonymised and recorded",
+      "kind": "review"
+    }
+  ]
+}

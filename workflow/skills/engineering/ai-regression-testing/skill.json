@@ -1,0 +1,118 @@
+{
+  "id": "ai-regression-testing",
+  "category": "engineering",
+  "description": "Turn every fixed defect and every AI-generated change into a permanent regression test that runs without external services. Use when a defect has just been fixed, or when generated code touches an area with a history of failures.",
+  "phase": "test",
+  "verbs": [
+    "test",
+    "fix"
+  ],
+  "triggers": [
+    "regression test",
+    "fixed a bug",
+    "never again"
+  ],
+  "keywords": [
+    "regression",
+    "defect",
+    "sandbox",
+    "parity",
+    "test"
+  ],
+  "tools": [
+    {
+      "id": "regression-matrix",
+      "entry": "tools/regression_matrix.py",
+      "risk": "read",
+      "timeout": 15,
+      "description": "Maps fixed defects to tests and reports which defects have no guard.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "defects": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "id"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "area": {
+                  "type": "string"
+                },
+                "fixed": {
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          "tests": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "name"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "issue": {
+                  "type": "string"
+                },
+                "sandboxed": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "defects",
+          "tests"
+        ]
+      },
+      "sample": {
+        "defects": [
+          {
+            "id": "BUG-12",
+            "area": "auth",
+            "fixed": true
+          },
+          {
+            "id": "BUG-31",
+            "area": "checkout",
+            "fixed": true
+          }
+        ],
+        "tests": [
+          {
+            "name": "auth_blocks_expired_token",
+            "issue": "BUG-12",
+            "sandboxed": true
+          },
+          {
+            "name": "checkout_retries_once",
+            "issue": "BUG-31",
+            "sandboxed": false
+          }
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "the skill's exit criteria are met",
+      "kind": "review"
+    }
+  ]
+}

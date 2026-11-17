@@ -1,0 +1,115 @@
+{
+  "id": "runbook-writing",
+  "category": "content",
+  "description": "Write a runbook someone can follow at 3 a.m. under stress: symptom, first command, decision points and how to know it is over. Use when an alert has no answer, when an incident needed a person who was on holiday, or when the same fix is rediscovered every time.",
+  "phase": "document",
+  "verbs": [
+    "document",
+    "plan"
+  ],
+  "triggers": [
+    "write a runbook",
+    "how do we fix this at 3am",
+    "incident playbook",
+    "first action"
+  ],
+  "keywords": [
+    "runbook",
+    "playbook",
+    "escalation",
+    "incident",
+    "oncall",
+    "procedure",
+    "recovery"
+  ],
+  "tools": [
+    {
+      "id": "runbook-check",
+      "entry": "tools/runbook_check.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Checks a runbook for a first action, confirmations on dangerous steps, escalation and a recovery criterion.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "symptom": {
+            "type": "string"
+          },
+          "steps": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "branches": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "escalation": {
+            "type": "object"
+          },
+          "recovery": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "steps"
+        ]
+      },
+      "sample": {
+        "symptom": "checkout returns 500 for card payments",
+        "steps": [
+          {
+            "action": "open the payments dashboard",
+            "expect": "error rate above 2%"
+          },
+          {
+            "action": "run purge_retry_queue --dry-run",
+            "expect": "0 pending",
+            "dangerous": true,
+            "confirm": "ask the payments owner"
+          }
+        ],
+        "branches": [
+          {
+            "if": "queue is empty",
+            "then": "escalate to platform"
+          }
+        ],
+        "escalation": {
+          "owner": "payments-oncall",
+          "evidence": "dashboard snapshot"
+        },
+        "recovery": {
+          "check": "error rate below 0.5%",
+          "window": "10m"
+        }
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "runbook-check reports a first action, an escalation and a recovery criterion",
+      "kind": "tool",
+      "tool": "runbook-check"
+    },
+    {
+      "id": "rehearsed",
+      "statement": "someone who did not write it followed it end to end",
+      "kind": "review"
+    },
+    {
+      "id": "danger",
+      "statement": "every dangerous step has a confirmation",
+      "kind": "review"
+    }
+  ]
+}

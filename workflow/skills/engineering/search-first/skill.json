@@ -1,0 +1,35 @@
+{
+  "id": "search-first",
+  "category": "engineering",
+  "description": "Search the repository, npm, PyPI and GitHub before writing a dependency, helper or module that probably already exists. Use when about to add a package or a general-purpose utility instead of reusing what is available.",
+  "phase": "plan",
+  "verbs": [
+    "plan",
+    "investigate"
+  ],
+  "triggers": [
+    "add a dependency",
+    "new helper",
+    "do we already have"
+  ],
+  "keywords": [
+    "dependency",
+    "reuse",
+    "npm",
+    "pypi",
+    "search"
+  ],
+  "tools": [],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "the skill's exit criteria are met",
+      "kind": "review"
+    }
+  ]
+}

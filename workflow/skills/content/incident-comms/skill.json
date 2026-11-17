@@ -1,0 +1,112 @@
+{
+  "id": "incident-comms",
+  "category": "content",
+  "description": "Say what is broken, for whom, and when the next update comes: the first notice, the cadence and the closing message. Use when an incident is user-visible, when support is being asked the same question, or when the silence is becoming the story.",
+  "phase": "ship",
+  "verbs": [
+    "ship",
+    "document"
+  ],
+  "triggers": [
+    "incident update",
+    "status page",
+    "tell the customers",
+    "what do we say"
+  ],
+  "keywords": [
+    "incident",
+    "status",
+    "update",
+    "cadence",
+    "outage",
+    "communication",
+    "postmortem"
+  ],
+  "tools": [
+    {
+      "id": "comms-check",
+      "entry": "tools/comms_check.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Checks an incident message set for a first notice, a kept cadence, ETAs and a closing message.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "incident": {
+            "type": "string"
+          },
+          "channel": {
+            "type": "string"
+          },
+          "promised_cadence_minutes": {
+            "type": "number"
+          },
+          "messages": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "messages"
+        ]
+      },
+      "sample": {
+        "incident": "checkout 500s",
+        "channel": "#incident-checkout",
+        "promised_cadence_minutes": 30,
+        "messages": [
+          {
+            "at": "2026-11-05T10:00:00Z",
+            "kind": "first",
+            "confirmed": [
+              "card payments fail"
+            ],
+            "unknown": [
+              "cause"
+            ],
+            "next_update": "10:30"
+          },
+          {
+            "at": "2026-11-05T10:34:00Z",
+            "kind": "update",
+            "confirmed": [
+              "vendor timeout"
+            ],
+            "next_update": "11:00"
+          },
+          {
+            "at": "2026-11-05T11:05:00Z",
+            "kind": "resolved",
+            "duration_minutes": 65,
+            "residual": "none"
+          }
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "comms-check reports a first notice, a kept cadence and a closing message",
+      "kind": "tool",
+      "tool": "comms-check"
+    },
+    {
+      "id": "honesty",
+      "statement": "no message states an unverified cause as fact",
+      "kind": "review"
+    },
+    {
+      "id": "close",
+      "statement": "the closing message states duration and residual effects",
+      "kind": "review"
+    }
+  ]
+}

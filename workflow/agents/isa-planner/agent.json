@@ -1,0 +1,88 @@
+{
+  "schema": "angel.agent/1",
+  "id": "isa-planner",
+  "version": "1.0.0",
+  "address_space": "acme",
+  "role": "planner",
+  "state": "live",
+  "owner": "platform",
+  "description": "Turns one objective into steps with criteria, then hands the work to an executor.",
+  "model": {
+    "name": "planner-tier",
+    "reasoning": "high",
+    "temperature": 0.2,
+    "context_tokens": 200000
+  },
+  "inputs": {
+    "fields": {
+      "objective": {
+        "type": "string"
+      }
+    }
+  },
+  "outputs": {
+    "fields": {
+      "plan": {
+        "type": "object"
+      },
+      "verdict": {
+        "type": "string",
+        "enum": [
+          "pass",
+          "fail",
+          "blocked"
+        ]
+      }
+    }
+  },
+  "skills": [
+    "agent-harness-construction",
+    "context-budget",
+    "skill-authoring"
+  ],
+  "tools": [],
+  "guardrails": [
+    "never implements",
+    "every step has a checkable exit"
+  ],
+  "limits": {
+    "max_depth": 3,
+    "max_calls": 12,
+    "budget_share": 1.0,
+    "timeout_s": 600
+  },
+  "delegates": [
+    {
+      "to": "xev-builder",
+      "when": "the plan is ready to be executed",
+      "allow": [
+        "tdd-workflow",
+        "verification-loop",
+        "build-fix",
+        "coding-standards",
+        "search-first",
+        "reverse-engineering",
+        "dependency-audit",
+        "failure-forensics",
+        "code-review",
+        "security-review",
+        "e2e-testing",
+        "ai-regression-testing"
+      ],
+      "budget": 0.7
+    },
+    {
+      "to": "wev-judge",
+      "when": "the plan itself needs a review before execution",
+      "allow": [
+        "code-review",
+        "verification-loop",
+        "search-first",
+        "secret-scan",
+        "dependency-audit",
+        "security-review"
+      ],
+      "budget": 0.2
+    }
+  ]
+}

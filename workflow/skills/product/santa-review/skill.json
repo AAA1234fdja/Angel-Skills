@@ -1,0 +1,119 @@
+{
+  "id": "santa-review",
+  "category": "product",
+  "description": "Adversarial review where two independent reviewers must both pass a change before it ships. Use when a change is high-impact, when review has become a rubber stamp, or when one approval has stopped predicting anything.",
+  "phase": "review",
+  "verbs": [
+    "review",
+    "verify"
+  ],
+  "triggers": [
+    "two reviewers must approve",
+    "review is a rubber stamp",
+    "high impact change review",
+    "adversarial review"
+  ],
+  "keywords": [
+    "review",
+    "independent",
+    "second reviewer",
+    "lens",
+    "rubber stamp",
+    "adversarial"
+  ],
+  "tools": [
+    {
+      "id": "dual-review",
+      "entry": "tools/dual_review.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Refuses a pass with open blockers, non-independent reviews, identical lenses and 'pass with concerns'.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "change": {
+            "type": "string"
+          },
+          "criteria": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "reviewers": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "disagreements": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "criteria",
+          "reviewers"
+        ]
+      },
+      "sample": {
+        "change": "refund authorisation rewrite",
+        "criteria": [
+          "no double refund under retry",
+          "audit trail preserved"
+        ],
+        "reviewers": [
+          {
+            "name": "ana",
+            "lens": "correctness",
+            "verdict": "pass",
+            "blockers": [],
+            "reviewed_independently": true,
+            "wrote_before_discussion": true
+          },
+          {
+            "name": "luis",
+            "lens": "operability",
+            "verdict": "pass_with_concerns",
+            "blockers": [
+              "no timeout on retry"
+            ],
+            "reviewed_independently": false,
+            "wrote_before_discussion": false
+          }
+        ],
+        "disagreements": [
+          {
+            "topic": "retry timeout",
+            "settled_by": ""
+          }
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "dual-review reports two independent passes on distinct lenses",
+      "kind": "tool",
+      "tool": "dual-review"
+    },
+    {
+      "id": "independent",
+      "statement": "both verdicts were written before any discussion",
+      "kind": "review"
+    },
+    {
+      "id": "evidence",
+      "statement": "each disagreement is settled by named evidence",
+      "kind": "review"
+    }
+  ]
+}

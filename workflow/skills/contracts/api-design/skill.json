@@ -1,0 +1,124 @@
+{
+  "id": "api-design",
+  "category": "contracts",
+  "description": "Specify the shape of a call before anyone implements it: operations, errors, idempotency and what the consumer may ignore. Use when an endpoint, SDK method or shared schema is being added, when a client broke because the surface was never written down, or when two teams disagree about what a simple call returns.",
+  "phase": "design",
+  "verbs": [
+    "design"
+  ],
+  "triggers": [
+    "api design",
+    "define an endpoint",
+    "idempotency",
+    "what does it return",
+    "surface"
+  ],
+  "keywords": [
+    "api",
+    "endpoint",
+    "idempotency",
+    "retry",
+    "schema",
+    "surface",
+    "consumer",
+    "sdk",
+    "operation"
+  ],
+  "tools": [
+    {
+      "id": "surface-audit",
+      "entry": "tools/surface_audit.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Checks an operation list for missing idempotency, undocumented errors, mixed read/write and unversioned required fields.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "operations": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "operations"
+        ]
+      },
+      "sample": {
+        "operations": [
+          {
+            "name": "get_invoice",
+            "kind": "read",
+            "idempotent": true,
+            "errors": [
+              "NOT_FOUND",
+              "FORBIDDEN"
+            ],
+            "returns": [
+              "id",
+              "total"
+            ]
+          },
+          {
+            "name": "create_invoice",
+            "kind": "write",
+            "idempotent": true,
+            "errors": [
+              "VALIDATION",
+              "CONFLICT"
+            ],
+            "returns": [
+              "id"
+            ]
+          },
+          {
+            "name": "void_invoice",
+            "kind": "write",
+            "errors": [],
+            "returns": [
+              "id"
+            ]
+          },
+          {
+            "name": "list_invoices",
+            "kind": "read",
+            "idempotent": true,
+            "errors": [
+              "FORBIDDEN"
+            ],
+            "returns": [
+              "items"
+            ],
+            "new_required_fields": [
+              "tenant_id"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "surface-audit reports no missing idempotency and no undocumented error",
+      "kind": "tool",
+      "tool": "surface-audit"
+    },
+    {
+      "id": "examples",
+      "statement": "every operation has a request and a response example",
+      "kind": "artifact"
+    },
+    {
+      "id": "frozen",
+      "statement": "the surface is recorded with a version and a date",
+      "kind": "review"
+    }
+  ]
+}

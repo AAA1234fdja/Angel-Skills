@@ -1,0 +1,59 @@
+{
+  "id": "code-review",
+  "category": "engineering",
+  "description": "Fresh-context review of a diff: real defects ranked by severity, a verdict at the end, and no redesign of the author's approach. Use when a change is ready for a pull request, arrives from someone else, or a task was closed green but something feels off.",
+  "phase": "review",
+  "verbs": [
+    "review"
+  ],
+  "triggers": [
+    "review this diff",
+    "before the pull request",
+    "review my change"
+  ],
+  "keywords": [
+    "review",
+    "diff",
+    "severity",
+    "verdict",
+    "pull request"
+  ],
+  "tools": [
+    {
+      "id": "diff-review",
+      "entry": "tools/diff_review.py",
+      "risk": "read",
+      "timeout": 20,
+      "description": "Scans a unified diff for debug leftovers, secrets, swallowed errors and missing tests.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "diff": {
+            "type": "string"
+          },
+          "max_added_lines": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "diff"
+        ]
+      },
+      "sample": {
+        "diff": "--- a/src/app.py\n+++ b/src/app.py\n@@ -1,3 +1,6 @@\n def handler(user):\n+    if user is None:\n+        raise ValueError('user required')\n+    return user.id\n"
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "the skill's exit criteria are met",
+      "kind": "review"
+    }
+  ]
+}

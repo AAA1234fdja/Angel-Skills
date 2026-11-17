@@ -1,0 +1,234 @@
+# workflow · the skill package of Angel
+
+Package **0.8.0** — a self-contained set of **88 skills, 85 executable tools,
+5 contracts and 6 agents**, with a registry, a validator, a router, a run engine,
+an agent dispatcher and an optional Ely extension. No external dependencies, no
+network, no services: Python 3.10+ standard library only.
+
+```text
+workflow/
+├── WORKFLOW.md            ← read first: purpose, routing path, rules
+├── EXTENSION-STANDARD.md  ← read before creating or editing a skill
+├── categories.json        ← registry: the source of truth for categories, ids, agents
+├── skills/<category>/<id>/
+│   ├── SKILL.md           the procedure (when, when not, steps, exit criteria)
+│   ├── skill.json         the composition (phase, verbs, triggers, tools, contracts)
+│   └── tools/*.py         executables: run(payload) -> dict
+├── contracts/<name>/<version>.schema.json   versioned promises, immutable
+├── agents/<id>/agent.json the card: an agent is an API with an address
+├── agents/roster.json     the index the Ely extension reads
+├── AGENTS.md              agents and subagents: addresses, cards, the five rules
+├── angel/                 the runtime (registry, router, protocols, contracts,
+│                          tools, journal, runner, agents, errors, cli)
+├── tests/                 197 tests over the runtime, the catalogue and the extension
+├── tools/                 maintenance scripts (add_samples.py)
+└── ely-extension/         optional extension for Ely IDE (angel.workflow)
+```
+
+## Quick start
+
+From `workflow/`:
+
+```bash
+python3 -m angel.cli list                     # skills by category, with tools
+python3 -m angel.cli show tdd-workflow        # one skill, with its manifest
+python3 -m angel.cli validate --strict        # registry ⇄ disk, no warnings
+python3 -m angel.cli route --need "the build is broken"      # who answers, and why
+python3 -m angel.cli run --need "the build is broken"        # plan → tools → verdict
+python3 -m angel.cli tool --self-test         # every tool on its declared sample
+python3 -m angel.cli contract --check         # contract history and compatibility
+python3 -m angel.cli journal --all            # verify every run's hash chain
+python3 -m angel.cli agents list              # the roster, with pinned addresses
+python3 -m angel.cli agents validate --strict # cards, edges, depth, budgets, cycles
+python3 -m angel.cli agents plan --agent isa-planner --need "review this diff"
+python3 -m angel.cli agents call --agent xev-builder --need "add the endpoint" --execute
+python3 -m angel.cli pack --out dist/workflow.zip
+```
+
+`--json` before the subcommand gives machine-readable output; the exit code is the
+contract (see `EXTENSION-STANDARD.md` §10).
+
+## The six rules of the package
+
+1. **A skill is a folder with a procedure and a composition.** `SKILL.md` says what
+   to do; `skill.json` says when to load it and what to run. One without the other
+   is half a skill and fails validation.
+2. **The registry and the disk never disagree.** Every skill on disk is registered;
+   every registered skill has a `SKILL.md`. `validate` compares both directions.
+3. **Routing is data, not a prompt.** A need is scored against the triggers, verbs
+   and keywords each manifest declares. A wrong route is a manifest bug you can fix
+   and re-run, and the reasons are printed.
+4. **Tools are pure and sandboxed.** A tool receives its whole payload and never
+   touches the filesystem, the network or the process table; it may import only
+   pure-computation modules. Every tool ships a `sample`, which is what makes
+   `tool --self-test` possible.
+5. **A run leaves evidence.** Every hand-off is a typed protocol message and every
+   run writes a hash-chained journal: what ran, in what order, under what budget.
+6. **An agent is an API that cannot widen itself.** Its card is a contract, its
+   address carries a behaviour pin, its subagents only ever receive an intersection
+   of what it holds, and a call graph with a cycle is refused before it runs.
+
+## Current state
+
+| Category | Status | Skills | Gate |
+|---|---|---|---|
+| `engineering` | activa | 18 | no change finished without tdd-workflow + verification-loop evidence |
+| `contracts` | activa | 5 | versions are immutable; a breaking change is a new major |
+| `protocols` | activa | 5 | zero malformed messages accepted |
+| `errors` | activa | 6 | no error crosses a boundary without code, owner and recovery |
+| `agentic` | activa | 6 | no agent change without an eval before and after |
+| `security` | activa | 6 | high-severity findings block the run |
+| `data` | activa | 6 | no migration without a tested reverse path |
+| `research` | activa | 5 | no claim without a source, no change without a predicted impact |
+| `harness` | activa | 4 | nothing installed, widened or removed without provenance and a tested way back |
+| `tests` | activa | 3 | no suite trusted until a baseline ran and every skip has an owner |
+| `reversing` | activa | 4 | every finding is tied to an artefact |
+| `governance` | activa | 9 | nothing enters without `validate --strict` + a registry record |
+| `product` | activa | 5 | accessibility AA failures block |
+| `content` | activa | 6 | nothing published without an executed example |
+
+Each skill's `phase`, `verbs`, `triggers` and tools are in
+`skills/<category>/<id>/skill.json`; the catalogue with descriptions is
+`categories.json`.
+
+## Routing path
+
+```text
+need (one sentence)
+  → route: score every skill, keep the answers, print the reasons
+  → plan: order the steps, attach criteria, budget
+  → dispatch (yev-dispatch) → execute: run each tool with its sample or payload
+  → result (xev-result) → verdict (wev-verdict) → gate → journal
+```
+
+The router understands English and Spanish terminology, masks negated clauses ("sin
+tests" never routes to a test skill), and never offers a skill that only shares a
+verb with the need. `route --explain <skill> --need ...` shows the score breakdown.
+
+## Agents and subagents
+
+An **agent is an API**: it publishes a card, it answers at an address, and every
+API may call subagents. `AGENTS.md` is the reference; the short version:
+
+```
+workflow agents list                      # roster, versions, addresses
+workflow agents show xev-builder          # one card in full
+workflow agents validate --strict         # contract, edges, limits, cycles
+workflow agents tree isa-planner          # the delegation graph
+workflow agents address agent://acme/isa-planner->xev-builder
+workflow agents plan  --agent isa-planner --need "review the security of this diff"
+workflow agents call  --agent xev-builder --need "add the endpoint and its tests" --execute
+```
+
+Addresses carry a pin: `agent://acme/xev-builder@1.0.0#3d6252a9`. The pin is a
+hash of the card's behaviour surface, so an exact reference refuses a card that
+changed instead of quietly upgrading it (`E_AGENT_STALE`, exit 13). Authority is
+intersected down the tree, `max_depth`/`max_calls`/budget are checked before a
+call is attempted, a cycle is refused when the roster loads, and every call
+leaves a tree plus a hash-chained journal.
+
+Six cards ship in `agents/`: `isa-planner`, `xev-builder`, `xev-tester`,
+`wev-judge`, `zev-scout`, `governance-auditor`. Their skills are real skills from
+the registry, checked by `agents validate`, so the graph cannot drift into
+fiction.
+
+## Adding a skill
+
+1. Read `EXTENSION-STANDARD.md` §1–§7.
+2. `python3 -m angel.cli new <id> --category <category> --phase <phase> --verb <verb>`
+   — it scaffolds the folder **and** registers it atomically.
+3. Fill in `SKILL.md`, then `skill.json` (tools, triggers, contracts).
+4. `python3 -m angel.cli validate --strict` → green, or no commit.
+5. Add a line to `CHANGELOG.md`.
+
+The full procedure is the `skill-authoring` skill.
+
+## Integrating with Ely (optional)
+
+The extension never activates by itself: it is copied into the IDE and enabled from
+the **Extensions** view.
+
+```bash
+python3 -m angel.cli install --ely /path/to/Ely
+```
+
+That leaves `IDE/ely-extensions/angel.workflow/` with the manifest, `main.js` and a
+copy of the package so the extension can read it through `workspace.readFile`
+without leaving its sandbox. Commands it adds to the palette:
+
+| Command | What it does |
+|---|---|
+| `Workflow: list skills` | table by category with status and trigger |
+| `Workflow: load phase into chat` | asks for a phase and sends only those skills |
+| `Workflow: open a skill` | shows the full `SKILL.md` |
+| `Workflow: tools of a skill` | its tools, risks and contracts |
+| `Workflow: validate the package` | same rules as the CLI, inside the IDE |
+| `Workflow: read the standard` | opens `EXTENSION-STANDARD.md` |
+| `Workflow: pack agents` | every card with its address, limits and edges |
+| `Workflow: agent tree` | the delegation graph reached from each root |
+| `Workflow: agent address` | one card's address, inputs, outputs, guardrails |
+
+Declared permissions: `workspace:read`, `ui`, `commands`, `chat`. No network, no
+writes. Disabling it leaves the package intact and the CLI working.
+
+## Size and shape
+
+The package reports its size and enforces its shape. The two are different controls,
+and only the second one protects quality.
+
+### Size (reported, not gated)
+
+```bash
+find . -type f \( -name "*.py" -o -name "*.md" -o -name "*.json" -o -name "*.mjs" -o -name "*.js" \) \
+  -not -path "./dist/*" -not -path "./.workflow/*" -not -path "*/__pycache__/*" \
+  | sort | xargs wc -l | tail -1
+```
+
+Current figure: **31,463 lines**.
+
+Through 0.5 and part of 0.6 this number was a ceiling, and it made the wrong thing
+happen: 0.5 shipped eight skills squeezed to fit, and the ceiling still broke. The
+count was measuring the wrong quantity. A skill that compresses a decision into sixty
+words is not cheaper than one that takes ninety — it is a different, worse product.
+
+So the ceiling is retired as a gate, and this is the honest reason: it was gamed by
+exactly the change it was supposed to prevent. Growth is now governed by the shape
+standard below and by **displacement** — a skill that does not change a decision is
+folded into the one that does.
+
+### Shape (gated by tests, per skill)
+
+| Standard | Minimum | Enforced by |
+|---|---|---|
+| Body length | 60 lines | `SkillShapeTests.test_every_skill_meets_the_declared_shape` |
+| Procedure | 7 numbered steps, each starting with a decision in bold | same test |
+| Failure modes | 5 rows in § Common Failures | same test |
+| Required sections | When to Use · When Not to Use · Procedure · Exit Criteria | same test |
+| Discrimination | § When Not to Use names the sibling skill that owns the case | `test_a_skill_states_the_sibling_that_owns_the_case_it_refuses` |
+| Executable procedure | ≥1 tool that runs on its own `sample` | `validate --strict`, `tool --self-test` |
+| Machine-checkable exit | ≥1 `acceptance` criterion of `kind: tool` | `validate --strict` |
+
+All **88** skills meet it. The 23 oldest ones did not when this standard was written,
+and were rewritten in 0.7 rather than grandfathered: a standard that applies only to
+the skills of the moment is a preference.
+
+| Block | Lines |
+|---|---|
+| manifests and contracts (`skill.json`, `categories.json`, schemas) | 9,976 |
+| `SKILL.md` procedures | 6,026 |
+| skill tools | 5,969 |
+| runtime `angel/` | 5,045 |
+| tests | 2,383 |
+| main documents | 1,223 |
+| Ely extension | 528 |
+| agent cards and index (`agents/`) | 451 |
+| maintenance scripts | 240 |
+| **total** | **31,841** |
+
+## Origin of the patterns
+
+Skills marked `status: adoptada` adapt procedures from
+[affaan-m/ECC](https://github.com/affaan-m/ECC) (MIT, commit `b38be6a`), rewritten
+for this repository with the original id kept in `metadata.origin`. The complete
+inventory is `../ECC-INVENTARIO.md`; what this package does differently is in
+`WORKFLOW.md` §1.

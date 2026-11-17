@@ -1,0 +1,120 @@
+{
+  "id": "release-notes-audit",
+  "category": "content",
+  "description": "Check that release notes describe what actually shipped: every user-visible change, the breaking ones first, and nothing that is still behind a flag. Use before publishing a release, or when notes and the changelog disagree.",
+  "phase": "ship",
+  "verbs": [
+    "ship",
+    "review"
+  ],
+  "triggers": [
+    "check the release notes",
+    "do the notes match the release",
+    "publish release notes",
+    "breaking changes not documented"
+  ],
+  "keywords": [
+    "release",
+    "notes",
+    "changelog",
+    "breaking",
+    "announce",
+    "flag",
+    "upgrade"
+  ],
+  "tools": [
+    {
+      "id": "notes-audit",
+      "entry": "tools/notes_audit.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Flags breaking entries without an action, notes with no linked change, announced work behind a flag, and unlinked breaking changes.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "string"
+          },
+          "changes": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "notes": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "audience": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "changes",
+          "notes"
+        ]
+      },
+      "sample": {
+        "version": "2.4.0",
+        "changes": [
+          {
+            "id": "c1",
+            "surface": "api",
+            "breaking": true
+          },
+          {
+            "id": "c2",
+            "surface": "cli",
+            "breaking": false
+          }
+        ],
+        "notes": [
+          {
+            "text": "announcing dark mode!",
+            "kind": "added",
+            "change": "c9",
+            "flag": "dark_mode",
+            "flag_enabled": false
+          },
+          {
+            "text": "removed the v1 token endpoint",
+            "kind": "breaking",
+            "change": "c1",
+            "action": ""
+          },
+          {
+            "text": "improvements",
+            "kind": "changed",
+            "change": ""
+          }
+        ],
+        "audience": "library consumers"
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "notes-audit reports no unlinked note and no undocumented breaking change",
+      "kind": "tool",
+      "tool": "notes-audit"
+    },
+    {
+      "id": "order",
+      "statement": "breaking entries come first and name the required action",
+      "kind": "artifact"
+    },
+    {
+      "id": "audience",
+      "statement": "the notes were checked against their audience",
+      "kind": "review"
+    }
+  ]
+}

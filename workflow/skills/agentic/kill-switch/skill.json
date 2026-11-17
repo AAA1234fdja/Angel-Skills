@@ -1,0 +1,94 @@
+{
+  "id": "kill-switch",
+  "category": "agentic",
+  "description": "Give an autonomous system a way to be stopped by a person who did not build it: one switch, one owner, one test. Use when an agent can act without approval, when a loop can spend money or touch production, or after an incident where stopping took longer than starting.",
+  "phase": "implement",
+  "verbs": [
+    "implement",
+    "secure"
+  ],
+  "triggers": [
+    "kill switch",
+    "stop the agent",
+    "emergency stop",
+    "how do we turn it off"
+  ],
+  "keywords": [
+    "kill",
+    "switch",
+    "stop",
+    "autonomous",
+    "runaway",
+    "flag",
+    "incident",
+    "rollback"
+  ],
+  "tools": [
+    {
+      "id": "kill-switch-audit",
+      "entry": "tools/kill_switch_audit.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Checks each autonomous capability for a reachable switch, a safe state, owners and a recent test.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "switches": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "switches"
+        ]
+      },
+      "sample": {
+        "switches": [
+          {
+            "capability": "auto-merge PRs",
+            "name": "flag:agent.automerge",
+            "owner": "platform",
+            "restart_owner": "platform",
+            "safe_state": "no further merges",
+            "reachable_without_deploy": true,
+            "in_flight": "finishes the current PR",
+            "tested_on": "2026-09-14",
+            "today": "2026-11-05"
+          },
+          {
+            "capability": "nightly dependency bumps",
+            "name": "cron:agent.bumps",
+            "safe_state": "queue paused",
+            "tested_on": "2025-06-01",
+            "today": "2026-11-05"
+          }
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "kill-switch-audit reports a reachable switch, safe state, owners and a recent test",
+      "kind": "tool",
+      "tool": "kill-switch-audit"
+    },
+    {
+      "id": "tested",
+      "statement": "the switch was flipped in production this quarter",
+      "kind": "artifact"
+    },
+    {
+      "id": "inflight",
+      "statement": "in-flight behaviour of a stop is documented",
+      "kind": "review"
+    }
+  ]
+}

@@ -1,0 +1,93 @@
+{
+  "id": "string-extraction",
+  "category": "reversing",
+  "description": "Pull the useful strings out of an artefact you cannot run: URLs, paths, keys, errors and formats, then decide which are evidence. Use when an artefact must be understood without executing it, or when a binary hints at a file or an endpoint.",
+  "phase": "research",
+  "verbs": [
+    "investigate",
+    "extract"
+  ],
+  "triggers": [
+    "extract strings",
+    "what endpoints are in the binary",
+    "analyse without running",
+    "strings in the blob"
+  ],
+  "keywords": [
+    "strings",
+    "binary",
+    "extract",
+    "endpoint",
+    "artifact",
+    "evidence",
+    "obfuscated"
+  ],
+  "tools": [
+    {
+      "id": "string-triage",
+      "entry": "tools/string_triage.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Groups extracted strings by kind, separates credential-shaped hits and drops noise.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "artefact": {
+            "type": "object"
+          },
+          "strings": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "credential_reviewed": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "strings"
+        ]
+      },
+      "sample": {
+        "artefact": {
+          "path": "bin/agent",
+          "sha256": "9f2c",
+          "arch": "x86_64"
+        },
+        "strings": [
+          "https://api.example.com/v2/upload",
+          "/etc/agent/config.yaml",
+          "AKIAIOSFODNN7EXAMPLE",
+          "context deadline exceeded",
+          "v1.4.2",
+          "---",
+          "x"
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "string-triage reports the groups and no unclassified credential-shaped string",
+      "kind": "tool",
+      "tool": "string-triage"
+    },
+    {
+      "id": "identity",
+      "statement": "the artefact path and hash are recorded",
+      "kind": "artifact"
+    },
+    {
+      "id": "negative",
+      "statement": "negative findings are written down",
+      "kind": "review"
+    }
+  ]
+}

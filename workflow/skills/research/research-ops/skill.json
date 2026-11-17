@@ -1,0 +1,136 @@
+{
+  "id": "research-ops",
+  "category": "research",
+  "description": "Run a research task as an operation with a question, a plan and a stop condition, instead of an open-ended browse. Use when a question needs several sources, when time is bounded, or when somebody will act on the answer.",
+  "phase": "research",
+  "verbs": [
+    "investigate",
+    "plan"
+  ],
+  "triggers": [
+    "research this question",
+    "find out the state of the art",
+    "compare sources and recommend",
+    "how much research is enough"
+  ],
+  "keywords": [
+    "research",
+    "plan",
+    "evidence bar",
+    "stop condition",
+    "confidence",
+    "gaps",
+    "budget"
+  ],
+  "tools": [
+    {
+      "id": "research-plan",
+      "entry": "tools/research_plan.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Flags a missing decision, an undefined evidence bar, untimed phases, findings without confidence and unstated gaps.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "question": {
+            "type": "string"
+          },
+          "decision": {
+            "type": "string"
+          },
+          "evidence_bar": {
+            "type": "object"
+          },
+          "phases": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "findings": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "gaps": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "change_trigger": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "question",
+          "decision",
+          "phases"
+        ]
+      },
+      "sample": {
+        "question": "is Postgres 17 supported on our host",
+        "decision": "which database version the 2027 migration targets",
+        "evidence_bar": {
+          "yes": "host docs list 17 GA",
+          "no": "docs cap at 16",
+          "unknown": ""
+        },
+        "phases": [
+          {
+            "name": "primary docs",
+            "minutes": 20,
+            "spent": 25,
+            "sources": [
+              "host docs"
+            ]
+          },
+          {
+            "name": "communities",
+            "minutes": 15,
+            "spent": 10,
+            "sources": []
+          }
+        ],
+        "findings": [
+          {
+            "claim": "17 is GA",
+            "confidence": "high"
+          },
+          {
+            "claim": "extensions work",
+            "confidence": ""
+          }
+        ],
+        "gaps": [
+          "did not read the 17.1 release notes"
+        ],
+        "change_trigger": ""
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "research-plan reports a defined evidence bar and levelled findings",
+      "kind": "tool",
+      "tool": "research-plan"
+    },
+    {
+      "id": "stop",
+      "statement": "the search stopped at the bar, not at exhaustion",
+      "kind": "review"
+    },
+    {
+      "id": "gaps",
+      "statement": "what was not read is listed as a gap",
+      "kind": "artifact"
+    }
+  ]
+}

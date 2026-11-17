@@ -1,0 +1,293 @@
+# CHANGELOG · workflow
+
+Formato: fecha · versión del paquete · cambio. Cada entrada dice qué cambia
+para quien consume el paquete; los cambios de comportamiento incompatibles van primero
+y con la acción requerida.
+
+## 0.8.0 — 2026-11-05
+
+Diez skills nuevas y una categoría, `research`: es el hueco más grande que quedaba
+frente al ECC, que dedica 31 skills a convertir una incógnita en una respuesta con
+fuentes. El paquete pasa de 78 a 88 skills y de 75 a 85 herramientas; ningún id,
+categoría ni fase existente cambia.
+
+**compatible** — aditivo salvo la entrada nueva en `categories.json`, que cambia el
+orden de las categorías (ahora `research` va entre `data` y `harness`). Si algo leía
+`order` posicionalmente, usa el campo, no el índice.
+
+- **added** — `sourced-answer` (research, `research`): una fuente por afirmación,
+  fecha de publicación y de lectura, contradicciones declaradas en vez de promediadas;
+  tool `source-audit`.
+- **added** — `research-ops` (research, `research`): la investigación como operación
+  con barra de evidencia, cajas de tiempo y huecos declarados; tool `research-plan`.
+- **added** — `codebase-onboarding` (research, `research`): entrar en un repositorio
+  hasta poder **predecir** el primer cambio; tool `onboarding-check`.
+- **added** — `change-impact` (research, `plan`): radio de impacto predicho antes del
+  cambio y comparado después; tool `impact-diff`.
+- **added** — `code-tour` (research, `document`): un recorrido por un flujo, anclado a
+  ficheros y símbolos que existen, ocho pasos como máximo; tool `tour-check`.
+- **added** — `docs-governance` (content, `audit`): cuatro roles, un dueño y una fecha
+  de revisión por documento, un origen por dato; tool `docs-audit`.
+- **added** — `failure-replay` (errors, `debug`): reconstruir el fallo hasta que ocurra
+  a demanda y probar que la reproducción es **el mismo** fallo; tool `replay-check`.
+  Cierra el hueco entre `failure-forensics` (explica) y el test de regresión (protege).
+- **added** — `santa-review` (product, `review`): dos revisores independientes, lentes
+  distintas, ambos deben pasar; "apruebo con reservas" cuenta como fallo; tool
+  `dual-review`.
+- **added** — `scraping-ethics` (engineering, `design`): términos, robots, tasa, datos
+  personales y vía de retirada **antes** de escribir el colector; tool `scrape-policy`.
+- **added** — `webhook-contract` (protocols, `design`): firma, ventana de replay,
+  at-least-once con clave de idempotencia, orden por entidad y camino de dead-letter;
+  tool `webhook-contract-check`, que rechaza "exactly-once" por imposible.
+- **changed** — `tests/`: 197. Las 10 nuevas entran en las pruebas de forma, de rutas
+  y de "la herramienta sabe decir no", sin escribir casos nuevos: el estándar de 0.7
+  ya las cubre porque recorre todo el catálogo.
+
+## 0.7.0 — 2026-11-05
+
+Once skills nuevas y, más importante, un estándar de forma que ahora se aplica a las
+**78** skills del paquete en vez de a las de la última tanda. Es el cambio de fondo:
+0.6 presumía de un techo de líneas y lo rompió; esta versión mide otra cosa.
+
+**budget** — el techo de líneas deja de ser una puerta y pasa a ser un dato (28.443
+líneas, en el README). La razón está escrita allí: el techo se podía cumplir recortando
+procedimientos, que es exactamente lo que 0.5 hizo y lo que empeoró el producto. Lo que
+se mide ahora es la forma: 60 líneas mínimas de cuerpo, 7 pasos numerados con la
+decisión en negrita, 5 modos de fallo, las cuatro secciones obligatorias y un
+`When Not to Use` que nombra a la skill que sí cubre el caso. Está en tests, no en un
+párrafo.
+
+**breaking** para quien tenía skills de relleno: 23 skills antiguas no cumplían el
+estándar y se reescribieron en vez de perdonarse, y las 78 ganaron un handoff explícito
+en `When Not to Use`. Si un procedimiento tuyo vive en una de ellas, su numeración
+cambió. Acción: relee la sección `Procedure` de las skills que uses.
+
+- **added** — categoría `harness` (4 skills) con su puerta: nada se instala, se amplía
+  ni se retira sin procedencia, entrada de inventario y una vuelta atrás probada.
+- **added** — categoría `tests` (3 skills): la suite como activo, no como trámite.
+- **added** — `skill-stocktake` (governance, `audit`): duplicados de propiedad, skills
+  muertas, prosa que creció más que su herramienta; tool `stocktake`.
+- **added** — `skill-scout` (governance, `research`): reutilizar o adaptar antes de
+  escribir; exige licencia y commit fijado; tool `scout-report`.
+- **added** — `harness-inventory` (harness, `audit`): siete capas, procedencia, gatillo
+  y radio de impacto; tool `surface-audit`.
+- **added** — `harness-provenance` (harness, `design`): una rama no es una versión;
+  tool `install-gate`, que rechaza refs móviles y superficies sin revisar.
+- **added** — `harness-gc` (harness, `meta`): retirar con evidencia, ventana y vuelta
+  atrás; tool `gc-plan`, que se niega a tocar la última copia de una capacidad.
+- **added** — `harness-context-profiles` (harness, `design`): modos por decisión, reglas
+  compartidas una sola vez; tool `profile-check`.
+- **added** — `intent-driven-development` (product, `design`): intención ambigua a
+  criterios observables; tool `intent-check`, que rechaza adjetivos.
+- **added** — `test-suite-adoption` (tests, `audit`): qué tests pueden fallar de verdad;
+  tool `suite-baseline`, que cuenta los que no pueden.
+- **added** — `regression-ledger` (tests, `verify`): consumidores por módulo y el check
+  que prueba que no se rompió; tool `ledger-check`.
+- **added** — `test-data-strategy` (tests, `design`): datos propios, deterministas y sin
+  producción sin anonimizar; tool `data-strategy-check`.
+- **added** — `release-notes-audit` (content, `ship`): notas que describen lo que salió,
+  breaking primero; tool `notes-audit`.
+- **changed** — `tests/`: 197. Dos pruebas nuevas recorren todo el catálogo (forma y
+  handoff), y la de rutas se extendió a las 26 skills añadidas desde 0.5.
+- **fixed** — cinco skills nuevas declaraban `status: adapted`, que el registro no
+  admite (`adopted|original|experimental`); la adaptación vive en `origin`.
+
+## 0.6.0 — 2026-11-05
+
+Quince skills nuevas, todas con herramienta ejecutable, y dos correcciones que el
+validador y el router necesitaban. El paquete pasa de 52 a 67 skills y de 49 a 64
+herramientas; ninguna skill existente cambia de id, categoría ni fase.
+
+**budget** — el paquete queda en **25.642 líneas** sobre un techo de 25.000, medido
+con el comando del README y no estimado. Es la primera vez que el número supera el
+techo de forma consciente y la decisión está razonada en el README (§ Line budget):
+el presupuesto **no se vuelve a subir** para meter más de lo mismo; la siguiente
+skill entra desplazando a otra o no entra.
+
+**compatible** — no cambia ningún contrato, ningún id y ningún verbo existente. Lo
+nuevo es aditivo salvo dos arreglos de comportamiento descritos abajo.
+
+- **added** — `ux-flow-review` (product, `review`): puntos muertos, retornos y
+  callejones sin salida de un flujo; tool `flow-audit`.
+- **added** — `api-reference-writing` (content, `document`): completitud de la
+  referencia, con idempotencia y ejemplo ejecutado; tool `doc-completeness`.
+- **added** — `runbook-writing` (content, `document`): primera acción, criterio de
+  parada y verificación; tool `runbook-check`.
+- **added** — `adr-writing` (governance, `document`): contexto, decisión y
+  consecuencia, con la alternativa rechazada; tool `adr-check`.
+- **added** — `premortem` (governance, `plan`): fallo hipotético, causa y señal
+  temprana; tool `premortem-scan`.
+- **added** — `artifact-naming` (governance, `document`): nombre único, versión y
+  palabra de estado; tool `name-audit`.
+- **added** — `incident-comms` (content, `ship`): actualizaciones con cadencia,
+  público y lo que se sabe frente a lo que se supone; tool `comms-check`.
+- **added** — `commit-hygiene` (engineering, `implement`): un asunto, un motivo y
+  un cambio por commit; tool `commit-lint`.
+- **added** — `technical-debt-ledger` (engineering, `plan`): coste mensual, interés
+  y dueño de cada deuda; tool `debt-ledger`.
+- **added** — `event-versioning` (protocols, `document`): ventana de doble escritura
+  y fecha de retirada; tool `event-compat`.
+- **added** — `string-extraction` (reversing, `research`): triaje de cadenas, con
+  las que parecen credenciales separadas; tool `string-triage`.
+- **added** — `dependency-pinning` (security, `implement`): versión exacta, hash de
+  integridad y superficie transitiva; tool `pin-audit`.
+- **added** — `kill-switch` (agentic, `implement`): un interruptor por capacidad,
+  accionable sin desplegar y probado este trimestre; tool `kill-switch-audit`.
+- **added** — `oncall-handoff` (governance, `ship`): incidencias abiertas, ruido
+  conocido y renovaciones programadas; tool `handoff-check`.
+- **added** — `benchmark-discipline` (data, `verify`): línea base, entorno declarado
+  y varianza; tool `bench-compare`, que informa "sin diferencia" cuando el delta cabe
+  dentro del ruido.
+- **fixed** — `angel/jsonschema.py`: una propiedad llamada `required` dentro de
+  `properties` ya no se interpreta como la palabra clave `required`. Antes, un
+  esquema que describía un campo obligatorio llamado así era imposible de validar.
+- **fixed** — el router enmascara la cláusula posterior a una negación ("without
+  breaking consumers"), así que un disparador que contenga la negación nunca puede
+  coincidir. Se añade un test que lo impide: los disparadores no llevan negaciones.
+- **changed** — `tests/`: 195 tests. La comprobación de pureza de herramientas lee
+  el código, no los docstrings, y "sin diferencia" cuenta como respuesta válida de
+  una herramienta de medición.
+
+## 0.5.0 — 2026-11-05
+
+Ocho skills nuevas y tres reglas que el validador ahora exige. El paquete pasa de
+44 a 52 skills y de 41 a 49 herramientas; ninguna skill existente cambia de id.
+
+**breaking** para quien declaraba herramientas sin `sample`: desde esta versión es
+un error, no un aviso, porque una herramienta sin muestra no se puede auto-probar y
+su denominador es desconocido. Acción: añade un `sample` real a cada tool.
+
+**budget** — el techo de líneas pasa de 20.000 a 25.000, decidido y razonado en el
+README (§ Line budget), no para justificar relleno: 52 skills con herramientas no
+caben en 20.000 a la densidad actual. La regla no cambia (se mide, no se estima y
+subirlo es una decisión registrada aquí); cambia el número una vez.
+
+- **added** — `release-readiness` (product, fase `ship`): cinco puertas, veredicto y
+  ruta de rollback; tool `release-gate`.
+- **added** — `api-design` (contracts, `design`): la superficie de una llamada antes
+  de implementarla; tool `surface-audit`.
+- **added** — `threat-model` (security, `design`): activos, fronteras de confianza y
+  cobertura STRIDE; tool `threat-coverage`.
+- **added** — `data-retention` (data, `design`): propósito, ventana con disparador e
+  inventario de copias; tool `retention-audit`.
+- **added** — `alert-design` (errors, `implement`): síntoma, umbral razonado y línea
+  de runbook; tool `alert-audit`.
+- **added** — `flaky-test-triage` (engineering, `debug`): cuarentena, clasificación
+  del no-determinismo y arreglo de la causa; tool `flake-classifier`.
+- **added** — `dependency-graph` (engineering, `plan`): ciclos, capas, fan-in y
+  huérfanos antes de refactorizar; tool `dependency-audit`.
+- **added** — `prototype-spike` (engineering, `research`): pregunta, caja de horas y
+  fecha de borrado; tool `spike-budget`.
+- **added** — `acceptance` en `skill.json` pasa a validarse: cada criterio declara su
+  `kind` (`tool`, `command`, `test`, `review`, `artifact`) y, si es `tool`, nombra
+  una herramienta que la skill declara. Un criterio de salida ahora es comprobable.
+- **changed** — vocabulario de fases y verbos: se añaden la fase `ship` y el verbo
+  `ship`, porque publicar no es sinónimo de documentar ni de verificar.
+- **changed** — `changelog-discipline` exige `audience` por entrada: un cambio sin
+  sujeto obliga al lector a decidir si le afecta, que es su pregunta más cara.
+
+## 0.4.0 — 2026-11-05
+
+Los agentes pasan a ser servicios administrables: un agente es una API, y toda
+API puede llamar subagentes. El modelo viene de Harness-Candy y aquí se vuelve
+datos que el runtime valida, enruta y deja en el journal.
+
+**compatible** — no se rompe nada de 0.3: las 44 skills, los 41 tools y los 4
+contratos siguen igual. Lo nuevo es aditivo, salvo el manifiesto de Ely, que pasa
+a 0.4.0 con tres comandos más.
+
+- **added** — `angel/agents.py`: direcciones `agent://<space>/<id>@<x.y.z>#<pin>-><hop>`,
+  carta de agente, `Roster` (get/resolve/child/children/parents/tree/cascade_order/
+  validate), `Dispatcher` (plan + ejecución), `Call`/`Outcome`/`Delegation` y un
+  journal por llamada.
+- **added** — cinco reglas que el runtime hace cumplir: la carta valida contra su
+  contrato; las capacidades se intersectan hacia abajo (un subagente nunca recibe
+  más de lo que su padre tiene); `max_depth`/`max_calls`/`budget_share` se
+  comprueban antes de llamar; un ciclo se rechaza al cargar el roster; toda llamada
+  deja un árbol y un journal encadenado por hashes.
+- **added** — 6 cartas en `agents/`: `isa-planner`, `xev-builder`, `xev-tester`,
+  `wev-judge`, `zev-scout`, `governance-auditor`, más `agents/roster.json` (el
+  índice que lee la extensión de Ely, que no puede listar directorios).
+- **added** — `agent-card@1.0.0` como quinto contrato: es la firma de la carta y
+  se valida al cargar el roster, no solo en `validate`.
+- **added** — `workflow agents list|show|validate|tree|address|plan|call`, siete
+  subcomandos (el CLI pasa de 14 a 21).
+- **added** — `AGENTS.md` como documento de referencia del sistema de agentes.
+- **added** — 51 tests nuevos (`tests/test_agents.py`, 47; 4 en la suite de
+  consistencia): direcciones, pines obsoletos, contratos, ciclos, autorización,
+  profundidad, fan-out, presupuesto, techos de ejecución, journal y CLI. Total: 176.
+- **changed** — la extensión de Ely pasa a 0.4.0 con tres comandos de solo lectura
+  (`agents`, `agent tree`, `agent address`). Sigue sin permiso de red.
+- **changed** — `max_depth` se mide desde el propio agente (cuántos saltos por
+  debajo), y el grafo se valida contra ese límite: un grafo más profundo que el
+  límite declarado es un error, no un aviso.
+
+## 0.3.0 — 2026-11-05
+
+Reescritura completa. El paquete pasa de catálogo de markdown a runtime ejecutable.
+
+**breaking** — una skill ya no es un `.md` suelto: es una carpeta con `SKILL.md` +
+`skill.json` + `tools/` + `references/`. Las skills de 0.2 (`skills/ingenieria/`,
+`skills/agentic/`) se eliminan y se recrean con el nuevo esquema. Acción: si tenías
+copias locales, añádeles `skill.json` y vuelve a pasar `workflow validate --strict`.
+
+- **added** — `angel/`, runtime en Python 3.10+ stdlib: `registry` (carga, valida y
+  reconcilia disco contra registro), `router` (puntuación determinista),
+  `protocols` (6 protocolos tipados y versionados), `contracts` (JSON-schema con
+  versiones inmutables y diff semántico), `tools` (sandbox de builtins + allow-list
+  de módulos, timeout y captura), `journal` (cadena de hashes), `runner` (plan,
+  dispatch, ejecución, veredicto, gate), `errors` (taxonomía con dueño y recuperación),
+  `frontmatter`, `jsonschema`, `cli` (14 subcomandos).
+- **added** — 44 skills en 11 categorías activas: engineering 12, contracts 4,
+  protocols 3, errors 4, agentic 5, security 4, data 4, reversing 3, governance 3,
+  product 1, content 1. Todas en inglés, con `origin`, `phase` y `status`.
+- **added** — 41 herramientas ejecutables, todas de riesgo `read`, puras, con
+  esquema de entrada y un `sample` declarado; `workflow tool --self-test` ejecuta
+  las 41 y falla si una no produce `advice`.
+- **added** — 4 contratos con consumidores: `skill-report@1.1.0`,
+  `message-digest@1.0.0`, `isa-plan@1.0.0`, `xev-result@1.0.0`.
+- **added** — `tests/`: 118 tests sobre el runtime y el catálogo real, incluida la
+  consistencia entre documentación, comandos citados y ficheros en disco.
+- **added** — `WORKFLOW.md` como documento principal: propósito, comparación con
+  ECC, anatomía de una skill, recorrido de 8 pasos, presupuesto de contexto, 8
+  reglas no negociables, ruta de crecimiento.
+- **changed** — `EXTENSION-STANDARD.md` reescrito a 0.3: las tres pruebas de una
+  skill, contrato de frontmatter y de `skill.json`, tabla de riesgos, checklist,
+  antipatrones, protocolo de registro y códigos de salida.
+- **changed** — el router entiende español, enmascara cláusulas negadas, agrupa los
+  pasos en respuestas y apoyo, y filtra (en vez de puntuar) la fase pedida.
+- **changed** — `workflow validate` compara en las dos direcciones (disco ⇄ registro)
+  y `--strict` convierte avisos en fallo.
+- **fixed** — `workflow tool` devuelve código 7/8 cuando la herramienta dictamina
+  que no hay que seguir, para que una cadena de shell se detenga.
+- **fixed** — el CLI ya no contiene el hack `{"**base": None} if False else {...}`.
+- **removed** — `bin/workflow.mjs` y `src/registry.mjs` (CLI Node de 0.2): el runtime
+  Python los sustituye por completo. Usa `python3 -m angel.cli`.
+
+## 0.2.0 — 2026-11-05
+
+- `ingenieria` completada: 11 skills. Se añaden `e2e-testing` (test),
+  `ai-regression-testing` (test), `refactor-clean` (implement) y
+  `performance-optimizer` (implement). `pending` de la categoría queda vacío.
+- `agentic` pasa a `activa` con 3 skills: `agent-harness-construction` (plan),
+  `agent-architecture-audit` (review) y `eval-harness` (verify). Gate de la
+  categoría: ningún cambio en un agente se acepta sin eval antes/después.
+- `pending` de `agentic`: `continuous-learning-v2`, `strategic-compact`,
+  `safety-guard`, `agent-eval`, `agent-self-evaluation`.
+- `README.md` raíz del repo reescrito: apuntaba a un placeholder.
+- `validate` en verde: 14 skills, 0 errores, 0 avisos.
+
+## 0.1.0 — 2026-11-05
+
+- Paquete `workflow/` creado: `EXTENSION-STANDARD.md`, `categories.json`,
+  `bin/workflow.mjs`, `src/registry.mjs`, extensión `angel.workflow`, `README.md`.
+- Categoría `ingenieria` activa con 7 skills: `tdd-workflow`, `verification-loop`,
+  `coding-standards`, `code-review`, `search-first`, `build-fix`, `skill-authoring`.
+- Categorías `agentic`, `seguridad`, `datos-infra`, `producto` y `contenido`
+  declaradas en estado `pendiente`, con sus ids de ECC anotados en `pending`.
+- CLI con `list`, `show`, `claim`, `validate`, `plan`, `pack`, `install`, `where`.
+- Extensión de Ely con 5 comandos, permisos `workspace:read`, `ui`, `commands`,
+  `chat` (sin red, sin escritura).
+
+Pendiente para 0.3.0: `seguridad` (`security-review`, `safety-guard`, `gateguard`,
+`security-bounty-hunter`) y decidir si `datos-infra` se parte en dos.

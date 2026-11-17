@@ -1,0 +1,115 @@
+{
+  "id": "skill-stocktake",
+  "category": "governance",
+  "description": "Audit an existing skill library for quality instead of adding to it: dead skills, duplicate ownership, drifting procedures and criteria nobody can check. Use before authoring a new skill, after a batch of additions, or when the library has grown faster than anyone can recall what is in it.",
+  "phase": "audit",
+  "verbs": [
+    "audit",
+    "review"
+  ],
+  "triggers": [
+    "audit the skill library",
+    "do we already have this skill",
+    "which skills are unused",
+    "skills overlap",
+    "stocktake"
+  ],
+  "keywords": [
+    "stocktake",
+    "audit",
+    "library",
+    "overlap",
+    "duplicate",
+    "dead",
+    "retire",
+    "inventory",
+    "quality"
+  ],
+  "tools": [
+    {
+      "id": "stocktake",
+      "entry": "tools/stocktake.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Reports duplicate ownership, dead skills, thin tooling and skills with no executable criterion.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "as_of": {
+            "type": "string"
+          },
+          "skills": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "skills"
+        ]
+      },
+      "sample": {
+        "as_of": "2026-11-05",
+        "skills": [
+          {
+            "id": "code-review",
+            "category": "engineering",
+            "phase": "review",
+            "uses": {
+              "code-review": 412
+            },
+            "tools": [
+              "diff-classifier"
+            ],
+            "acceptance_tools": 1,
+            "body_lines": 68,
+            "needs": [
+              "review this diff"
+            ]
+          },
+          {
+            "id": "diff-reviewer",
+            "category": "engineering",
+            "phase": "review",
+            "uses": {
+              "diff-reviewer": 9
+            },
+            "tools": [],
+            "acceptance_tools": 0,
+            "body_lines": 132,
+            "needs": [
+              "review this diff"
+            ],
+            "cited_in": [
+              "WORKFLOW.md"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "stocktake reports no duplicate ownership and no skill without an executable criterion",
+      "kind": "tool",
+      "tool": "stocktake"
+    },
+    {
+      "id": "decisions",
+      "statement": "every finding has one of four outcomes: fold, fix, retire, leave",
+      "kind": "review"
+    },
+    {
+      "id": "date",
+      "statement": "the inventory came from the registry, with a date",
+      "kind": "artifact"
+    }
+  ]
+}

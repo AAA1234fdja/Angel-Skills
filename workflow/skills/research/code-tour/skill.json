@@ -1,0 +1,118 @@
+{
+  "id": "code-tour",
+  "category": "research",
+  "description": "Write a walkthrough that leads a reader through a real code path, anchored to files and lines that exist. Use when onboarding someone to one flow, when a change needs explaining in order, or when a diagram is less useful than eight anchored steps.",
+  "phase": "document",
+  "verbs": [
+    "document"
+  ],
+  "triggers": [
+    "walk through this flow",
+    "guided tour of the code",
+    "explain the code path in order",
+    "onboarding walkthrough"
+  ],
+  "keywords": [
+    "tour",
+    "walkthrough",
+    "anchor",
+    "steps",
+    "reader",
+    "flow"
+  ],
+  "tools": [
+    {
+      "id": "tour-check",
+      "entry": "tools/tour_check.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Flags missing reader, more than eight steps, unanchored steps, broken anchors and steps with nothing to notice.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "reader": {
+            "type": "string"
+          },
+          "question": {
+            "type": "string"
+          },
+          "steps": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "untoured_branches": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "verified_after_edit": {
+            "type": "boolean"
+          },
+          "existing_files": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "steps"
+        ]
+      },
+      "sample": {
+        "reader": "backend dev who needs to know where a refund is authorised",
+        "question": "where is a refund approved, and what can stop it",
+        "steps": [
+          {
+            "title": "request enters",
+            "file": "api/refunds.py",
+            "symbol": "create_refund",
+            "notice": "the idempotency guard"
+          },
+          {
+            "title": "service layer",
+            "file": "",
+            "notice": ""
+          }
+        ],
+        "untoured_branches": [
+          {
+            "branch": "async retry",
+            "leads_to": "workers/refund.py"
+          }
+        ],
+        "verified_after_edit": false,
+        "existing_files": [
+          "api/refunds.py",
+          "workers/refund.py"
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "tour-check reports no broken anchor and no unanchored step",
+      "kind": "tool",
+      "tool": "tour-check"
+    },
+    {
+      "id": "run",
+      "statement": "every anchor was verified after the last edit",
+      "kind": "review"
+    },
+    {
+      "id": "branches",
+      "statement": "untoured branches say where they lead",
+      "kind": "artifact"
+    }
+  ]
+}

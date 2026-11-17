@@ -1,0 +1,124 @@
+{
+  "id": "change-impact",
+  "category": "research",
+  "description": "Predict what a change will touch before making it, then compare the prediction with what actually moved. Use when a change crosses a boundary, when the blast radius is unknown, or after a change broke something unrelated.",
+  "phase": "plan",
+  "verbs": [
+    "plan",
+    "investigate"
+  ],
+  "triggers": [
+    "what will this change break",
+    "blast radius",
+    "what depends on this module",
+    "impact analysis before the change"
+  ],
+  "keywords": [
+    "impact",
+    "blast radius",
+    "consumers",
+    "prediction",
+    "reach",
+    "irreversible"
+  ],
+  "tools": [
+    {
+      "id": "impact-diff",
+      "entry": "tools/impact_diff.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Diffs predicted reach against actual reach and flags unpredicted files, silent consumers and over-prediction.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "surface": {
+            "type": "string"
+          },
+          "predicted": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "actual": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "second_order": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "irreversible": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "rehearsed": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "surface",
+          "predicted",
+          "actual"
+        ]
+      },
+      "sample": {
+        "surface": "POST /v1/refunds: amount becomes integer cents",
+        "predicted": [
+          "checkout/refund.py",
+          "docs/api.md",
+          "tests/test_refund.py"
+        ],
+        "actual": [
+          "checkout/refund.py",
+          "docs/api.md",
+          "tests/test_refund.py",
+          "billing/report.sql"
+        ],
+        "second_order": [
+          {
+            "consumer": "checkout",
+            "effect": "fails to compile"
+          },
+          {
+            "consumer": "report.sql",
+            "effect": ""
+          }
+        ],
+        "irreversible": [
+          "backfill rewrote the amount column"
+        ],
+        "rehearsed": false
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "impact-diff reports no unexplained miss and no silent consumer",
+      "kind": "tool",
+      "tool": "impact-diff"
+    },
+    {
+      "id": "before",
+      "statement": "the prediction was written before the change",
+      "kind": "artifact"
+    },
+    {
+      "id": "guard",
+      "statement": "each surprise produced a test, lint rule or ledger entry",
+      "kind": "review"
+    }
+  ]
+}

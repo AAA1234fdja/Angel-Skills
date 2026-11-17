@@ -1,0 +1,211 @@
+{
+  "$schema": "angel/jsonschema-subset",
+  "$id": "workflow/contracts/agent-card@1.0.0",
+  "title": "Agent card",
+  "description": "The API description of one agent: who it is, what it accepts, what it returns, what it may do and whom it may call. Written once per agent under agents/<id>/agent.json and consumed by the roster, the dispatcher and the journal.",
+  "x-consumers": [
+    "roster",
+    "dispatcher",
+    "journal",
+    "ely"
+  ],
+  "type": "object",
+  "required": [
+    "schema",
+    "id",
+    "version",
+    "address_space",
+    "role",
+    "state",
+    "model",
+    "description",
+    "inputs",
+    "outputs",
+    "skills",
+    "tools",
+    "limits"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "angel.agent/1"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "address_space": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "planner",
+        "executor",
+        "researcher",
+        "validator",
+        "governor",
+        "router"
+      ]
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "live",
+        "deprecated"
+      ]
+    },
+    "description": {
+      "type": "string",
+      "minLength": 20
+    },
+    "model": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reasoning": {
+          "type": "string",
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ]
+        },
+        "temperature": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 2
+        },
+        "context_tokens": {
+          "type": "integer",
+          "minimum": 1000
+        }
+      }
+    },
+    "inputs": {
+      "type": "object",
+      "required": [
+        "fields"
+      ]
+    },
+    "outputs": {
+      "type": "object",
+      "required": [
+        "fields"
+      ]
+    },
+    "skills": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "tools": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "guardrails": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 4
+      }
+    },
+    "limits": {
+      "type": "object",
+      "required": [
+        "max_depth",
+        "max_calls",
+        "budget_share",
+        "timeout_s"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "max_depth": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 8
+        },
+        "max_calls": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 200
+        },
+        "budget_share": {
+          "type": "number",
+          "minimum": 0.01,
+          "maximum": 1
+        },
+        "timeout_s": {
+          "type": "number",
+          "minimum": 1
+        }
+      }
+    },
+    "delegates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "to",
+          "when",
+          "allow"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "to": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+          },
+          "when": {
+            "type": "string",
+            "minLength": 8
+          },
+          "allow": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1
+          },
+          "budget": {
+            "type": "number",
+            "minimum": 0.01,
+            "maximum": 1
+          }
+        }
+      }
+    },
+    "references": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "owner": {
+      "type": "string"
+    },
+    "metadata": {
+      "type": "object"
+    }
+  }
+}

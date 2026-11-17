@@ -1,0 +1,120 @@
+{
+  "id": "failure-forensics",
+  "category": "errors",
+  "description": "Reconstruct a failed run from its journal: what ran, what failed, what was retried, and where the chain of evidence breaks. Use when a run failed and the console output is not enough to explain it.",
+  "phase": "debug",
+  "verbs": [
+    "debug",
+    "investigate",
+    "audit"
+  ],
+  "triggers": [
+    "why did the run fail",
+    "reconstruct the timeline",
+    "forensics",
+    "post-mortem"
+  ],
+  "keywords": [
+    "forensics",
+    "journal",
+    "replay",
+    "failure",
+    "timeline"
+  ],
+  "tools": [
+    {
+      "id": "timeline",
+      "entry": "tools/timeline.py",
+      "risk": "read",
+      "timeout": 15,
+      "description": "Builds an ordered timeline from journal entries and flags the first anomaly.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "entries": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "entries"
+        ]
+      },
+      "sample": {
+        "entries": [
+          {
+            "seq": 0,
+            "kind": "run.start",
+            "data": {
+              "objective": "verify the change"
+            }
+          },
+          {
+            "seq": 1,
+            "kind": "plan",
+            "data": {
+              "steps": 2
+            }
+          },
+          {
+            "seq": 2,
+            "kind": "dispatch",
+            "data": {
+              "step_id": "s1",
+              "skill": "verification-loop"
+            }
+          },
+          {
+            "seq": 3,
+            "kind": "tool.call",
+            "data": {
+              "tool": "gate"
+            }
+          },
+          {
+            "seq": 4,
+            "kind": "tool.result",
+            "data": {
+              "status": "ok"
+            }
+          },
+          {
+            "seq": 5,
+            "kind": "result",
+            "data": {
+              "status": "ok"
+            }
+          },
+          {
+            "seq": 6,
+            "kind": "verdict",
+            "data": {
+              "verdict": "pass"
+            }
+          },
+          {
+            "seq": 7,
+            "kind": "run.end",
+            "data": {
+              "verdict": "pass"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "the skill's exit criteria are met",
+      "kind": "review"
+    }
+  ]
+}

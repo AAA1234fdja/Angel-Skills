@@ -1,0 +1,119 @@
+{
+  "id": "adr-writing",
+  "category": "governance",
+  "description": "Record a decision with its context, the options rejected and what would reverse it. Use when a choice is expensive to undo, when the same debate returns, when a newcomer asks why it is like this, or before a refactor assumes the decision.",
+  "phase": "document",
+  "verbs": [
+    "document",
+    "design"
+  ],
+  "triggers": [
+    "write an adr",
+    "architecture decision record",
+    "why was this chosen",
+    "decision log"
+  ],
+  "keywords": [
+    "adr",
+    "decision",
+    "architecture",
+    "tradeoff",
+    "supersede",
+    "rationale"
+  ],
+  "tools": [
+    {
+      "id": "adr-check",
+      "entry": "tools/adr_check.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Checks an ADR for rejected options, stated consequences and a reversal condition.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "context": {
+            "type": "string"
+          },
+          "decision": {
+            "type": "string"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "consequences": {
+            "type": "object"
+          },
+          "reversal": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "decision",
+          "options"
+        ]
+      },
+      "sample": {
+        "title": "Use Redis for sessions",
+        "date": "2026-11-05",
+        "status": "accepted",
+        "context": "sessions live in the app process, so two replicas drop logins",
+        "decision": "sessions will be stored in Redis",
+        "options": [
+          {
+            "name": "sticky sessions",
+            "lost_because": "still drops on deploy"
+          },
+          {
+            "name": "redis",
+            "chosen": true
+          }
+        ],
+        "consequences": {
+          "positive": [
+            "deploys no longer log people out"
+          ],
+          "negative": [
+            "a new dependency with an SLO"
+          ]
+        },
+        "reversal": "if p99 session read exceeds 5ms"
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "adr-check reports a rejected option, both consequence kinds and a reversal condition",
+      "kind": "tool",
+      "tool": "adr-check"
+    },
+    {
+      "id": "supersede",
+      "statement": "superseded decisions are marked, not rewritten",
+      "kind": "review"
+    },
+    {
+      "id": "place",
+      "statement": "the record lives next to the code it governs",
+      "kind": "artifact"
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "id": "security-review",
+  "category": "security",
+  "description": "Adversarial review of a diff for reachable vulnerabilities, ranked by exploitability. Use when a change touches authentication, input handling, secrets, file paths or anything exposed to the network.",
+  "phase": "review",
+  "verbs": [
+    "secure",
+    "review",
+    "audit"
+  ],
+  "triggers": [
+    "security review",
+    "is this safe",
+    "before shipping auth"
+  ],
+  "keywords": [
+    "security",
+    "vulnerability",
+    "injection",
+    "auth",
+    "exploit"
+  ],
+  "tools": [
+    {
+      "id": "attack-surface",
+      "entry": "tools/attack_surface.py",
+      "risk": "read",
+      "timeout": 15,
+      "description": "Scans a diff for high-signal vulnerability patterns ranked by input reachability.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "diff": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "diff"
+        ]
+      },
+      "sample": {
+        "diff": "--- a/api/routes.py\n+++ b/api/routes.py\n@@ -10,3 +10,8 @@\n+@app.route('/files')\n+def read_file():\n+    name = request.args['name']\n+    return open('uploads/' + name).read()\n"
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "the skill's exit criteria are met",
+      "kind": "review"
+    }
+  ]
+}

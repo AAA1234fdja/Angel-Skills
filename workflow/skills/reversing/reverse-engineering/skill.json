@@ -1,0 +1,67 @@
+{
+  "id": "reverse-engineering",
+  "category": "reversing",
+  "description": "Recover the behaviour of an unknown system from artefacts: static triage, dynamic observation, protocol reconstruction and a written report. Use when there is a binary, a capture or an undocumented service whose behaviour must be understood before building on top of it.",
+  "phase": "research",
+  "verbs": [
+    "investigate",
+    "extract"
+  ],
+  "triggers": [
+    "reverse engineer",
+    "unknown binary",
+    "undocumented api",
+    "how does it work"
+  ],
+  "keywords": [
+    "reverse",
+    "binary",
+    "protocol",
+    "traffic",
+    "artefact"
+  ],
+  "tools": [
+    {
+      "id": "artefact-triage",
+      "entry": "tools/artefact_triage.py",
+      "risk": "read",
+      "timeout": 20,
+      "description": "Classifies an artefact by magic bytes and plans the next investigative step.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "artefact": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "artefact"
+        ]
+      },
+      "sample": {
+        "artefact": {
+          "path": "capture.bin",
+          "size": 40960,
+          "head_hex": "1f8b0800",
+          "strings": [
+            "/api/v2/login",
+            "X-Sig",
+            "gzip"
+          ]
+        }
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "the skill's exit criteria are met",
+      "kind": "review"
+    }
+  ]
+}

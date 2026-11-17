@@ -1,0 +1,104 @@
+{
+  "id": "alert-design",
+  "category": "errors",
+  "description": "Design alerts a tired person can act on: a symptom, a threshold with a reason, and a runbook line. Use when adding monitoring, when an alert is being silenced or ignored, when an incident was found before any alert fired, or when paging volume grows faster than incidents.",
+  "phase": "implement",
+  "verbs": [
+    "implement",
+    "design"
+  ],
+  "triggers": [
+    "design an alert",
+    "alert fatigue",
+    "we were not paged",
+    "silence this alert",
+    "on call"
+  ],
+  "keywords": [
+    "alert",
+    "monitoring",
+    "pager",
+    "oncall",
+    "symptom",
+    "threshold",
+    "runbook",
+    "page",
+    "observability"
+  ],
+  "tools": [
+    {
+      "id": "alert-audit",
+      "entry": "tools/alert_audit.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Checks alerts for a symptom, a reason, a runbook line, auto-resolution and pages per incident.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "alerts": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "pages_last_90d": {
+            "type": "number"
+          },
+          "incidents_last_90d": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "alerts"
+        ]
+      },
+      "sample": {
+        "alerts": [
+          {
+            "name": "checkout failure rate",
+            "symptom": "users cannot pay",
+            "signal": "error_rate",
+            "threshold": 0.02,
+            "window": "5m",
+            "reason": "2% is 40 lost orders a day",
+            "owner": "payments",
+            "runbook": "open the payments dashboard, check provider status",
+            "resolves": true
+          },
+          {
+            "name": "api cpu",
+            "signal": "cpu",
+            "threshold": 0.9,
+            "window": "10m",
+            "resolves": false
+          }
+        ],
+        "pages_last_90d": 96,
+        "incidents_last_90d": 12
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "alert-audit reports no missing symptom, reason or runbook line",
+      "kind": "tool",
+      "tool": "alert-audit"
+    },
+    {
+      "id": "ratio",
+      "statement": "pages per incident is at most four",
+      "kind": "review"
+    },
+    {
+      "id": "prune",
+      "statement": "silenced and never-firing alerts have a deletion date",
+      "kind": "review"
+    }
+  ]
+}

@@ -1,0 +1,115 @@
+{
+  "id": "test-suite-adoption",
+  "category": "tests",
+  "description": "Adopt an existing test suite, or rescue one nobody trusts: measure what it actually covers, find the tests that cannot fail, and get from red to a baseline. Use when inheriting a repo, when a suite is skipped in CI, or when 'the tests pass' and production disagrees.",
+  "phase": "audit",
+  "verbs": [
+    "audit",
+    "verify"
+  ],
+  "triggers": [
+    "we inherited a test suite",
+    "which tests can actually fail",
+    "is this test suite worth trusting",
+    "suite is skipped in ci",
+    "tests pass but production breaks"
+  ],
+  "keywords": [
+    "suite",
+    "adopt",
+    "baseline",
+    "skip",
+    "assertions",
+    "mutation",
+    "trust",
+    "trusting",
+    "silent"
+  ],
+  "tools": [
+    {
+      "id": "suite-baseline",
+      "entry": "tools/suite_baseline.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Flags tests that cannot fail, unattributed skips, a weak mutation sample and a suite too slow to survive.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "suite": {
+            "type": "string"
+          },
+          "duration_s": {
+            "type": "number"
+          },
+          "tests": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "known_failures": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "tests"
+        ]
+      },
+      "sample": {
+        "suite": "backend",
+        "duration_s": 640,
+        "tests": [
+          {
+            "id": "test_resume",
+            "assertions": 3,
+            "skipped": false,
+            "noticed_mutation": true
+          },
+          {
+            "id": "test_health",
+            "assertions": 0,
+            "skipped": false
+          },
+          {
+            "id": "test_legacy_export",
+            "assertions": 2,
+            "skipped": true,
+            "skip_reason": "",
+            "skip_owner": ""
+          }
+        ],
+        "known_failures": [
+          {
+            "name": "test_legacy_export"
+          }
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "suite-baseline reports no unattributed skip and no silent test",
+      "kind": "tool",
+      "tool": "suite-baseline"
+    },
+    {
+      "id": "baseline",
+      "statement": "a recorded baseline run exists: count, duration, skips, known failures",
+      "kind": "artifact"
+    },
+    {
+      "id": "gate",
+      "statement": "CI fails on new assertion-free tests and unattributed skips",
+      "kind": "command"
+    }
+  ]
+}

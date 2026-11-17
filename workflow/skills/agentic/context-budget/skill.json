@@ -1,0 +1,85 @@
+{
+  "id": "context-budget",
+  "category": "agentic",
+  "description": "Spend context deliberately: measure what is loaded, cap it, and compact at phase boundaries instead of reactively. Use when sessions run long, the agent forgets early instructions, or the catalogue itself is eating the window.",
+  "phase": "plan",
+  "verbs": [
+    "plan",
+    "measure"
+  ],
+  "triggers": [
+    "running out of context",
+    "agent forgets",
+    "compact"
+  ],
+  "keywords": [
+    "context",
+    "budget",
+    "compact",
+    "tokens",
+    "window"
+  ],
+  "tools": [
+    {
+      "id": "budget-model",
+      "entry": "tools/budget_model.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Estimates context cost of a load plan and flags over-budget phases.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "window": {
+            "type": "integer"
+          },
+          "components": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "components"
+        ]
+      },
+      "sample": {
+        "window": 200000,
+        "components": [
+          {
+            "name": "system",
+            "chars": 6000,
+            "cap": 0.2
+          },
+          {
+            "name": "skills",
+            "chars": 24000,
+            "cap": 0.3
+          },
+          {
+            "name": "files",
+            "chars": 40000,
+            "cap": 0.3
+          },
+          {
+            "name": "history",
+            "chars": 20000,
+            "cap": 0.2
+          }
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "the skill's exit criteria are met",
+      "kind": "review"
+    }
+  ]
+}

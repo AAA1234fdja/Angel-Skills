@@ -1,0 +1,75 @@
+{
+  "id": "tdd-workflow",
+  "category": "engineering",
+  "description": "Red-green-refactor with a coverage gate, so a task is never called done because the code looks right. Use when implementation is about to be written, or a defect is about to be fixed and needs a failing test first.",
+  "phase": "test",
+  "verbs": [
+    "test",
+    "implement"
+  ],
+  "triggers": [
+    "write the failing test",
+    "red green refactor",
+    "test first"
+  ],
+  "keywords": [
+    "tdd",
+    "test",
+    "coverage",
+    "red",
+    "green",
+    "refactor"
+  ],
+  "tools": [
+    {
+      "id": "coverage-gate",
+      "entry": "tools/coverage_gate.py",
+      "risk": "read",
+      "timeout": 15,
+      "description": "Applies coverage thresholds to an inline coverage report and lists uncovered files.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "report": {
+            "type": "object"
+          },
+          "threshold": {
+            "type": "number"
+          },
+          "new_files": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "report"
+        ]
+      },
+      "sample": {
+        "threshold": 0.8,
+        "report": {
+          "files": {
+            "src/app.py": {
+              "line": 0.91,
+              "branch": 0.72
+            }
+          }
+        }
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "the skill's exit criteria are met",
+      "kind": "review"
+    }
+  ]
+}

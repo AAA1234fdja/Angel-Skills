@@ -1,0 +1,43 @@
+{
+  "schema": "angel.roster/1",
+  "description": "The index Ely reads: it cannot list a directory, so every card under agents/ is named here and the runtime refuses to load a roster that disagrees with the folder.",
+  "address_space": "acme",
+  "agents": [
+    {
+      "id": "governance-auditor",
+      "version": "1.0.0",
+      "role": "governor",
+      "state": "live"
+    },
+    {
+      "id": "isa-planner",
+      "version": "1.0.0",
+      "role": "planner",
+      "state": "live"
+    },
+    {
+      "id": "wev-judge",
+      "version": "1.0.0",
+      "role": "validator",
+      "state": "live"
+    },
+    {
+      "id": "xev-builder",
+      "version": "1.0.0",
+      "role": "executor",
+      "state": "live"
+    },
+    {
+      "id": "xev-tester",
+      "version": "1.0.0",
+      "role": "executor",
+      "state": "live"
+    },
+    {
+      "id": "zev-scout",
+      "version": "1.0.0",
+      "role": "researcher",
+      "state": "live"
+    }
+  ]
+}

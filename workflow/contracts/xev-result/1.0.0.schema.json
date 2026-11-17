@@ -1,0 +1,79 @@
+{
+  "$schema": "angel/jsonschema-subset",
+  "$id": "workflow/contracts/xev-result@1.0.0",
+  "title": "XEV result payload",
+  "description": "What an executor reports after a dispatched step: status, outputs, artefacts and, on failure, a structured error that the WEV can judge.",
+  "type": "object",
+  "x-consumers": [
+    "wev",
+    "yev"
+  ],
+  "required": [
+    "step_id",
+    "status"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "step_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "ok",
+        "partial",
+        "error"
+      ]
+    },
+    "outputs": {
+      "type": "object"
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "duration_ms": {
+      "type": "number",
+      "minimum": 0
+    },
+    "error": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message"
+      ],
+      "properties": {
+        "code": {
+          "type": "string",
+          "pattern": "^E_[A-Z_]+$"
+        },
+        "message": {
+          "type": "string",
+          "maxLength": 400
+        },
+        "hint": {
+          "type": "string",
+          "maxLength": 300
+        },
+        "retryable": {
+          "type": "boolean"
+        },
+        "owner": {
+          "type": "string",
+          "enum": [
+            "user",
+            "author",
+            "producer",
+            "caller",
+            "tool",
+            "runtime"
+          ]
+        }
+      }
+    }
+  }
+}

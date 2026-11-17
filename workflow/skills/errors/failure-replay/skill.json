@@ -1,0 +1,128 @@
+{
+  "id": "failure-replay",
+  "category": "errors",
+  "description": "Rebuild a failure from the record until it happens again on demand, then turn it into a test. Use when a failure is described but not reproducible, or when a fix cannot be called fixed because nobody can make it fail.",
+  "phase": "debug",
+  "verbs": [
+    "debug",
+    "investigate"
+  ],
+  "triggers": [
+    "cannot reproduce the bug",
+    "it happens only in production",
+    "make the failure happen again",
+    "fix with no failing test"
+  ],
+  "keywords": [
+    "reproduce",
+    "replay",
+    "reproduction",
+    "signature",
+    "minimal input",
+    "failing test"
+  ],
+  "tools": [
+    {
+      "id": "replay-check",
+      "entry": "tools/replay_check.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Flags an unfrozen record, unranked variables, a reproduction not proven to be the same failure, and a fix with no preceding failing test.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "failure": {
+            "type": "string"
+          },
+          "record": {
+            "type": "object"
+          },
+          "unpinned_variables": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "parallel_changes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "reproduction": {
+            "type": "object"
+          },
+          "minimal_input": {
+            "type": "string"
+          },
+          "test": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "record",
+          "reproduction",
+          "test"
+        ]
+      },
+      "sample": {
+        "failure": "refund created twice for one order",
+        "record": {
+          "version": "1.9.4",
+          "input": "POST /refunds x2 (parallel)",
+          "at": "2026-11-04T21:12Z",
+          "order": [
+            "pay",
+            "refund",
+            "retry"
+          ]
+        },
+        "unpinned_variables": [
+          {
+            "name": "concurrency",
+            "plausibility": "high",
+            "replayed": false
+          }
+        ],
+        "parallel_changes": [
+          "concurrency",
+          "locale"
+        ],
+        "reproduction": {
+          "same_path": true,
+          "same_message": false,
+          "same_state": true
+        },
+        "minimal_input": "",
+        "test": {
+          "name": "test_double_refund",
+          "failed_before": false,
+          "reason": ""
+        }
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "replay-check reports a pinned record, a proven signature and a preceding failing test",
+      "kind": "tool",
+      "tool": "replay-check"
+    },
+    {
+      "id": "test",
+      "statement": "the test failed before the fix, for the stated reason",
+      "kind": "test"
+    },
+    {
+      "id": "reduction",
+      "statement": "the minimal failing input is recorded with its reduction steps",
+      "kind": "artifact"
+    }
+  ]
+}

@@ -1,0 +1,89 @@
+{
+  "id": "message-schema",
+  "category": "protocols",
+  "description": "Keep message schemas and code in sync by deriving one from the other, so a field cannot exist in only half the system. Use when a protocol is implemented in code and documented in a schema that both drift over time.",
+  "phase": "implement",
+  "verbs": [
+    "implement",
+    "generate"
+  ],
+  "triggers": [
+    "schema drift",
+    "derive schema",
+    "keep types and schema aligned"
+  ],
+  "keywords": [
+    "schema",
+    "drift",
+    "derive",
+    "dataclass",
+    "sync"
+  ],
+  "tools": [
+    {
+      "id": "drift-check",
+      "entry": "tools/drift_check.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Compares a code field list against a schema and reports drift both ways.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "code_fields": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "schema": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "code_fields",
+          "schema"
+        ]
+      },
+      "sample": {
+        "code_fields": [
+          "protocol",
+          "version",
+          "task_id",
+          "origin",
+          "target",
+          "msg_id",
+          "ts",
+          "parent",
+          "objective",
+          "steps"
+        ],
+        "schema": {
+          "properties": {
+            "protocol": {},
+            "version": {},
+            "task_id": {},
+            "origin": {},
+            "target": {},
+            "msg_id": {},
+            "ts": {},
+            "objective": {},
+            "steps": {},
+            "risks": {}
+          }
+        }
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "the skill's exit criteria are met",
+      "kind": "review"
+    }
+  ]
+}

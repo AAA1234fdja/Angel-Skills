@@ -1,0 +1,115 @@
+{
+  "id": "dependency-pinning",
+  "category": "security",
+  "description": "Pin and verify what you install: exact versions, lockfile integrity, transitive surface and a path to update. Use when converting ranges to pins, when two machines resolve different versions, when an audit asks what you ship, or before adding a dependency that brings thirty more.",
+  "phase": "implement",
+  "verbs": [
+    "implement",
+    "secure"
+  ],
+  "triggers": [
+    "pin dependencies",
+    "lockfile",
+    "why two machines differ",
+    "transitive dependencies",
+    "reproducible build"
+  ],
+  "keywords": [
+    "pin",
+    "lockfile",
+    "dependency",
+    "hash",
+    "integrity",
+    "transitive",
+    "version",
+    "reproducible"
+  ],
+  "tools": [
+    {
+      "id": "pin-audit",
+      "entry": "tools/pin_audit.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Audits a lockfile for floating versions, missing hashes, duplicate versions and the transitive surface.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "lockfile": {
+            "type": "string"
+          },
+          "packages": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "declared_ranges": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "update_path": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "packages"
+        ]
+      },
+      "sample": {
+        "lockfile": "poetry.lock",
+        "update_path": "bot opens a PR weekly",
+        "packages": [
+          {
+            "name": "requests",
+            "version": "2.31.0",
+            "direct": true,
+            "hash": "sha256:9f",
+            "requires": [
+              "urllib3"
+            ]
+          },
+          {
+            "name": "urllib3",
+            "version": "2.0.7",
+            "direct": false,
+            "hash": "sha256:aa",
+            "requires": []
+          },
+          {
+            "name": "certifi",
+            "version": ">=2023",
+            "direct": false,
+            "requires": [
+              "urllib3"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "pin-audit reports no floating range, no missing hash and no duplicate version",
+      "kind": "tool",
+      "tool": "pin-audit"
+    },
+    {
+      "id": "update",
+      "statement": "an update path exists with an owner",
+      "kind": "review"
+    },
+    {
+      "id": "surface",
+      "statement": "every large transitive addition has a stated reason",
+      "kind": "review"
+    }
+  ]
+}

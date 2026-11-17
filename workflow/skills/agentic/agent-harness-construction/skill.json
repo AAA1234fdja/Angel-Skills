@@ -1,0 +1,91 @@
+{
+  "id": "agent-harness-construction",
+  "category": "agentic",
+  "description": "Design action space, tool granularity, observation format and context budget so an agent finishes more tasks. Use when defining or revising an agent's tool set, its observation format, or why it keeps failing halfway.",
+  "phase": "plan",
+  "verbs": [
+    "design",
+    "plan"
+  ],
+  "triggers": [
+    "design an agent",
+    "tool set",
+    "action space",
+    "observation format",
+    "agent ignores instructions",
+    "agent fails halfway"
+  ],
+  "keywords": [
+    "harness",
+    "tools",
+    "action",
+    "observation",
+    "context",
+    "budget"
+  ],
+  "tools": [
+    {
+      "id": "harness-score",
+      "entry": "tools/harness_score.py",
+      "risk": "read",
+      "timeout": 15,
+      "description": "Scores a harness description against the four quality axes.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "tools": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "system_prompt_chars": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "tools"
+        ]
+      },
+      "sample": {
+        "tools": [
+          {
+            "id": "read",
+            "input_schema": true,
+            "returns": [
+              "status",
+              "summary",
+              "next_actions",
+              "artifacts"
+            ]
+          },
+          {
+            "id": "edit",
+            "input_schema": true,
+            "returns": [
+              "status",
+              "summary",
+              "next_actions",
+              "artifacts"
+            ]
+          }
+        ],
+        "system_prompt_chars": 4000,
+        "max_prompt_chars": 6000,
+        "has_recovery_contract": true
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "the skill's exit criteria are met",
+      "kind": "review"
+    }
+  ]
+}

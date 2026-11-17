@@ -1,0 +1,66 @@
+{
+  "id": "doc-writing",
+  "category": "content",
+  "description": "Write and review documentation that stays true: named source of truth, audience, failure modes and examples that actually run. Use when documenting a feature, writing a README, or when docs and code have already drifted.",
+  "phase": "document",
+  "verbs": [
+    "document"
+  ],
+  "triggers": [
+    "write documentation",
+    "readme",
+    "docs drifted",
+    "explain this module"
+  ],
+  "keywords": [
+    "docs",
+    "readme",
+    "documentation",
+    "audience",
+    "examples"
+  ],
+  "tools": [
+    {
+      "id": "doc-lint",
+      "entry": "tools/doc_lint.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Checks a document for audience, source of truth, runnable examples and drift markers.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "doc": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "doc"
+        ]
+      },
+      "sample": {
+        "doc": {
+          "path": "README.md",
+          "audience": "developers adding an endpoint",
+          "source_of_truth": "workflow/angel/cli.py",
+          "examples_run": 2,
+          "failure_section": true,
+          "last_verified": "2026-11-05",
+          "has_duplicated_truth": false,
+          "words": 900
+        }
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "the skill's exit criteria are met",
+      "kind": "review"
+    }
+  ]
+}

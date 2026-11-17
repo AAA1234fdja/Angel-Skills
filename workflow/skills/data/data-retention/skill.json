@@ -1,0 +1,119 @@
+{
+  "id": "data-retention",
+  "category": "data",
+  "description": "Decide what is kept, for how long and what deletes it: purpose, retention window, legal hold and the deletion path. Use when a new dataset is added, when someone asks to be forgotten, when an audit asks why a record still exists, or when a backup outlives its policy.",
+  "phase": "design",
+  "verbs": [
+    "design",
+    "audit"
+  ],
+  "triggers": [
+    "data retention",
+    "delete my data",
+    "right to be forgotten",
+    "keep it for how long",
+    "purge policy"
+  ],
+  "keywords": [
+    "retention",
+    "delete",
+    "purge",
+    "gdpr",
+    "personal",
+    "backup",
+    "policy",
+    "archive",
+    "erase"
+  ],
+  "tools": [
+    {
+      "id": "retention-audit",
+      "entry": "tools/retention_audit.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Checks every dataset for a purpose, a window with a trigger, a copy inventory and a verified deletion job.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "datasets": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "datasets"
+        ]
+      },
+      "sample": {
+        "datasets": [
+          {
+            "name": "support_tickets",
+            "purpose": "answer customer questions",
+            "classification": "personal",
+            "window_days": 365,
+            "trigger": "ticket closed",
+            "owner": "support",
+            "copies": [
+              "primary",
+              "backup",
+              "warehouse"
+            ],
+            "deletion_job": "jobs/purge_tickets",
+            "verified": true
+          },
+          {
+            "name": "clickstream",
+            "classification": "operational",
+            "window_days": 30,
+            "owner": "analytics",
+            "copies": [
+              "warehouse"
+            ],
+            "deletion_job": "jobs/purge_events",
+            "verified": false
+          },
+          {
+            "name": "contracts",
+            "purpose": "prove the agreement",
+            "classification": "financial",
+            "window_days": 3650,
+            "trigger": "contract end",
+            "owner": "legal",
+            "copies": [
+              "primary",
+              "backup"
+            ],
+            "deletion_job": "jobs/purge_contracts",
+            "verified": true,
+            "legal_hold": true
+          }
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "retention-audit reports no dataset without purpose, window or copy list",
+      "kind": "tool",
+      "tool": "retention-audit"
+    },
+    {
+      "id": "proof",
+      "statement": "the deletion job ran end to end once, with counts recorded",
+      "kind": "artifact"
+    },
+    {
+      "id": "holds",
+      "statement": "every exception has an owner and an expiry",
+      "kind": "review"
+    }
+  ]
+}

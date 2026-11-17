@@ -1,0 +1,79 @@
+{
+  "id": "changelog-discipline",
+  "category": "governance",
+  "description": "Keep a changelog a consumer can act on: what changed, what breaks and what to do about it. Use when releasing, when a skill version changes, or when readers cannot tell whether an update affects them.",
+  "phase": "document",
+  "verbs": [
+    "document",
+    "review"
+  ],
+  "triggers": [
+    "changelog",
+    "release notes",
+    "what changed"
+  ],
+  "keywords": [
+    "changelog",
+    "version",
+    "breaking",
+    "release",
+    "notes"
+  ],
+  "tools": [
+    {
+      "id": "changelog-lint",
+      "entry": "tools/changelog_lint.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Lints changelog entries for actionability and breaking-change disclosure.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "entries": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "entries"
+        ]
+      },
+      "sample": {
+        "entries": [
+          {
+            "version": "0.3.0",
+            "type": "breaking",
+            "audience": "skill authors",
+            "text": "skills moved to folders",
+            "action": "add skill.json and re-run validate"
+          },
+          {
+            "version": "0.3.1",
+            "type": "fixed",
+            "audience": "operators",
+            "text": "the journal now fsyncs every entry"
+          },
+          {
+            "version": "0.3.2",
+            "type": "added",
+            "text": "new agent commands"
+          }
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "the skill's exit criteria are met",
+      "kind": "review"
+    }
+  ]
+}

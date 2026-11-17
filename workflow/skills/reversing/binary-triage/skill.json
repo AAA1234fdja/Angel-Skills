@@ -1,0 +1,80 @@
+{
+  "id": "binary-triage",
+  "category": "reversing",
+  "description": "First pass on an unknown binary: type, architecture, strings, imports and packing signals, without executing it. Use when a sample arrives and the question is what it is before anything else happens.",
+  "phase": "research",
+  "verbs": [
+    "investigate",
+    "audit"
+  ],
+  "triggers": [
+    "unknown binary",
+    "triage a sample",
+    "what is this file"
+  ],
+  "keywords": [
+    "binary",
+    "triage",
+    "strings",
+    "imports",
+    "packing"
+  ],
+  "tools": [
+    {
+      "id": "triage-report",
+      "entry": "tools/triage_report.py",
+      "risk": "read",
+      "timeout": 15,
+      "description": "Produces a static triage report with risk indicators from supplied metadata.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "metadata": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "metadata"
+        ]
+      },
+      "sample": {
+        "metadata": {
+          "sha256": "9f2c0d1e4b5a6c7d8e9f0a1b2c3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f",
+          "kind": "pe",
+          "arch": "x86_64",
+          "size": 912384,
+          "entropy": 6.1,
+          "imports": [
+            "kernel32.dll!CreateFileW",
+            "kernel32.dll!WriteFile",
+            "ws2_32.dll!socket",
+            "ws2_32.dll!connect",
+            "user32.dll!MessageBoxA",
+            "advapi32.dll!RegOpenKeyExW",
+            "kernel32.dll!Sleep",
+            "kernel32.dll!GetTickCount",
+            "kernel32.dll!LoadLibraryA",
+            "kernel32.dll!GetProcAddress",
+            "user32.dll!GetAsyncKeyState"
+          ],
+          "sections_writable_executable": 0,
+          "strings": [
+            "https://example.invalid/beacon"
+          ]
+        }
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "the skill's exit criteria are met",
+      "kind": "review"
+    }
+  ]
+}

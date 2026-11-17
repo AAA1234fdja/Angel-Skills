@@ -1,0 +1,73 @@
+{
+  "id": "refactor-clean",
+  "category": "engineering",
+  "description": "Verified removal of dead code and duplicate logic, one candidate per commit with the suite green throughout. Use when the repository accumulates unused functions, orphan imports or two implementations of the same thing.",
+  "phase": "implement",
+  "verbs": [
+    "refactor"
+  ],
+  "triggers": [
+    "dead code",
+    "unused",
+    "duplicate logic",
+    "clean up"
+  ],
+  "keywords": [
+    "dead code",
+    "duplicate",
+    "unused",
+    "refactor",
+    "consolidate"
+  ],
+  "tools": [
+    {
+      "id": "dead-code-scan",
+      "entry": "tools/dead_code_scan.py",
+      "risk": "read",
+      "timeout": 20,
+      "description": "Classifies symbols into safe/review/keep from usage evidence supplied inline.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "symbols": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "symbols"
+        ]
+      },
+      "sample": {
+        "symbols": [
+          {
+            "name": "format_legacy",
+            "defined": true,
+            "referenced": false,
+            "tests": 0
+          },
+          {
+            "name": "clamp",
+            "defined": true,
+            "referenced": true,
+            "tests": 2
+          }
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "the skill's exit criteria are met",
+      "kind": "review"
+    }
+  ]
+}

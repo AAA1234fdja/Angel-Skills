@@ -1,0 +1,98 @@
+{
+  "id": "flaky-test-triage",
+  "category": "engineering",
+  "description": "Turn a flaky test into a diagnosis: quarantine it, reproduce it, name the source of nondeterminism and fix or delete it. Use when CI fails and passes without a code change, when retry is becoming policy, or before a suite's signal stops being trusted.",
+  "phase": "debug",
+  "verbs": [
+    "debug",
+    "test"
+  ],
+  "triggers": [
+    "flaky test",
+    "intermittent failure",
+    "failed once passed on retry",
+    "unstable test",
+    "randomly fails"
+  ],
+  "keywords": [
+    "flaky",
+    "intermittent",
+    "nondeterministic",
+    "retry",
+    "quarantine",
+    "race",
+    "seed",
+    "timing",
+    "unstable"
+  ],
+  "tools": [
+    {
+      "id": "flake-classifier",
+      "entry": "tools/flake_classifier.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Classifies a flaky test from its run sequence and observed signals and names the likely source.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "runs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "signals": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "runs"
+        ]
+      },
+      "sample": {
+        "runs": [
+          "pass",
+          "fail",
+          "pass",
+          "pass",
+          "fail",
+          "pass",
+          "pass",
+          "pass",
+          "fail",
+          "pass"
+        ],
+        "signals": [
+          "timing",
+          "shared_state"
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "flake-classifier names a signal and calls the test flaky",
+      "kind": "tool",
+      "tool": "flake-classifier"
+    },
+    {
+      "id": "sequence",
+      "statement": "ten runs before and ten after the fix are recorded",
+      "kind": "artifact"
+    },
+    {
+      "id": "ticket",
+      "statement": "the quarantine marker links to a ticket with the diagnosis",
+      "kind": "review"
+    }
+  ]
+}

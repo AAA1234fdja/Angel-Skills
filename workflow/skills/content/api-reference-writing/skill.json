@@ -1,0 +1,106 @@
+{
+  "id": "api-reference-writing",
+  "category": "content",
+  "description": "Write a reference a caller can act on: every operation, its parameters, what comes back and what fails. Use when an endpoint ships undocumented, when the docs are generated but unreadable, or when support keeps answering what a parameter does.",
+  "phase": "document",
+  "verbs": [
+    "document",
+    "review"
+  ],
+  "triggers": [
+    "write the api reference",
+    "document an endpoint",
+    "docs for this api",
+    "reference page"
+  ],
+  "keywords": [
+    "reference",
+    "documentation",
+    "endpoint",
+    "parameters",
+    "errors",
+    "docs",
+    "openapi"
+  ],
+  "tools": [
+    {
+      "id": "doc-completeness",
+      "entry": "tools/doc_completeness.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Scores each documented operation for parameters, examples, errors and idempotency.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "operations": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "operations"
+        ]
+      },
+      "sample": {
+        "operations": [
+          {
+            "name": "POST /invoices",
+            "method": "POST",
+            "path": "/invoices",
+            "auth": "bearer",
+            "idempotent": true,
+            "parameters": [
+              {
+                "name": "total",
+                "type": "integer",
+                "required": true,
+                "wrong": "422 when negative"
+              }
+            ],
+            "request_example": "{\"total\": 1200}",
+            "response_example": "{\"id\": \"inv_1\"}",
+            "errors": [
+              {
+                "code": "422",
+                "retry": false
+              }
+            ]
+          },
+          {
+            "name": "GET /invoices/{id}",
+            "method": "GET",
+            "path": "/invoices/<id>",
+            "auth": "bearer",
+            "response_example": "{...}",
+            "errors": []
+          }
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "doc-completeness reports no operation below the bar",
+      "kind": "tool",
+      "tool": "doc-completeness"
+    },
+    {
+      "id": "run",
+      "statement": "the examples were executed against a real instance",
+      "kind": "artifact"
+    },
+    {
+      "id": "errors",
+      "statement": "every error code is listed with retry guidance",
+      "kind": "review"
+    }
+  ]
+}

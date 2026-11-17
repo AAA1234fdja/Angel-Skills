@@ -1,0 +1,103 @@
+{
+  "id": "ux-flow-review",
+  "category": "product",
+  "description": "Walk a user flow end to end and report where it stalls: steps, decision points, dead ends and recoverability. Use when a flow is about to ship, when support keeps explaining the same screen, when a funnel leaks at one step, or before asking for a redesign.",
+  "phase": "review",
+  "verbs": [
+    "review",
+    "audit"
+  ],
+  "triggers": [
+    "review the flow",
+    "funnel drop off",
+    "users get stuck",
+    "too many steps",
+    "dead end"
+  ],
+  "keywords": [
+    "flow",
+    "funnel",
+    "steps",
+    "dead end",
+    "recoverable",
+    "ux",
+    "onboarding",
+    "checkout"
+  ],
+  "tools": [
+    {
+      "id": "flow-audit",
+      "entry": "tools/flow_audit.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Weights the steps of a user flow, finds dead ends and unrecoverable steps.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "job": {
+            "type": "string"
+          },
+          "steps": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "steps"
+        ]
+      },
+      "sample": {
+        "job": "renew an expired card",
+        "steps": [
+          {
+            "id": "open",
+            "kind": "decision",
+            "cost": 1
+          },
+          {
+            "id": "confirm",
+            "kind": "input",
+            "cost": 2
+          },
+          {
+            "id": "save",
+            "kind": "wait",
+            "cost": 3,
+            "recoverable": true
+          },
+          {
+            "id": "declined",
+            "kind": "error",
+            "cost": 5,
+            "dead_end": true
+          }
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "flow-audit reports the weighted cost and lists every dead end",
+      "kind": "tool",
+      "tool": "flow-audit"
+    },
+    {
+      "id": "three",
+      "statement": "the three costliest steps have one proposed change each",
+      "kind": "review"
+    },
+    {
+      "id": "after",
+      "statement": "the before/after step count is recorded",
+      "kind": "artifact"
+    }
+  ]
+}

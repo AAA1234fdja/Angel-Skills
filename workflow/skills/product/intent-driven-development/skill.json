@@ -1,0 +1,110 @@
+{
+  "id": "intent-driven-development",
+  "category": "product",
+  "description": "Turn an ambiguous or high-impact request into scoped, verifiable acceptance criteria before writing code. Use when a request is a sentence long but the change is a week long, or when 'done' is negotiated at review time.",
+  "phase": "design",
+  "verbs": [
+    "design",
+    "plan"
+  ],
+  "triggers": [
+    "the request is ambiguous",
+    "scope this change",
+    "what does done mean",
+    "acceptance criteria before coding"
+  ],
+  "keywords": [
+    "intent",
+    "scope",
+    "acceptance",
+    "criteria",
+    "non-goals",
+    "ambiguity",
+    "requirement"
+  ],
+  "tools": [
+    {
+      "id": "intent-check",
+      "entry": "tools/intent_check.py",
+      "risk": "read",
+      "timeout": 10,
+      "description": "Refuses unobservable wording, criteria with no check, missing non-goals and ambiguities resolved by nobody.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "intent": {
+            "type": "string"
+          },
+          "criteria": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "non_goals": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "ambiguities": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "criteria"
+        ]
+      },
+      "sample": {
+        "intent": "users can resume an abandoned checkout",
+        "criteria": [
+          {
+            "id": "resume",
+            "statement": "a cart idle for 24h can be resumed within 2 clicks",
+            "check": "e2e: resume.spec.ts"
+          },
+          {
+            "id": "fast",
+            "statement": "the resume page is fast",
+            "check": ""
+          }
+        ],
+        "non_goals": [
+          "changing the payment flow"
+        ],
+        "ambiguities": [
+          {
+            "question": "24h or 48h?",
+            "resolved_by": "ana"
+          }
+        ]
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "intent-check refuses nothing: observable criteria, each with a check",
+      "kind": "tool",
+      "tool": "intent-check"
+    },
+    {
+      "id": "non-goals",
+      "statement": "non-goals are listed, not implied",
+      "kind": "artifact"
+    },
+    {
+      "id": "readback",
+      "statement": "the requester read the intent back and agreed",
+      "kind": "review"
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "id": "verification-loop",
+  "category": "engineering",
+  "description": "Six-phase verification (build, types, lint, tests with coverage, security, diff review) with quotable evidence for every phase. Use when a task is being closed, before a commit, or when someone hands over a change to accept or reject.",
+  "phase": "verify",
+  "verbs": [
+    "verify",
+    "review"
+  ],
+  "triggers": [
+    "close the task",
+    "before commit",
+    "verify the change"
+  ],
+  "keywords": [
+    "verify",
+    "build",
+    "lint",
+    "types",
+    "gate",
+    "evidence"
+  ],
+  "tools": [
+    {
+      "id": "gate",
+      "entry": "tools/verify_gate.py",
+      "risk": "read",
+      "timeout": 15,
+      "description": "Evaluates the six phases from reported results and blocks on missing evidence.",
+      "input": {
+        "type": "object",
+        "properties": {
+          "phases": {
+            "type": "object"
+          },
+          "allow_skips": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "phases"
+        ]
+      },
+      "sample": {
+        "allow_skips": [
+          "security"
+        ],
+        "phases": {
+          "build": {
+            "status": "pass",
+            "command": "npm run build",
+            "output": "ok"
+          },
+          "types": {
+            "status": "pass",
+            "command": "tsc --noEmit"
+          },
+          "lint": {
+            "status": "pass",
+            "command": "npm run lint"
+          },
+          "tests": {
+            "status": "pass",
+            "command": "npm test",
+            "output": "42 passing"
+          },
+          "diff": {
+            "status": "pass",
+            "command": "git diff --check"
+          }
+        }
+      }
+    }
+  ],
+  "contracts": [],
+  "requires": [],
+  "routing": {
+    "not_for": []
+  },
+  "acceptance": [
+    {
+      "id": "exit",
+      "statement": "the skill's exit criteria are met",
+      "kind": "review"
+    }
+  ]
+}

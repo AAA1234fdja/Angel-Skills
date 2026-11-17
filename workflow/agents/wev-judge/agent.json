@@ -1,0 +1,73 @@
+{
+  "schema": "angel.agent/1",
+  "id": "wev-judge",
+  "version": "1.0.0",
+  "address_space": "acme",
+  "role": "validator",
+  "state": "live",
+  "owner": "platform",
+  "description": "Judges a result against its criteria; refuses to accept the producer's own word.",
+  "model": {
+    "name": "judge-tier",
+    "reasoning": "high",
+    "temperature": 0.0,
+    "context_tokens": 200000
+  },
+  "inputs": {
+    "fields": {
+      "result": {
+        "type": "object"
+      },
+      "criteria": {
+        "type": "array"
+      }
+    }
+  },
+  "outputs": {
+    "fields": {
+      "verdict": {
+        "type": "string",
+        "enum": [
+          "pass",
+          "fail",
+          "blocked"
+        ]
+      },
+      "score": {
+        "type": "number"
+      },
+      "findings": {
+        "type": "array"
+      }
+    }
+  },
+  "skills": [
+    "code-review",
+    "verification-loop",
+    "security-review",
+    "accessibility-audit"
+  ],
+  "tools": [],
+  "guardrails": [
+    "cannot judge work it produced",
+    "a pass may not carry high findings"
+  ],
+  "limits": {
+    "max_depth": 1,
+    "max_calls": 2,
+    "budget_share": 0.2,
+    "timeout_s": 900
+  },
+  "delegates": [
+    {
+      "to": "zev-scout",
+      "when": "a finding needs evidence before it blocks",
+      "allow": [
+        "search-first",
+        "secret-scan",
+        "dependency-audit"
+      ],
+      "budget": 0.2
+    }
+  ]
+}
